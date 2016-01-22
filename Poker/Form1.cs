@@ -164,8 +164,7 @@
                     pPanel.BackColor = Color.DarkBlue;
                     pPanel.Height = 150;
                     pPanel.Width = 180;
-                    //pPanel.Visible = false;
-                    pPanel.Visible = true;
+                    pPanel.Visible = false;
                 }
 
                 if (bot1Chips > 0)
