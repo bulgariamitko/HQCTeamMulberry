@@ -36,7 +36,8 @@
         List<int> ints = new List<int>();
         bool PFturn = false, Pturn = true, restart = false, raising = false;
         Poker.Type sorted;
-        string[] imgLocation = Directory.GetFiles("Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
+        //string[] imgLocation = Directory.GetFiles("Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
+        string[] imgLocation = Directory.GetFiles(@"..\..\Assets\Cards", "*.png", SearchOption.TopDirectoryOnly);
         /*string[] imgLocation ={
                    "Assets\\Cards\\33.png","Assets\\Cards\\22.png",
                     "Assets\\Cards\\29.png","Assets\\Cards\\21.png",
@@ -110,7 +111,8 @@
             MaximizeBox = false;
             MinimizeBox = false;
             bool check = false;
-            Bitmap backImage = new Bitmap("Assets\\Back\\Back.png");
+            //Bitmap backImage = new Bitmap("Assets\\Back\\Back.png");
+            Bitmap backImage = new Bitmap(@"..\..\Assets\Back\Back.png");
             int horizontal = 580, vertical = 480;
             Random r = new Random();
 
@@ -126,13 +128,15 @@
             {
 
                 deck[i] = Image.FromFile(imgLocation[i]);
-                var charsToRemove = new string[] { "Assets\\Cards\\", ".png" };
+                //var charsToRemove = new string[] { "Assets\\Cards\\", ".png" };
+                var charsToRemove = new string[] { @"..\..\Assets\Cards\", ".png" };
                 foreach (var c in charsToRemove)
                 {
                     imgLocation[i] = imgLocation[i].Replace(c, string.Empty);
                 }
 
-                reserve[i] = int.Parse(imgLocation[i]) - 1;
+                //reserve[i] = int.Parse(imgLocation[i]) - 1;
+                reserve[i] = int.Parse(imgLocation[i].Remove(imgLocation[i].IndexOf("_"))) - 1;
                 holder[i] = new PictureBox();
                 holder[i].SizeMode = PictureBoxSizeMode.StretchImage;
                 holder[i].Height = 130;
@@ -160,7 +164,8 @@
                     pPanel.BackColor = Color.DarkBlue;
                     pPanel.Height = 150;
                     pPanel.Width = 180;
-                    pPanel.Visible = false;
+                    //pPanel.Visible = false;
+                    pPanel.Visible = true;
                 }
 
                 if (bot1Chips > 0)
@@ -2031,7 +2036,8 @@
                 last = 0;
                 call = bb;
                 Raise = 0;
-                imgLocation = Directory.GetFiles("Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
+                //imgLocation = Directory.GetFiles("Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
+                imgLocation = Directory.GetFiles(@"..\..\Assets\Cards", "*.png", SearchOption.TopDirectoryOnly);
                 bools.Clear();
                 rounds = 0;
                 pPower = 0; pType = -1;
@@ -2285,7 +2291,8 @@
                     bRaise.Text = "Raise";
                 }
             }
-            imgLocation = Directory.GetFiles("Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
+            //imgLocation = Directory.GetFiles("Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
+            imgLocation = Directory.GetFiles(@"..\..\Assets\Cards", "*.png", SearchOption.TopDirectoryOnly);
             for (int os = 0; os < 17; os++)
             {
                 holder[os].Image = null;
