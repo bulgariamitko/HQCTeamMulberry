@@ -1,7 +1,14 @@
 ﻿namespace Poker
 {
-    partial class AddChips
+    using System.Windows.Forms;
+
+    public partial class AddChips
     {
+        private Label label1;
+        private Button button1;
+        private Button button2;
+        private TextBox textBox1;
+
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -13,10 +20,11 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing && (this.components != null))
             {
-                components.Dispose();
+                this.components.Dispose();
             }
+
             base.Dispose(disposing);
         }
 
@@ -28,10 +36,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label1 = new Label();
+            this.button1 = new Button();
+            this.button2 = new Button();
+            this.textBox1 = new TextBox();
             this.SuspendLayout();
             // 
             // label1
@@ -53,7 +61,7 @@
             this.button1.TabIndex = 1;
             this.button1.Text = "Add Chips";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.Button1Click);
             // 
             // button2
             // 
@@ -64,7 +72,7 @@
             this.button2.TabIndex = 2;
             this.button2.Text = "Exit";
             this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.button2.Click += new System.EventHandler(this.Button2Click);
             // 
             // textBox1
             // 
@@ -86,14 +94,8 @@
             this.Text = "You Ran Out Of Chips";
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
         #endregion
-
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.TextBox textBox1;
     }
 }

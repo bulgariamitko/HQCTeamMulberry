@@ -388,9 +388,6 @@
         private System.Windows.Forms.Label b2Status;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox tbRaise;
-
-
-
     }
 }
 
