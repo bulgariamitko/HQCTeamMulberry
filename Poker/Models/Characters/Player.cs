@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Poker.Models.Characters
+﻿namespace Poker.Models.Characters
 {
-    class Player
+    public class Player
     {
     }
 }
