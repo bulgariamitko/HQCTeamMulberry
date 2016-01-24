@@ -70,7 +70,7 @@
         private List<int> ints = new List<int>();
         private bool _pFturn = false, _pturn = true, _restart = false, _raising = false;
         private Poker.Type _sorted;
-        private string[] imgLocation = Directory.GetFiles("Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
+        private string[] imgLocation = Directory.GetFiles("..\\..\\Resources\\Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
         /*string[] ImgLocation ={
                    "Assets\\Cards\\33.png","Assets\\Cards\\22.png",
                     "Assets\\Cards\\29.png","Assets\\Cards\\21.png",
@@ -143,7 +143,7 @@
             MaximizeBox = false;
             MinimizeBox = false;
             bool check = false;
-            Bitmap backImage = new Bitmap("Assets\\Back\\Back.png");
+            Bitmap backImage = new Bitmap("..\\..\\Resources\\Assets\\Back\\Back.png");
             int horizontal = 580, vertical = 480;
             Random r = new Random();
             for (i = imgLocation.Length; i > 0; i--)
@@ -157,7 +157,7 @@
             for (i = 0; i < 17; i++)
             {
                 _deck[i] = Image.FromFile(imgLocation[i]);
-                var charsToRemove = new string[] { "Assets\\Cards\\", ".png" };
+                var charsToRemove = new string[] { "..\\..\\Resources\\Assets\\Cards\\", ".png" };
                 foreach (var c in charsToRemove)
                 {
                     imgLocation[i] = imgLocation[i].Replace(c, string.Empty);
@@ -2045,7 +2045,7 @@
                 _last = 0;
                 call = bb;
                 raise = 0;
-                imgLocation = Directory.GetFiles("Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
+                imgLocation = Directory.GetFiles("..\\..\\Resources\\Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
                 _bools.Clear();
                 rounds = 0;
                 playerPower = 0; playerType = -1;
@@ -2362,7 +2362,7 @@
                     bRaise.Text = "Raise";
                 }
             }
-            imgLocation = Directory.GetFiles("Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
+            imgLocation = Directory.GetFiles("..\\..\\Resources\\Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
             for (int os = 0; os < 17; os++)
             {
                 _holder[os].Image = null;
