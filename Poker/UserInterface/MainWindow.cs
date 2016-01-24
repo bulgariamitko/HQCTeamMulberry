@@ -8,7 +8,7 @@
     using System.Threading.Tasks;
     using System.Windows.Forms;
 
-    public partial class Form1 : Form
+    public partial class MainWindow : Form
     {
         #region Variables
         private ProgressBar progressBar = new ProgressBar();
@@ -90,7 +90,7 @@
         private int _t = 60, i, bb = 500, _sb = 250, _up = 10000000, _turnCount = 0;
 
         #endregion
-        public Form1()
+        public MainWindow()
         {
             //bools.Add(PFturn); bools.Add(B1Fturn); bools.Add(B2Fturn); bools.Add(B3Fturn); bools.Add(B4Fturn); bools.Add(B5Fturn);
             call = bb;
