@@ -14,7 +14,7 @@
             FontFamily fontFamily = new FontFamily("Arial");
             this.InitializeComponent();
             this.ControlBox = false;
-            this.label1.BorderStyle = BorderStyle.FixedSingle;
+            this.outOfChipsLabel.BorderStyle = BorderStyle.FixedSingle;
         }
 
         public int A
@@ -26,17 +26,17 @@
         public void Button1Click(object sender, EventArgs e)
         {
             int parsedValue;
-            if (int.Parse(this.textBox1.Text) > MaxChips)
+            if (int.Parse(this.addChipsTextBox.Text) > MaxChips)
             {
                 throw new InvalidOperationException(string.Format("The maximium chips you can add is {0}", MaxChips));
             }
 
-            if (!int.TryParse(this.textBox1.Text, out parsedValue))
+            if (!int.TryParse(this.addChipsTextBox.Text, out parsedValue))
             {
                 throw new InvalidOperationException("This is a number only field");
             }
 
-            this.a = int.Parse(this.textBox1.Text);
+            this.a = int.Parse(this.addChipsTextBox.Text);
             this.Close();
         }
 
