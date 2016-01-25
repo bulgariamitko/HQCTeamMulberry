@@ -13,7 +13,9 @@
         #region Variables
         private ProgressBar progressBar = new ProgressBar();
 
-        private const int DefaultStartingChips = 10000;
+        public const int DefaultStartingChips = 10000;
+        public const int DefaultSetOfCards = 52;
+        public const int DefaultCardsInGame = 17;
 
         private int Nm;
 
@@ -26,7 +28,8 @@
         private Panel bot5Panel = new Panel();
 
 
-        int call = 500, foldedPlayers = 5;
+        private int call = 500;
+        private int foldedPlayers = 5;
 
         //Chips
         public int Chips = DefaultStartingChips;
@@ -70,8 +73,8 @@
         private List<int> ints = new List<int>();
         private bool _pFturn = false, _pturn = true, _restart = false, _raising = false;
         private Poker.Type _sorted;
-        private string[] imgLocation = Directory.GetFiles("..\\..\\Resources\\Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
-        /*string[] ImgLocation ={
+        private string[] cardsImageLocation = Directory.GetFiles("..\\..\\Resources\\Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
+        /*string[] cardsImageLocation ={
                    "Assets\\Cards\\33.png","Assets\\Cards\\22.png",
                     "Assets\\Cards\\29.png","Assets\\Cards\\21.png",
                     "Assets\\Cards\\36.png","Assets\\Cards\\17.png",
@@ -82,9 +85,9 @@
                     "Assets\\Cards\\12.png",
                     "Assets\\Cards\\8.png","Assets\\Cards\\18.png",
                     "Assets\\Cards\\15.png","Assets\\Cards\\27.png"};*/
-        private int[] _reserve = new int[17];
-        private Image[] _deck = new Image[52];
-        private PictureBox[] _holder = new PictureBox[52];
+        private int[] reservedGameCardsIndexes = new int[17];
+        private Image[] gameCardsAsImages = new Image[52];
+        private PictureBox[] cardsPictureBoxArray = new PictureBox[52];
         private Timer _timer = new Timer();
         private Timer _updates = new Timer();
         private int _t = 60, i, bb = 500, _sb = 250, _up = 10000000, _turnCount = 0;
@@ -146,48 +149,48 @@
             Bitmap backImage = new Bitmap("..\\..\\Resources\\Assets\\Back\\Back.png");
             int horizontal = 580, vertical = 480;
             Random r = new Random();
-            for (i = imgLocation.Length; i > 0; i--)
+            for (i = cardsImageLocation.Length; i > 0; i--)
             {
                 int j = r.Next(i);
-                var k = imgLocation[j];
-                imgLocation[j] = imgLocation[i - 1];
-                imgLocation[i - 1] = k;
+                var k = cardsImageLocation[j];
+                cardsImageLocation[j] = cardsImageLocation[i - 1];
+                cardsImageLocation[i - 1] = k;
             }
 
             for (i = 0; i < 17; i++)
             {
-                _deck[i] = Image.FromFile(imgLocation[i]);
+                gameCardsAsImages[i] = Image.FromFile(cardsImageLocation[i]);
                 var charsToRemove = new string[] { "..\\..\\Resources\\Assets\\Cards\\", ".png" };
                 foreach (var c in charsToRemove)
                 {
-                    imgLocation[i] = imgLocation[i].Replace(c, string.Empty);
+                    cardsImageLocation[i] = cardsImageLocation[i].Replace(c, string.Empty);
                 }
 
-                _reserve[i] = int.Parse(imgLocation[i]) - 1;
-                _holder[i] = new PictureBox();
-                _holder[i].SizeMode = PictureBoxSizeMode.StretchImage;
-                _holder[i].Height = 130;
-                _holder[i].Width = 80;
-                this.Controls.Add(_holder[i]);
-                _holder[i].Name = "pb" + i.ToString();
+                reservedGameCardsIndexes[i] = int.Parse(cardsImageLocation[i]) - 1;
+                cardsPictureBoxArray[i] = new PictureBox();
+                cardsPictureBoxArray[i].SizeMode = PictureBoxSizeMode.StretchImage;
+                cardsPictureBoxArray[i].Height = 130;
+                cardsPictureBoxArray[i].Width = 80;
+                this.Controls.Add(cardsPictureBoxArray[i]);
+                cardsPictureBoxArray[i].Name = "pb" + i.ToString();
                 await Task.Delay(200);
 
                 #region Throwing Cards
                 if (i < 2)
                 {
-                    if (_holder[0].Tag != null)
+                    if (cardsPictureBoxArray[0].Tag != null)
                     {
-                        _holder[1].Tag = _reserve[1];
+                        cardsPictureBoxArray[1].Tag = reservedGameCardsIndexes[1];
                     }
 
-                    _holder[0].Tag = _reserve[0];
-                    _holder[i].Image = _deck[i];
-                    _holder[i].Anchor = (AnchorStyles.Bottom);
+                    cardsPictureBoxArray[0].Tag = reservedGameCardsIndexes[0];
+                    cardsPictureBoxArray[i].Image = gameCardsAsImages[i];
+                    cardsPictureBoxArray[i].Anchor = (AnchorStyles.Bottom);
                     //Holder[i].Dock = DockStyle.Top;
-                    _holder[i].Location = new Point(horizontal, vertical);
-                    horizontal += _holder[i].Width;
+                    cardsPictureBoxArray[i].Location = new Point(horizontal, vertical);
+                    horizontal += cardsPictureBoxArray[i].Width;
                     this.Controls.Add(playerPanel);
-                    playerPanel.Location = new Point(_holder[0].Left - 10, _holder[0].Top - 10);
+                    playerPanel.Location = new Point(cardsPictureBoxArray[0].Left - 10, cardsPictureBoxArray[0].Top - 10);
                     playerPanel.BackColor = Color.DarkBlue;
                     playerPanel.Height = 150;
                     playerPanel.Width = 180;
@@ -199,12 +202,12 @@
                     foldedPlayers--;
                     if (i >= 2 && i < 4)
                     {
-                        if (_holder[2].Tag != null)
+                        if (cardsPictureBoxArray[2].Tag != null)
                         {
-                            _holder[3].Tag = _reserve[3];
+                            cardsPictureBoxArray[3].Tag = reservedGameCardsIndexes[3];
                         }
 
-                        _holder[2].Tag = _reserve[2];
+                        cardsPictureBoxArray[2].Tag = reservedGameCardsIndexes[2];
                         if (!check)
                         {
                             horizontal = 15;
@@ -212,14 +215,14 @@
                         }
 
                         check = true;
-                        _holder[i].Anchor = (AnchorStyles.Bottom | AnchorStyles.Left);
-                        _holder[i].Image = backImage;
+                        cardsPictureBoxArray[i].Anchor = (AnchorStyles.Bottom | AnchorStyles.Left);
+                        cardsPictureBoxArray[i].Image = backImage;
                         //Holder[i].Image = Deck[i];
-                        _holder[i].Location = new Point(horizontal, vertical);
-                        horizontal += _holder[i].Width;
-                        _holder[i].Visible = true;
+                        cardsPictureBoxArray[i].Location = new Point(horizontal, vertical);
+                        horizontal += cardsPictureBoxArray[i].Width;
+                        cardsPictureBoxArray[i].Visible = true;
                         this.Controls.Add(bot1Panel);
-                        bot1Panel.Location = new Point(_holder[2].Left - 10, _holder[2].Top - 10);
+                        bot1Panel.Location = new Point(cardsPictureBoxArray[2].Left - 10, cardsPictureBoxArray[2].Top - 10);
                         bot1Panel.BackColor = Color.DarkBlue;
                         bot1Panel.Height = 150;
                         bot1Panel.Width = 180;
@@ -236,12 +239,12 @@
                     foldedPlayers--;
                     if (i >= 4 && i < 6)
                     {
-                        if (_holder[4].Tag != null)
+                        if (cardsPictureBoxArray[4].Tag != null)
                         {
-                            _holder[5].Tag = _reserve[5];
+                            cardsPictureBoxArray[5].Tag = reservedGameCardsIndexes[5];
                         }
 
-                        _holder[4].Tag = _reserve[4];
+                        cardsPictureBoxArray[4].Tag = reservedGameCardsIndexes[4];
                         if (!check)
                         {
                             horizontal = 75;
@@ -249,14 +252,14 @@
                         }
 
                         check = true;
-                        _holder[i].Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-                        _holder[i].Image = backImage;
+                        cardsPictureBoxArray[i].Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+                        cardsPictureBoxArray[i].Image = backImage;
                         //Holder[i].Image = Deck[i];
-                        _holder[i].Location = new Point(horizontal, vertical);
-                        horizontal += _holder[i].Width;
-                        _holder[i].Visible = true;
+                        cardsPictureBoxArray[i].Location = new Point(horizontal, vertical);
+                        horizontal += cardsPictureBoxArray[i].Width;
+                        cardsPictureBoxArray[i].Visible = true;
                         this.Controls.Add(bot2Panel);
-                        bot2Panel.Location = new Point(_holder[4].Left - 10, _holder[4].Top - 10);
+                        bot2Panel.Location = new Point(cardsPictureBoxArray[4].Left - 10, cardsPictureBoxArray[4].Top - 10);
                         bot2Panel.BackColor = Color.DarkBlue;
                         bot2Panel.Height = 150;
                         bot2Panel.Width = 180;
@@ -273,12 +276,12 @@
                     foldedPlayers--;
                     if (i >= 6 && i < 8)
                     {
-                        if (_holder[6].Tag != null)
+                        if (cardsPictureBoxArray[6].Tag != null)
                         {
-                            _holder[7].Tag = _reserve[7];
+                            cardsPictureBoxArray[7].Tag = reservedGameCardsIndexes[7];
                         }
 
-                        _holder[6].Tag = _reserve[6];
+                        cardsPictureBoxArray[6].Tag = reservedGameCardsIndexes[6];
                         if (!check)
                         {
                             horizontal = 590;
@@ -286,14 +289,14 @@
                         }
 
                         check = true;
-                        _holder[i].Anchor = (AnchorStyles.Top);
-                        _holder[i].Image = backImage;
+                        cardsPictureBoxArray[i].Anchor = (AnchorStyles.Top);
+                        cardsPictureBoxArray[i].Image = backImage;
                         //Holder[i].Image = Deck[i];
-                        _holder[i].Location = new Point(horizontal, vertical);
-                        horizontal += _holder[i].Width;
-                        _holder[i].Visible = true;
+                        cardsPictureBoxArray[i].Location = new Point(horizontal, vertical);
+                        horizontal += cardsPictureBoxArray[i].Width;
+                        cardsPictureBoxArray[i].Visible = true;
                         this.Controls.Add(bot3Panel);
-                        bot3Panel.Location = new Point(_holder[6].Left - 10, _holder[6].Top - 10);
+                        bot3Panel.Location = new Point(cardsPictureBoxArray[6].Left - 10, cardsPictureBoxArray[6].Top - 10);
                         bot3Panel.BackColor = Color.DarkBlue;
                         bot3Panel.Height = 150;
                         bot3Panel.Width = 180;
@@ -310,25 +313,25 @@
                     foldedPlayers--;
                     if (i >= 8 && i < 10)
                     {
-                        if (_holder[8].Tag != null)
+                        if (cardsPictureBoxArray[8].Tag != null)
                         {
-                            _holder[9].Tag = _reserve[9];
+                            cardsPictureBoxArray[9].Tag = reservedGameCardsIndexes[9];
                         }
-                        _holder[8].Tag = _reserve[8];
+                        cardsPictureBoxArray[8].Tag = reservedGameCardsIndexes[8];
                         if (!check)
                         {
                             horizontal = 1115;
                             vertical = 65;
                         }
                         check = true;
-                        _holder[i].Anchor = (AnchorStyles.Top | AnchorStyles.Right);
-                        _holder[i].Image = backImage;
+                        cardsPictureBoxArray[i].Anchor = (AnchorStyles.Top | AnchorStyles.Right);
+                        cardsPictureBoxArray[i].Image = backImage;
                         //Holder[i].Image = Deck[i];
-                        _holder[i].Location = new Point(horizontal, vertical);
-                        horizontal += _holder[i].Width;
-                        _holder[i].Visible = true;
+                        cardsPictureBoxArray[i].Location = new Point(horizontal, vertical);
+                        horizontal += cardsPictureBoxArray[i].Width;
+                        cardsPictureBoxArray[i].Visible = true;
                         this.Controls.Add(bot4Panel);
-                        bot4Panel.Location = new Point(_holder[8].Left - 10, _holder[8].Top - 10);
+                        bot4Panel.Location = new Point(cardsPictureBoxArray[8].Left - 10, cardsPictureBoxArray[8].Top - 10);
                         bot4Panel.BackColor = Color.DarkBlue;
                         bot4Panel.Height = 150;
                         bot4Panel.Width = 180;
@@ -344,25 +347,25 @@
                     foldedPlayers--;
                     if (i >= 10 && i < 12)
                     {
-                        if (_holder[10].Tag != null)
+                        if (cardsPictureBoxArray[10].Tag != null)
                         {
-                            _holder[11].Tag = _reserve[11];
+                            cardsPictureBoxArray[11].Tag = reservedGameCardsIndexes[11];
                         }
-                        _holder[10].Tag = _reserve[10];
+                        cardsPictureBoxArray[10].Tag = reservedGameCardsIndexes[10];
                         if (!check)
                         {
                             horizontal = 1160;
                             vertical = 420;
                         }
                         check = true;
-                        _holder[i].Anchor = (AnchorStyles.Bottom | AnchorStyles.Right);
-                        _holder[i].Image = backImage;
+                        cardsPictureBoxArray[i].Anchor = (AnchorStyles.Bottom | AnchorStyles.Right);
+                        cardsPictureBoxArray[i].Image = backImage;
                         //Holder[i].Image = Deck[i];
-                        _holder[i].Location = new Point(horizontal, vertical);
-                        horizontal += _holder[i].Width;
-                        _holder[i].Visible = true;
+                        cardsPictureBoxArray[i].Location = new Point(horizontal, vertical);
+                        horizontal += cardsPictureBoxArray[i].Width;
+                        cardsPictureBoxArray[i].Visible = true;
                         this.Controls.Add(bot5Panel);
-                        bot5Panel.Location = new Point(_holder[10].Left - 10, _holder[10].Top - 10);
+                        bot5Panel.Location = new Point(cardsPictureBoxArray[10].Left - 10, cardsPictureBoxArray[10].Top - 10);
                         bot5Panel.BackColor = Color.DarkBlue;
                         bot5Panel.Height = 150;
                         bot5Panel.Width = 180;
@@ -375,13 +378,13 @@
                 }
                 if (i >= 12)
                 {
-                    _holder[12].Tag = _reserve[12];
-                    if (i > 12) _holder[13].Tag = _reserve[13];
-                    if (i > 13) _holder[14].Tag = _reserve[14];
-                    if (i > 14) _holder[15].Tag = _reserve[15];
+                    cardsPictureBoxArray[12].Tag = reservedGameCardsIndexes[12];
+                    if (i > 12) cardsPictureBoxArray[13].Tag = reservedGameCardsIndexes[13];
+                    if (i > 13) cardsPictureBoxArray[14].Tag = reservedGameCardsIndexes[14];
+                    if (i > 14) cardsPictureBoxArray[15].Tag = reservedGameCardsIndexes[15];
                     if (i > 15)
                     {
-                        _holder[16].Tag = _reserve[16];
+                        cardsPictureBoxArray[16].Tag = reservedGameCardsIndexes[16];
 
                     }
                     if (!check)
@@ -390,12 +393,12 @@
                         vertical = 265;
                     }
                     check = true;
-                    if (_holder[i] != null)
+                    if (cardsPictureBoxArray[i] != null)
                     {
-                        _holder[i].Anchor = AnchorStyles.None;
-                        _holder[i].Image = backImage;
+                        cardsPictureBoxArray[i].Anchor = AnchorStyles.None;
+                        cardsPictureBoxArray[i].Image = backImage;
                         //Holder[i].Image = Deck[i];
-                        _holder[i].Location = new Point(horizontal, vertical);
+                        cardsPictureBoxArray[i].Location = new Point(horizontal, vertical);
                         horizontal += 110;
                     }
                 }
@@ -403,90 +406,90 @@
                 if (Bot1Chips <= 0)
                 {
                     _b1Fturn = true;
-                    _holder[2].Visible = false;
-                    _holder[3].Visible = false;
+                    cardsPictureBoxArray[2].Visible = false;
+                    cardsPictureBoxArray[3].Visible = false;
                 }
                 else
                 {
                     _b1Fturn = false;
                     if (i == 3)
                     {
-                        if (_holder[3] != null)
+                        if (cardsPictureBoxArray[3] != null)
                         {
-                            _holder[2].Visible = true;
-                            _holder[3].Visible = true;
+                            cardsPictureBoxArray[2].Visible = true;
+                            cardsPictureBoxArray[3].Visible = true;
                         }
                     }
                 }
                 if (Bot2Chips <= 0)
                 {
                     _b2Fturn = true;
-                    _holder[4].Visible = false;
-                    _holder[5].Visible = false;
+                    cardsPictureBoxArray[4].Visible = false;
+                    cardsPictureBoxArray[5].Visible = false;
                 }
                 else
                 {
                     _b2Fturn = false;
                     if (i == 5)
                     {
-                        if (_holder[5] != null)
+                        if (cardsPictureBoxArray[5] != null)
                         {
-                            _holder[4].Visible = true;
-                            _holder[5].Visible = true;
+                            cardsPictureBoxArray[4].Visible = true;
+                            cardsPictureBoxArray[5].Visible = true;
                         }
                     }
                 }
                 if (Bot3Chips <= 0)
                 {
                     _b3Fturn = true;
-                    _holder[6].Visible = false;
-                    _holder[7].Visible = false;
+                    cardsPictureBoxArray[6].Visible = false;
+                    cardsPictureBoxArray[7].Visible = false;
                 }
                 else
                 {
                     _b3Fturn = false;
                     if (i == 7)
                     {
-                        if (_holder[7] != null)
+                        if (cardsPictureBoxArray[7] != null)
                         {
-                            _holder[6].Visible = true;
-                            _holder[7].Visible = true;
+                            cardsPictureBoxArray[6].Visible = true;
+                            cardsPictureBoxArray[7].Visible = true;
                         }
                     }
                 }
                 if (Bot4Chips <= 0)
                 {
                     _b4Fturn = true;
-                    _holder[8].Visible = false;
-                    _holder[9].Visible = false;
+                    cardsPictureBoxArray[8].Visible = false;
+                    cardsPictureBoxArray[9].Visible = false;
                 }
                 else
                 {
                     _b4Fturn = false;
                     if (i == 9)
                     {
-                        if (_holder[9] != null)
+                        if (cardsPictureBoxArray[9] != null)
                         {
-                            _holder[8].Visible = true;
-                            _holder[9].Visible = true;
+                            cardsPictureBoxArray[8].Visible = true;
+                            cardsPictureBoxArray[9].Visible = true;
                         }
                     }
                 }
                 if (Bot5Chips <= 0)
                 {
                     _b5Fturn = true;
-                    _holder[10].Visible = false;
-                    _holder[11].Visible = false;
+                    cardsPictureBoxArray[10].Visible = false;
+                    cardsPictureBoxArray[11].Visible = false;
                 }
                 else
                 {
                     _b5Fturn = false;
                     if (i == 11)
                     {
-                        if (_holder[11] != null)
+                        if (cardsPictureBoxArray[11] != null)
                         {
-                            _holder[10].Visible = true;
-                            _holder[11].Visible = true;
+                            cardsPictureBoxArray[10].Visible = true;
+                            cardsPictureBoxArray[11].Visible = true;
                         }
                     }
                 }
@@ -724,7 +727,7 @@
             }
         }
 
-        void Rules(int c1, int c2, string currentText, ref double current, ref double power, bool foldedTurn)
+        private void Rules(int c1, int c2, string currentText, ref double current, ref double power, bool foldedTurn)
         {
             if (c1 == 0 && c2 == 1)
             {
@@ -735,13 +738,13 @@
                 bool done = false, vf = false;
                 int[] straight1 = new int[5];
                 int[] straight = new int[7];
-                straight[0] = _reserve[c1];
-                straight[1] = _reserve[c2];
-                straight1[0] = straight[2] = _reserve[12];
-                straight1[1] = straight[3] = _reserve[13];
-                straight1[2] = straight[4] = _reserve[14];
-                straight1[3] = straight[5] = _reserve[15];
-                straight1[4] = straight[6] = _reserve[16];
+                straight[0] = reservedGameCardsIndexes[c1];
+                straight[1] = reservedGameCardsIndexes[c2];
+                straight1[0] = straight[2] = reservedGameCardsIndexes[12];
+                straight1[1] = straight[3] = reservedGameCardsIndexes[13];
+                straight1[2] = straight[4] = reservedGameCardsIndexes[14];
+                straight1[3] = straight[5] = reservedGameCardsIndexes[15];
+                straight1[4] = straight[6] = reservedGameCardsIndexes[16];
                 var a = straight.Where(o => o % 4 == 0).ToArray();
                 var b = straight.Where(o => o % 4 == 1).ToArray();
                 var c = straight.Where(o => o % 4 == 2).ToArray();
@@ -754,7 +757,7 @@
                 #endregion
                 for (i = 0; i < 16; i++)
                 {
-                    if (_reserve[i] == int.Parse(_holder[c1].Tag.ToString()) && _reserve[i + 1] == int.Parse(_holder[c2].Tag.ToString()))
+                    if (reservedGameCardsIndexes[i] == int.Parse(cardsPictureBoxArray[c1].Tag.ToString()) && reservedGameCardsIndexes[i + 1] == int.Parse(cardsPictureBoxArray[c2].Tag.ToString()))
                     {
                         //Pair from Hand current = 1
 
@@ -959,25 +962,25 @@
                 var f4 = straight1.Where(o => o % 4 == 3).ToArray();
                 if (f1.Length == 3 || f1.Length == 4)
                 {
-                    if (_reserve[i] % 4 == _reserve[i + 1] % 4 && _reserve[i] % 4 == f1[0] % 4)
+                    if (reservedGameCardsIndexes[i] % 4 == reservedGameCardsIndexes[i + 1] % 4 && reservedGameCardsIndexes[i] % 4 == f1[0] % 4)
                     {
-                        if (_reserve[i] / 4 > f1.Max() / 4)
+                        if (reservedGameCardsIndexes[i] / 4 > f1.Max() / 4)
                         {
                             current = 5;
-                            power = _reserve[i] + current * 100;
+                            power = reservedGameCardsIndexes[i] + current * 100;
                             _win.Add(new Type() { Power = power, Current = 5 });
                             _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
-                        if (_reserve[i + 1] / 4 > f1.Max() / 4)
+                        if (reservedGameCardsIndexes[i + 1] / 4 > f1.Max() / 4)
                         {
                             current = 5;
-                            power = _reserve[i + 1] + current * 100;
+                            power = reservedGameCardsIndexes[i + 1] + current * 100;
                             _win.Add(new Type() { Power = power, Current = 5 });
                             _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
-                        else if (_reserve[i] / 4 < f1.Max() / 4 && _reserve[i + 1] / 4 < f1.Max() / 4)
+                        else if (reservedGameCardsIndexes[i] / 4 < f1.Max() / 4 && reservedGameCardsIndexes[i + 1] / 4 < f1.Max() / 4)
                         {
                             current = 5;
                             power = f1.Max() + current * 100;
@@ -989,12 +992,12 @@
                 }
                 if (f1.Length == 4)//different cards in hand
                 {
-                    if (_reserve[i] % 4 != _reserve[i + 1] % 4 && _reserve[i] % 4 == f1[0] % 4)
+                    if (reservedGameCardsIndexes[i] % 4 != reservedGameCardsIndexes[i + 1] % 4 && reservedGameCardsIndexes[i] % 4 == f1[0] % 4)
                     {
-                        if (_reserve[i] / 4 > f1.Max() / 4)
+                        if (reservedGameCardsIndexes[i] / 4 > f1.Max() / 4)
                         {
                             current = 5;
-                            power = _reserve[i] + current * 100;
+                            power = reservedGameCardsIndexes[i] + current * 100;
                             _win.Add(new Type() { Power = power, Current = 5 });
                             _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
@@ -1008,12 +1011,12 @@
                             vf = true;
                         }
                     }
-                    if (_reserve[i + 1] % 4 != _reserve[i] % 4 && _reserve[i + 1] % 4 == f1[0] % 4)
+                    if (reservedGameCardsIndexes[i + 1] % 4 != reservedGameCardsIndexes[i] % 4 && reservedGameCardsIndexes[i + 1] % 4 == f1[0] % 4)
                     {
-                        if (_reserve[i + 1] / 4 > f1.Max() / 4)
+                        if (reservedGameCardsIndexes[i + 1] / 4 > f1.Max() / 4)
                         {
                             current = 5;
-                            power = _reserve[i + 1] + current * 100;
+                            power = reservedGameCardsIndexes[i + 1] + current * 100;
                             _win.Add(new Type() { Power = power, Current = 5 });
                             _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
@@ -1030,23 +1033,23 @@
                 }
                 if (f1.Length == 5)
                 {
-                    if (_reserve[i] % 4 == f1[0] % 4 && _reserve[i] / 4 > f1.Min() / 4)
+                    if (reservedGameCardsIndexes[i] % 4 == f1[0] % 4 && reservedGameCardsIndexes[i] / 4 > f1.Min() / 4)
                     {
                         current = 5;
-                        power = _reserve[i] + current * 100;
+                        power = reservedGameCardsIndexes[i] + current * 100;
                         _win.Add(new Type() { Power = power, Current = 5 });
                         _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
-                    if (_reserve[i + 1] % 4 == f1[0] % 4 && _reserve[i + 1] / 4 > f1.Min() / 4)
+                    if (reservedGameCardsIndexes[i + 1] % 4 == f1[0] % 4 && reservedGameCardsIndexes[i + 1] / 4 > f1.Min() / 4)
                     {
                         current = 5;
-                        power = _reserve[i + 1] + current * 100;
+                        power = reservedGameCardsIndexes[i + 1] + current * 100;
                         _win.Add(new Type() { Power = power, Current = 5 });
                         _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
-                    else if (_reserve[i] / 4 < f1.Min() / 4 && _reserve[i + 1] / 4 < f1.Min())
+                    else if (reservedGameCardsIndexes[i] / 4 < f1.Min() / 4 && reservedGameCardsIndexes[i + 1] / 4 < f1.Min())
                     {
                         current = 5;
                         power = f1.Max() + current * 100;
@@ -1058,25 +1061,25 @@
 
                 if (f2.Length == 3 || f2.Length == 4)
                 {
-                    if (_reserve[i] % 4 == _reserve[i + 1] % 4 && _reserve[i] % 4 == f2[0] % 4)
+                    if (reservedGameCardsIndexes[i] % 4 == reservedGameCardsIndexes[i + 1] % 4 && reservedGameCardsIndexes[i] % 4 == f2[0] % 4)
                     {
-                        if (_reserve[i] / 4 > f2.Max() / 4)
+                        if (reservedGameCardsIndexes[i] / 4 > f2.Max() / 4)
                         {
                             current = 5;
-                            power = _reserve[i] + current * 100;
+                            power = reservedGameCardsIndexes[i] + current * 100;
                             _win.Add(new Type() { Power = power, Current = 5 });
                             _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
-                        if (_reserve[i + 1] / 4 > f2.Max() / 4)
+                        if (reservedGameCardsIndexes[i + 1] / 4 > f2.Max() / 4)
                         {
                             current = 5;
-                            power = _reserve[i + 1] + current * 100;
+                            power = reservedGameCardsIndexes[i + 1] + current * 100;
                             _win.Add(new Type() { Power = power, Current = 5 });
                             _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
-                        else if (_reserve[i] / 4 < f2.Max() / 4 && _reserve[i + 1] / 4 < f2.Max() / 4)
+                        else if (reservedGameCardsIndexes[i] / 4 < f2.Max() / 4 && reservedGameCardsIndexes[i + 1] / 4 < f2.Max() / 4)
                         {
                             current = 5;
                             power = f2.Max() + current * 100;
@@ -1088,12 +1091,12 @@
                 }
                 if (f2.Length == 4)//different cards in hand
                 {
-                    if (_reserve[i] % 4 != _reserve[i + 1] % 4 && _reserve[i] % 4 == f2[0] % 4)
+                    if (reservedGameCardsIndexes[i] % 4 != reservedGameCardsIndexes[i + 1] % 4 && reservedGameCardsIndexes[i] % 4 == f2[0] % 4)
                     {
-                        if (_reserve[i] / 4 > f2.Max() / 4)
+                        if (reservedGameCardsIndexes[i] / 4 > f2.Max() / 4)
                         {
                             current = 5;
-                            power = _reserve[i] + current * 100;
+                            power = reservedGameCardsIndexes[i] + current * 100;
                             _win.Add(new Type() { Power = power, Current = 5 });
                             _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
@@ -1107,12 +1110,12 @@
                             vf = true;
                         }
                     }
-                    if (_reserve[i + 1] % 4 != _reserve[i] % 4 && _reserve[i + 1] % 4 == f2[0] % 4)
+                    if (reservedGameCardsIndexes[i + 1] % 4 != reservedGameCardsIndexes[i] % 4 && reservedGameCardsIndexes[i + 1] % 4 == f2[0] % 4)
                     {
-                        if (_reserve[i + 1] / 4 > f2.Max() / 4)
+                        if (reservedGameCardsIndexes[i + 1] / 4 > f2.Max() / 4)
                         {
                             current = 5;
-                            power = _reserve[i + 1] + current * 100;
+                            power = reservedGameCardsIndexes[i + 1] + current * 100;
                             _win.Add(new Type() { Power = power, Current = 5 });
                             _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
@@ -1129,23 +1132,23 @@
                 }
                 if (f2.Length == 5)
                 {
-                    if (_reserve[i] % 4 == f2[0] % 4 && _reserve[i] / 4 > f2.Min() / 4)
+                    if (reservedGameCardsIndexes[i] % 4 == f2[0] % 4 && reservedGameCardsIndexes[i] / 4 > f2.Min() / 4)
                     {
                         current = 5;
-                        power = _reserve[i] + current * 100;
+                        power = reservedGameCardsIndexes[i] + current * 100;
                         _win.Add(new Type() { Power = power, Current = 5 });
                         _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
-                    if (_reserve[i + 1] % 4 == f2[0] % 4 && _reserve[i + 1] / 4 > f2.Min() / 4)
+                    if (reservedGameCardsIndexes[i + 1] % 4 == f2[0] % 4 && reservedGameCardsIndexes[i + 1] / 4 > f2.Min() / 4)
                     {
                         current = 5;
-                        power = _reserve[i + 1] + current * 100;
+                        power = reservedGameCardsIndexes[i + 1] + current * 100;
                         _win.Add(new Type() { Power = power, Current = 5 });
                         _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
-                    else if (_reserve[i] / 4 < f2.Min() / 4 && _reserve[i + 1] / 4 < f2.Min())
+                    else if (reservedGameCardsIndexes[i] / 4 < f2.Min() / 4 && reservedGameCardsIndexes[i + 1] / 4 < f2.Min())
                     {
                         current = 5;
                         power = f2.Max() + current * 100;
@@ -1157,25 +1160,25 @@
 
                 if (f3.Length == 3 || f3.Length == 4)
                 {
-                    if (_reserve[i] % 4 == _reserve[i + 1] % 4 && _reserve[i] % 4 == f3[0] % 4)
+                    if (reservedGameCardsIndexes[i] % 4 == reservedGameCardsIndexes[i + 1] % 4 && reservedGameCardsIndexes[i] % 4 == f3[0] % 4)
                     {
-                        if (_reserve[i] / 4 > f3.Max() / 4)
+                        if (reservedGameCardsIndexes[i] / 4 > f3.Max() / 4)
                         {
                             current = 5;
-                            power = _reserve[i] + current * 100;
+                            power = reservedGameCardsIndexes[i] + current * 100;
                             _win.Add(new Type() { Power = power, Current = 5 });
                             _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
-                        if (_reserve[i + 1] / 4 > f3.Max() / 4)
+                        if (reservedGameCardsIndexes[i + 1] / 4 > f3.Max() / 4)
                         {
                             current = 5;
-                            power = _reserve[i + 1] + current * 100;
+                            power = reservedGameCardsIndexes[i + 1] + current * 100;
                             _win.Add(new Type() { Power = power, Current = 5 });
                             _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
-                        else if (_reserve[i] / 4 < f3.Max() / 4 && _reserve[i + 1] / 4 < f3.Max() / 4)
+                        else if (reservedGameCardsIndexes[i] / 4 < f3.Max() / 4 && reservedGameCardsIndexes[i + 1] / 4 < f3.Max() / 4)
                         {
                             current = 5;
                             power = f3.Max() + current * 100;
@@ -1187,12 +1190,12 @@
                 }
                 if (f3.Length == 4)//different cards in hand
                 {
-                    if (_reserve[i] % 4 != _reserve[i + 1] % 4 && _reserve[i] % 4 == f3[0] % 4)
+                    if (reservedGameCardsIndexes[i] % 4 != reservedGameCardsIndexes[i + 1] % 4 && reservedGameCardsIndexes[i] % 4 == f3[0] % 4)
                     {
-                        if (_reserve[i] / 4 > f3.Max() / 4)
+                        if (reservedGameCardsIndexes[i] / 4 > f3.Max() / 4)
                         {
                             current = 5;
-                            power = _reserve[i] + current * 100;
+                            power = reservedGameCardsIndexes[i] + current * 100;
                             _win.Add(new Type() { Power = power, Current = 5 });
                             _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
@@ -1206,12 +1209,12 @@
                             vf = true;
                         }
                     }
-                    if (_reserve[i + 1] % 4 != _reserve[i] % 4 && _reserve[i + 1] % 4 == f3[0] % 4)
+                    if (reservedGameCardsIndexes[i + 1] % 4 != reservedGameCardsIndexes[i] % 4 && reservedGameCardsIndexes[i + 1] % 4 == f3[0] % 4)
                     {
-                        if (_reserve[i + 1] / 4 > f3.Max() / 4)
+                        if (reservedGameCardsIndexes[i + 1] / 4 > f3.Max() / 4)
                         {
                             current = 5;
-                            power = _reserve[i + 1] + current * 100;
+                            power = reservedGameCardsIndexes[i + 1] + current * 100;
                             _win.Add(new Type() { Power = power, Current = 5 });
                             _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
@@ -1228,23 +1231,23 @@
                 }
                 if (f3.Length == 5)
                 {
-                    if (_reserve[i] % 4 == f3[0] % 4 && _reserve[i] / 4 > f3.Min() / 4)
+                    if (reservedGameCardsIndexes[i] % 4 == f3[0] % 4 && reservedGameCardsIndexes[i] / 4 > f3.Min() / 4)
                     {
                         current = 5;
-                        power = _reserve[i] + current * 100;
+                        power = reservedGameCardsIndexes[i] + current * 100;
                         _win.Add(new Type() { Power = power, Current = 5 });
                         _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
-                    if (_reserve[i + 1] % 4 == f3[0] % 4 && _reserve[i + 1] / 4 > f3.Min() / 4)
+                    if (reservedGameCardsIndexes[i + 1] % 4 == f3[0] % 4 && reservedGameCardsIndexes[i + 1] / 4 > f3.Min() / 4)
                     {
                         current = 5;
-                        power = _reserve[i + 1] + current * 100;
+                        power = reservedGameCardsIndexes[i + 1] + current * 100;
                         _win.Add(new Type() { Power = power, Current = 5 });
                         _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
-                    else if (_reserve[i] / 4 < f3.Min() / 4 && _reserve[i + 1] / 4 < f3.Min())
+                    else if (reservedGameCardsIndexes[i] / 4 < f3.Min() / 4 && reservedGameCardsIndexes[i + 1] / 4 < f3.Min())
                     {
                         current = 5;
                         power = f3.Max() + current * 100;
@@ -1256,25 +1259,25 @@
 
                 if (f4.Length == 3 || f4.Length == 4)
                 {
-                    if (_reserve[i] % 4 == _reserve[i + 1] % 4 && _reserve[i] % 4 == f4[0] % 4)
+                    if (reservedGameCardsIndexes[i] % 4 == reservedGameCardsIndexes[i + 1] % 4 && reservedGameCardsIndexes[i] % 4 == f4[0] % 4)
                     {
-                        if (_reserve[i] / 4 > f4.Max() / 4)
+                        if (reservedGameCardsIndexes[i] / 4 > f4.Max() / 4)
                         {
                             current = 5;
-                            power = _reserve[i] + current * 100;
+                            power = reservedGameCardsIndexes[i] + current * 100;
                             _win.Add(new Type() { Power = power, Current = 5 });
                             _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
-                        if (_reserve[i + 1] / 4 > f4.Max() / 4)
+                        if (reservedGameCardsIndexes[i + 1] / 4 > f4.Max() / 4)
                         {
                             current = 5;
-                            power = _reserve[i + 1] + current * 100;
+                            power = reservedGameCardsIndexes[i + 1] + current * 100;
                             _win.Add(new Type() { Power = power, Current = 5 });
                             _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
-                        else if (_reserve[i] / 4 < f4.Max() / 4 && _reserve[i + 1] / 4 < f4.Max() / 4)
+                        else if (reservedGameCardsIndexes[i] / 4 < f4.Max() / 4 && reservedGameCardsIndexes[i + 1] / 4 < f4.Max() / 4)
                         {
                             current = 5;
                             power = f4.Max() + current * 100;
@@ -1286,12 +1289,12 @@
                 }
                 if (f4.Length == 4)//different cards in hand
                 {
-                    if (_reserve[i] % 4 != _reserve[i + 1] % 4 && _reserve[i] % 4 == f4[0] % 4)
+                    if (reservedGameCardsIndexes[i] % 4 != reservedGameCardsIndexes[i + 1] % 4 && reservedGameCardsIndexes[i] % 4 == f4[0] % 4)
                     {
-                        if (_reserve[i] / 4 > f4.Max() / 4)
+                        if (reservedGameCardsIndexes[i] / 4 > f4.Max() / 4)
                         {
                             current = 5;
-                            power = _reserve[i] + current * 100;
+                            power = reservedGameCardsIndexes[i] + current * 100;
                             _win.Add(new Type() { Power = power, Current = 5 });
                             _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
@@ -1305,12 +1308,12 @@
                             vf = true;
                         }
                     }
-                    if (_reserve[i + 1] % 4 != _reserve[i] % 4 && _reserve[i + 1] % 4 == f4[0] % 4)
+                    if (reservedGameCardsIndexes[i + 1] % 4 != reservedGameCardsIndexes[i] % 4 && reservedGameCardsIndexes[i + 1] % 4 == f4[0] % 4)
                     {
-                        if (_reserve[i + 1] / 4 > f4.Max() / 4)
+                        if (reservedGameCardsIndexes[i + 1] / 4 > f4.Max() / 4)
                         {
                             current = 5;
-                            power = _reserve[i + 1] + current * 100;
+                            power = reservedGameCardsIndexes[i + 1] + current * 100;
                             _win.Add(new Type() { Power = power, Current = 5 });
                             _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
@@ -1327,23 +1330,23 @@
                 }
                 if (f4.Length == 5)
                 {
-                    if (_reserve[i] % 4 == f4[0] % 4 && _reserve[i] / 4 > f4.Min() / 4)
+                    if (reservedGameCardsIndexes[i] % 4 == f4[0] % 4 && reservedGameCardsIndexes[i] / 4 > f4.Min() / 4)
                     {
                         current = 5;
-                        power = _reserve[i] + current * 100;
+                        power = reservedGameCardsIndexes[i] + current * 100;
                         _win.Add(new Type() { Power = power, Current = 5 });
                         _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
-                    if (_reserve[i + 1] % 4 == f4[0] % 4 && _reserve[i + 1] / 4 > f4.Min() / 4)
+                    if (reservedGameCardsIndexes[i + 1] % 4 == f4[0] % 4 && reservedGameCardsIndexes[i + 1] / 4 > f4.Min() / 4)
                     {
                         current = 5;
-                        power = _reserve[i + 1] + current * 100;
+                        power = reservedGameCardsIndexes[i + 1] + current * 100;
                         _win.Add(new Type() { Power = power, Current = 5 });
                         _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
-                    else if (_reserve[i] / 4 < f4.Min() / 4 && _reserve[i + 1] / 4 < f4.Min())
+                    else if (reservedGameCardsIndexes[i] / 4 < f4.Min() / 4 && reservedGameCardsIndexes[i + 1] / 4 < f4.Min())
                     {
                         current = 5;
                         power = f4.Max() + current * 100;
@@ -1355,14 +1358,14 @@
                 //ace
                 if (f1.Length > 0)
                 {
-                    if (_reserve[i] / 4 == 0 && _reserve[i] % 4 == f1[0] % 4 && vf && f1.Length > 0)
+                    if (reservedGameCardsIndexes[i] / 4 == 0 && reservedGameCardsIndexes[i] % 4 == f1[0] % 4 && vf && f1.Length > 0)
                     {
                         current = 5.5;
                         power = 13 + current * 100;
                         _win.Add(new Type() { Power = power, Current = 5.5 });
                         _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
-                    if (_reserve[i + 1] / 4 == 0 && _reserve[i + 1] % 4 == f1[0] % 4 && vf && f1.Length > 0)
+                    if (reservedGameCardsIndexes[i + 1] / 4 == 0 && reservedGameCardsIndexes[i + 1] % 4 == f1[0] % 4 && vf && f1.Length > 0)
                     {
                         current = 5.5;
                         power = 13 + current * 100;
@@ -1372,14 +1375,14 @@
                 }
                 if (f2.Length > 0)
                 {
-                    if (_reserve[i] / 4 == 0 && _reserve[i] % 4 == f2[0] % 4 && vf && f2.Length > 0)
+                    if (reservedGameCardsIndexes[i] / 4 == 0 && reservedGameCardsIndexes[i] % 4 == f2[0] % 4 && vf && f2.Length > 0)
                     {
                         current = 5.5;
                         power = 13 + current * 100;
                         _win.Add(new Type() { Power = power, Current = 5.5 });
                         _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
-                    if (_reserve[i + 1] / 4 == 0 && _reserve[i + 1] % 4 == f2[0] % 4 && vf && f2.Length > 0)
+                    if (reservedGameCardsIndexes[i + 1] / 4 == 0 && reservedGameCardsIndexes[i + 1] % 4 == f2[0] % 4 && vf && f2.Length > 0)
                     {
                         current = 5.5;
                         power = 13 + current * 100;
@@ -1389,14 +1392,14 @@
                 }
                 if (f3.Length > 0)
                 {
-                    if (_reserve[i] / 4 == 0 && _reserve[i] % 4 == f3[0] % 4 && vf && f3.Length > 0)
+                    if (reservedGameCardsIndexes[i] / 4 == 0 && reservedGameCardsIndexes[i] % 4 == f3[0] % 4 && vf && f3.Length > 0)
                     {
                         current = 5.5;
                         power = 13 + current * 100;
                         _win.Add(new Type() { Power = power, Current = 5.5 });
                         _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
-                    if (_reserve[i + 1] / 4 == 0 && _reserve[i + 1] % 4 == f3[0] % 4 && vf && f3.Length > 0)
+                    if (reservedGameCardsIndexes[i + 1] / 4 == 0 && reservedGameCardsIndexes[i + 1] % 4 == f3[0] % 4 && vf && f3.Length > 0)
                     {
                         current = 5.5;
                         power = 13 + current * 100;
@@ -1406,14 +1409,14 @@
                 }
                 if (f4.Length > 0)
                 {
-                    if (_reserve[i] / 4 == 0 && _reserve[i] % 4 == f4[0] % 4 && vf && f4.Length > 0)
+                    if (reservedGameCardsIndexes[i] / 4 == 0 && reservedGameCardsIndexes[i] % 4 == f4[0] % 4 && vf && f4.Length > 0)
                     {
                         current = 5.5;
                         power = 13 + current * 100;
                         _win.Add(new Type() { Power = power, Current = 5.5 });
                         _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
-                    if (_reserve[i + 1] / 4 == 0 && _reserve[i + 1] % 4 == f4[0] % 4 && vf)
+                    if (reservedGameCardsIndexes[i + 1] / 4 == 0 && reservedGameCardsIndexes[i + 1] % 4 == f4[0] % 4 && vf)
                     {
                         current = 5.5;
                         power = 13 + current * 100;
@@ -1492,7 +1495,7 @@
                 for (int tc = 16; tc >= 12; tc--)
                 {
                     int max = tc - 12;
-                    if (_reserve[i] / 4 != _reserve[i + 1] / 4)
+                    if (reservedGameCardsIndexes[i] / 4 != reservedGameCardsIndexes[i + 1] / 4)
                     {
                         for (int k = 1; k <= max; k++)
                         {
@@ -1502,29 +1505,29 @@
                             }
                             if (tc - k >= 12)
                             {
-                                if (_reserve[i] / 4 == _reserve[tc] / 4 && _reserve[i + 1] / 4 == _reserve[tc - k] / 4 ||
-                                    _reserve[i + 1] / 4 == _reserve[tc] / 4 && _reserve[i] / 4 == _reserve[tc - k] / 4)
+                                if (reservedGameCardsIndexes[i] / 4 == reservedGameCardsIndexes[tc] / 4 && reservedGameCardsIndexes[i + 1] / 4 == reservedGameCardsIndexes[tc - k] / 4 ||
+                                    reservedGameCardsIndexes[i + 1] / 4 == reservedGameCardsIndexes[tc] / 4 && reservedGameCardsIndexes[i] / 4 == reservedGameCardsIndexes[tc - k] / 4)
                                 {
                                     if (!msgbox)
                                     {
-                                        if (_reserve[i] / 4 == 0)
+                                        if (reservedGameCardsIndexes[i] / 4 == 0)
                                         {
                                             current = 2;
-                                            power = 13 * 4 + (_reserve[i + 1] / 4) * 2 + current * 100;
+                                            power = 13 * 4 + (reservedGameCardsIndexes[i + 1] / 4) * 2 + current * 100;
                                             _win.Add(new Type() { Power = power, Current = 2 });
                                             _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                         }
-                                        if (_reserve[i + 1] / 4 == 0)
+                                        if (reservedGameCardsIndexes[i + 1] / 4 == 0)
                                         {
                                             current = 2;
-                                            power = 13 * 4 + (_reserve[i] / 4) * 2 + current * 100;
+                                            power = 13 * 4 + (reservedGameCardsIndexes[i] / 4) * 2 + current * 100;
                                             _win.Add(new Type() { Power = power, Current = 2 });
                                             _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                         }
-                                        if (_reserve[i + 1] / 4 != 0 && _reserve[i] / 4 != 0)
+                                        if (reservedGameCardsIndexes[i + 1] / 4 != 0 && reservedGameCardsIndexes[i] / 4 != 0)
                                         {
                                             current = 2;
-                                            power = (_reserve[i] / 4) * 2 + (_reserve[i + 1] / 4) * 2 + current * 100;
+                                            power = (reservedGameCardsIndexes[i] / 4) * 2 + (reservedGameCardsIndexes[i + 1] / 4) * 2 + current * 100;
                                             _win.Add(new Type() { Power = power, Current = 2 });
                                             _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                         }
@@ -1554,37 +1557,37 @@
                         }
                         if (tc - k >= 12)
                         {
-                            if (_reserve[tc] / 4 == _reserve[tc - k] / 4)
+                            if (reservedGameCardsIndexes[tc] / 4 == reservedGameCardsIndexes[tc - k] / 4)
                             {
-                                if (_reserve[tc] / 4 != _reserve[i] / 4 && _reserve[tc] / 4 != _reserve[i + 1] / 4 && current == 1)
+                                if (reservedGameCardsIndexes[tc] / 4 != reservedGameCardsIndexes[i] / 4 && reservedGameCardsIndexes[tc] / 4 != reservedGameCardsIndexes[i + 1] / 4 && current == 1)
                                 {
                                     if (!msgbox)
                                     {
-                                        if (_reserve[i + 1] / 4 == 0)
+                                        if (reservedGameCardsIndexes[i + 1] / 4 == 0)
                                         {
                                             current = 2;
-                                            power = (_reserve[i] / 4) * 2 + 13 * 4 + current * 100;
+                                            power = (reservedGameCardsIndexes[i] / 4) * 2 + 13 * 4 + current * 100;
                                             _win.Add(new Type() { Power = power, Current = 2 });
                                             _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                         }
-                                        if (_reserve[i] / 4 == 0)
+                                        if (reservedGameCardsIndexes[i] / 4 == 0)
                                         {
                                             current = 2;
-                                            power = (_reserve[i + 1] / 4) * 2 + 13 * 4 + current * 100;
+                                            power = (reservedGameCardsIndexes[i + 1] / 4) * 2 + 13 * 4 + current * 100;
                                             _win.Add(new Type() { Power = power, Current = 2 });
                                             _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                         }
-                                        if (_reserve[i + 1] / 4 != 0)
+                                        if (reservedGameCardsIndexes[i + 1] / 4 != 0)
                                         {
                                             current = 2;
-                                            power = (_reserve[tc] / 4) * 2 + (_reserve[i + 1] / 4) * 2 + current * 100;
+                                            power = (reservedGameCardsIndexes[tc] / 4) * 2 + (reservedGameCardsIndexes[i + 1] / 4) * 2 + current * 100;
                                             _win.Add(new Type() { Power = power, Current = 2 });
                                             _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                         }
-                                        if (_reserve[i] / 4 != 0)
+                                        if (reservedGameCardsIndexes[i] / 4 != 0)
                                         {
                                             current = 2;
-                                            power = (_reserve[tc] / 4) * 2 + (_reserve[i] / 4) * 2 + current * 100;
+                                            power = (reservedGameCardsIndexes[tc] / 4) * 2 + (reservedGameCardsIndexes[i] / 4) * 2 + current * 100;
                                             _win.Add(new Type() { Power = power, Current = 2 });
                                             _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                         }
@@ -1595,36 +1598,36 @@
                                 {
                                     if (!msgbox1)
                                     {
-                                        if (_reserve[i] / 4 > _reserve[i + 1] / 4)
+                                        if (reservedGameCardsIndexes[i] / 4 > reservedGameCardsIndexes[i + 1] / 4)
                                         {
-                                            if (_reserve[tc] / 4 == 0)
+                                            if (reservedGameCardsIndexes[tc] / 4 == 0)
                                             {
                                                 current = 0;
-                                                power = 13 + _reserve[i] / 4 + current * 100;
+                                                power = 13 + reservedGameCardsIndexes[i] / 4 + current * 100;
                                                 _win.Add(new Type() { Power = power, Current = 1 });
                                                 _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                             }
                                             else
                                             {
                                                 current = 0;
-                                                power = _reserve[tc] / 4 + _reserve[i] / 4 + current * 100;
+                                                power = reservedGameCardsIndexes[tc] / 4 + reservedGameCardsIndexes[i] / 4 + current * 100;
                                                 _win.Add(new Type() { Power = power, Current = 1 });
                                                 _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                             }
                                         }
                                         else
                                         {
-                                            if (_reserve[tc] / 4 == 0)
+                                            if (reservedGameCardsIndexes[tc] / 4 == 0)
                                             {
                                                 current = 0;
-                                                power = 13 + _reserve[i + 1] + current * 100;
+                                                power = 13 + reservedGameCardsIndexes[i + 1] + current * 100;
                                                 _win.Add(new Type() { Power = power, Current = 1 });
                                                 _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                             }
                                             else
                                             {
                                                 current = 0;
-                                                power = _reserve[tc] / 4 + _reserve[i + 1] / 4 + current * 100;
+                                                power = reservedGameCardsIndexes[tc] / 4 + reservedGameCardsIndexes[i + 1] / 4 + current * 100;
                                                 _win.Add(new Type() { Power = power, Current = 1 });
                                                 _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                             }
@@ -1643,11 +1646,11 @@
             if (current >= -1)
             {
                 bool msgbox = false;
-                if (_reserve[i] / 4 == _reserve[i + 1] / 4)
+                if (reservedGameCardsIndexes[i] / 4 == reservedGameCardsIndexes[i + 1] / 4)
                 {
                     if (!msgbox)
                     {
-                        if (_reserve[i] / 4 == 0)
+                        if (reservedGameCardsIndexes[i] / 4 == 0)
                         {
                             current = 1;
                             power = 13 * 4 + current * 100;
@@ -1657,7 +1660,7 @@
                         else
                         {
                             current = 1;
-                            power = (_reserve[i + 1] / 4) * 4 + current * 100;
+                            power = (reservedGameCardsIndexes[i + 1] / 4) * 4 + current * 100;
                             _win.Add(new Type() { Power = power, Current = 1 });
                             _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                         }
@@ -1666,42 +1669,42 @@
                 }
                 for (int tc = 16; tc >= 12; tc--)
                 {
-                    if (_reserve[i + 1] / 4 == _reserve[tc] / 4)
+                    if (reservedGameCardsIndexes[i + 1] / 4 == reservedGameCardsIndexes[tc] / 4)
                     {
                         if (!msgbox)
                         {
-                            if (_reserve[i + 1] / 4 == 0)
+                            if (reservedGameCardsIndexes[i + 1] / 4 == 0)
                             {
                                 current = 1;
-                                power = 13 * 4 + _reserve[i] / 4 + current * 100;
+                                power = 13 * 4 + reservedGameCardsIndexes[i] / 4 + current * 100;
                                 _win.Add(new Type() { Power = power, Current = 1 });
                                 _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                             }
                             else
                             {
                                 current = 1;
-                                power = (_reserve[i + 1] / 4) * 4 + _reserve[i] / 4 + current * 100;
+                                power = (reservedGameCardsIndexes[i + 1] / 4) * 4 + reservedGameCardsIndexes[i] / 4 + current * 100;
                                 _win.Add(new Type() { Power = power, Current = 1 });
                                 _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                             }
                         }
                         msgbox = true;
                     }
-                    if (_reserve[i] / 4 == _reserve[tc] / 4)
+                    if (reservedGameCardsIndexes[i] / 4 == reservedGameCardsIndexes[tc] / 4)
                     {
                         if (!msgbox)
                         {
-                            if (_reserve[i] / 4 == 0)
+                            if (reservedGameCardsIndexes[i] / 4 == 0)
                             {
                                 current = 1;
-                                power = 13 * 4 + _reserve[i + 1] / 4 + current * 100;
+                                power = 13 * 4 + reservedGameCardsIndexes[i + 1] / 4 + current * 100;
                                 _win.Add(new Type() { Power = power, Current = 1 });
                                 _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                             }
                             else
                             {
                                 current = 1;
-                                power = (_reserve[tc] / 4) * 4 + _reserve[i + 1] / 4 + current * 100;
+                                power = (reservedGameCardsIndexes[tc] / 4) * 4 + reservedGameCardsIndexes[i + 1] / 4 + current * 100;
                                 _win.Add(new Type() { Power = power, Current = 1 });
                                 _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                             }
@@ -1715,21 +1718,21 @@
         {
             if (current == -1)
             {
-                if (_reserve[i] / 4 > _reserve[i + 1] / 4)
+                if (reservedGameCardsIndexes[i] / 4 > reservedGameCardsIndexes[i + 1] / 4)
                 {
                     current = -1;
-                    power = _reserve[i] / 4;
+                    power = reservedGameCardsIndexes[i] / 4;
                     _win.Add(new Type() { Power = power, Current = -1 });
                     _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                 }
                 else
                 {
                     current = -1;
-                    power = _reserve[i + 1] / 4;
+                    power = reservedGameCardsIndexes[i + 1] / 4;
                     _win.Add(new Type() { Power = power, Current = -1 });
                     _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                 }
-                if (_reserve[i] / 4 == 0 || _reserve[i + 1] / 4 == 0)
+                if (reservedGameCardsIndexes[i] / 4 == 0 || reservedGameCardsIndexes[i + 1] / 4 == 0)
                 {
                     current = -1;
                     power = 13;
@@ -1748,8 +1751,8 @@
             for (int j = 0; j <= 16; j++)
             {
                 //await Task.Delay(5);
-                if (_holder[j].Visible)
-                    _holder[j].Image = _deck[j];
+                if (cardsPictureBoxArray[j].Visible)
+                    cardsPictureBoxArray[j].Image = gameCardsAsImages[j];
             }
             if (current == _sorted.Current)
             {
@@ -1924,9 +1927,9 @@
             {
                 for (int j = 12; j <= 14; j++)
                 {
-                    if (_holder[j].Image != _deck[j])
+                    if (cardsPictureBoxArray[j].Image != gameCardsAsImages[j])
                     {
-                        _holder[j].Image = _deck[j];
+                        cardsPictureBoxArray[j].Image = gameCardsAsImages[j];
                         _pCall = 0; _pRaise = 0;
                         _b1Call = 0; _b1Raise = 0;
                         _b2Call = 0; _b2Raise = 0;
@@ -1940,9 +1943,9 @@
             {
                 for (int j = 14; j <= 15; j++)
                 {
-                    if (_holder[j].Image != _deck[j])
+                    if (cardsPictureBoxArray[j].Image != gameCardsAsImages[j])
                     {
-                        _holder[j].Image = _deck[j];
+                        cardsPictureBoxArray[j].Image = gameCardsAsImages[j];
                         _pCall = 0; _pRaise = 0;
                         _b1Call = 0; _b1Raise = 0;
                         _b2Call = 0; _b2Raise = 0;
@@ -1956,9 +1959,9 @@
             {
                 for (int j = 15; j <= 16; j++)
                 {
-                    if (_holder[j].Image != _deck[j])
+                    if (cardsPictureBoxArray[j].Image != gameCardsAsImages[j])
                     {
-                        _holder[j].Image = _deck[j];
+                        cardsPictureBoxArray[j].Image = gameCardsAsImages[j];
                         _pCall = 0; _pRaise = 0;
                         _b1Call = 0; _b1Raise = 0;
                         _b2Call = 0; _b2Raise = 0;
@@ -2045,7 +2048,7 @@
                 _last = 0;
                 call = bb;
                 raise = 0;
-                imgLocation = Directory.GetFiles("..\\..\\Resources\\Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
+                cardsImageLocation = Directory.GetFiles("..\\..\\Resources\\Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
                 _bools.Clear();
                 rounds = 0;
                 playerPower = 0; playerType = -1;
@@ -2059,9 +2062,9 @@
                 _sorted.Power = 0;
                 for (int os = 0; os < 17; os++)
                 {
-                    _holder[os].Image = null;
-                    _holder[os].Invalidate();
-                    _holder[os].Visible = false;
+                    cardsPictureBoxArray[os].Image = null;
+                    cardsPictureBoxArray[os].Invalidate();
+                    cardsPictureBoxArray[os].Visible = false;
                 }
                 textBoxPot.Text = "0";
                 playerStatus.Text = "";
@@ -2231,7 +2234,7 @@
                 }
                 for (int j = 0; j <= 16; j++)
                 {
-                    _holder[j].Visible = false;
+                    cardsPictureBoxArray[j].Visible = false;
                 }
                 await Finish(1);
             }
@@ -2362,12 +2365,12 @@
                     buttonRaise.Text = "Raise";
                 }
             }
-            imgLocation = Directory.GetFiles("..\\..\\Resources\\Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
+            cardsImageLocation = Directory.GetFiles("..\\..\\Resources\\Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
             for (int os = 0; os < 17; os++)
             {
-                _holder[os].Image = null;
-                _holder[os].Invalidate();
-                _holder[os].Visible = false;
+                cardsPictureBoxArray[os].Image = null;
+                cardsPictureBoxArray[os].Invalidate();
+                cardsPictureBoxArray[os].Visible = false;
             }
             await Shuffle();
             //await Turns();
@@ -2462,8 +2465,8 @@
             }
             if (sFTurn)
             {
-                _holder[c1].Visible = false;
-                _holder[c2].Visible = false;
+                cardsPictureBoxArray[c1].Visible = false;
+                cardsPictureBoxArray[c2].Visible = false;
             }
         }
         private void HighCard(ref int sChips, ref bool sTurn, ref bool sFTurn, Label sStatus, double botPower)
