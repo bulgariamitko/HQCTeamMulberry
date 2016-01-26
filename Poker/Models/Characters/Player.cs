@@ -1,6 +1,6 @@
 ﻿namespace Poker.Models.Characters
 {
-    using Poker.Interfaces;
+    using Interfaces;
 
     public class Player : Character , IPlayer
     {

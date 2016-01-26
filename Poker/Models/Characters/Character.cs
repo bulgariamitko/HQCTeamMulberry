@@ -50,7 +50,7 @@
         public void InitializePanel(Point location)
         {
             this.Panel.Location = location;
-            this.Panel.BackColor = Color.DarkBlue;
+            this.Panel.BackColor = Color.FromArgb(16, 255, 0);
             this.Panel.Height = DefaultPlayerPanelHeight;
             this.Panel.Width = DefaultPlayerPanelWidth;
             this.Panel.Visible = false;

@@ -1,15 +1,11 @@
 ﻿namespace Poker.Data
 {
-    using Poker.Interfaces;
+    using Interfaces;
     using System.Collections.Generic;
 
     public class GameDatabase : IDatabase
     {
         //TODO: Check if name is proper, previous name - bools
-        private List<bool?> playersGameStatus;
-        private List<Type> win;
-        private List<string> checkWinners;
-        private List<int> chips;
 
         public GameDatabase()
         {
@@ -19,56 +15,12 @@
             this.Chips = new List<int>();
         }
 
-        public List<int> Chips
-        {
-            get
-            {
-                return this.chips;
-            }
+        public List<int> Chips { get; set; }
 
-            set
-            {
-                this.chips = value;
-            }
-        }
+        public List<string> CheckWinners { get; set; }
 
-        public List<string> CheckWinners
-        {
-            get
-            {
-                return this.checkWinners;
-            }
+        public List<Type> Win { get; set; }
 
-            set
-            {
-                this.checkWinners = value;
-            }
-        }
-
-        public List<Type> Win
-        {
-            get
-            {
-                return this.win;
-            }
-
-            set
-            {
-                this.win = value;
-            }
-        }
-
-        public List<bool?> PlayersGameStatus
-        {
-            get
-            {
-                return this.playersGameStatus;
-            }
-
-            set
-            {
-                this.playersGameStatus = value;
-            }
-        }
+        public List<bool?> PlayersGameStatus { get; set; }
     }
 }
