@@ -16,106 +16,55 @@
     public partial class MainWindow : Form
     {
         #region Variables
-        private ProgressBar progressBar = new ProgressBar();
-
-        public const int DefaultStartingChips = 10000;      //
         public const int DefaultSetOfCards = 52;
         public const int DefaultCardsInGame = 17;
-
-        private int Nm;
-
-        //Players panels
-        //private Panel this.player.Panel = new Panel();
-        //private Panel this.bots[0].Panel = new Panel();
-        //private Panel this.bots[1].Panel = new Panel();
-        //private Panel this.bots[2].Panel = new Panel();
-        //private Panel this.bots[3].Panel = new Panel();
-        //private Panel this.bots[4].Panel = new Panel();
-
-
-        private int neededChipsToCall;
-        private int foldedPlayers;
-
+        
+        private ProgressBar progressBar;
         private readonly IPlayer player;
         private readonly IList<IBot> bots;
         private readonly IWinningHandType winningHandType;
-        //Chips
-        //public int Chips = DefaultStartingChips;
-        //public int this.bots[0].Chips = DefaultStartingChips;
-        //public int this.bots[1].Chips = DefaultStartingChips;
-        //public int this.bots[2].Chips = DefaultStartingChips;
-        //public int this.bots[3].Chips = DefaultStartingChips;
-        //public int this.bots[4].Chips = DefaultStartingChips;
+        private readonly IDatabase gameDatabase;
 
+        private Type _sorted;
+        private string[] cardsImageLocation;
+        private int[] reservedGameCardsIndexes;
+        private Image[] gameCardsAsImages;
+        private PictureBox[] cardsPictureBoxArray;
+        private Timer _timer;
+        private Timer _updates;
+
+        private int Nm;
+        
+        private int neededChipsToCall;
+        private int foldedPlayers;
         private double type;
-        private int rounds = 0;
-        //private double this.bots[0].Power;
-        //private double this.bots[1].Power;
-        //private double this.bots[2].Power;
-        //private double this.bots[3].Power;
-        //private double this.bots[4].Power;
-        //private double this.player.Power = 0;
-
-        //private double this.player.Type = -1;
-        private int raise = 0;
-        //private double this.bots[0].Type = -1;
-        //private double this.bots[1].Type = -1;
-        //private double this.bots[2].Type = -1;
-        //private double this.bots[3].Type = -1;
-        //private double this.bots[4].Type = -1;
-
-        //private bool botOneTurn = false;  // otivat v Character
-        //private bool botTwoTurn = false;
-        //private bool botThreeTurn = false;
-        //private bool botFourTurn = false;
-        ///private bool botFiveTurn = false;
-
-        //private bool _b1Fturn = false, _b2Fturn = false, _b3Fturn = false, _b4Fturn = false, _b5Fturn = false; //pri igra4ite
-        //private bool _pFolded, _b1Folded, _b2Folded, _b3Folded, _b4Folded, _b5Folded  // pri igra4ite
-
+        private int rounds;
+        private int raise;
         private bool chipsAreAdded;
         private bool changed;
-
-        //private int _pCall = 0, _b1Call = 0, _b2Call = 0, _b3Call = 0, _b4Call = 0, _b5Call = 0, _pRaise = 0, _b1Raise = 0, _b2Raise = 0, _b3Raise = 0, _b4Raise = 0, _b5Raise = 0; // pri igra4ite
-        private int _height, _width, _winners = 0, _flop = 1, _turn = 2, _river = 3, _end = 4, _maxLeft = 6;
-        private int _last = 123, _raisedTurn = 1;
-
-        private IDatabase gameDatabase;
-        //private List<bool?> playersGameStatus = new List<bool?>(); // database
-        //private List<Type> win = new List<Type>(); // database
-        //private List<string> _checkWinners = new List<string>(); // database
-        //private List<int> ints = new List<int>();  // database
-
-        //private bool _pFturn = false; // pri player
-        //private bool _pturn = true; // pri player
-        private bool _restart = false;
-
-        private bool raising = false;
-        private Type _sorted;
-        private string[] cardsImageLocation = Directory.GetFiles("..\\..\\Resources\\Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
-        /*string[] cardsImageLocation ={
-                   "Assets\\Cards\\33.png","Assets\\Cards\\22.png",
-                    "Assets\\Cards\\29.png","Assets\\Cards\\21.png",
-                    "Assets\\Cards\\36.png","Assets\\Cards\\17.png",
-                    "Assets\\Cards\\40.png","Assets\\Cards\\16.png",
-                    "Assets\\Cards\\5.png","Assets\\Cards\\47.png",
-                    "Assets\\Cards\\37.png","Assets\\Cards\\13.png",
-                    
-                    "Assets\\Cards\\12.png",
-                    "Assets\\Cards\\8.png","Assets\\Cards\\18.png",
-                    "Assets\\Cards\\15.png","Assets\\Cards\\27.png"};*/
-        private int[] reservedGameCardsIndexes = new int[17];
-        private Image[] gameCardsAsImages = new Image[52];
-        private PictureBox[] cardsPictureBoxArray = new PictureBox[52];
-        private Timer _timer = new Timer();
-        private Timer _updates = new Timer();
-        private int secondsLeft = 60, i, bigBlindValue = 500, smallBlindValue = 250, _up = 10000000;
-
+        private int _height;
+        private int _width;
+        private int _winners;
+        private int _flop;
+        private int _turn;
+        private int _river;
+        private int _end;
+        private int _maxLeft;
+        private int _last;
+        private int _raisedTurn;
+        private bool _restart;
+        private bool raising;
+        private int secondsLeft;
+        private int i;
+        private int bigBlindValue;
+        private int smallBlindValue;
+        private int _up;
         private int turnCount;
 
         #endregion
         public MainWindow()
         {
+            this.progressBar = new ProgressBar();
             this.player = new Player("Player");
             this.bots = new List<IBot>()
                             {
@@ -126,50 +75,75 @@
                                 new Bot("Bot 5", 10, 420, 1160, AnchorStyles.Bottom, AnchorStyles.Right)
                             };
             this.winningHandType = new WinningHandType();
+            this.gameDatabase = new GameDatabase();
+            this.cardsImageLocation = Directory.GetFiles("..\\..\\Resources\\Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
+            this.reservedGameCardsIndexes = new int[DefaultCardsInGame];
+            this.gameCardsAsImages = new Image[DefaultSetOfCards];
+            this.cardsPictureBoxArray = new PictureBox[DefaultSetOfCards];
+            this._timer = new Timer();
+            this._updates = new Timer();
+
             this.neededChipsToCall = 500;
             this.foldedPlayers = 5;
-            this.gameDatabase = new GameDatabase();
             this.turnCount = 0;
-
-            //bools.Add(PFturn); bools.Add(B1Fturn); bools.Add(B2Fturn); bools.Add(B3Fturn); bools.Add(B4Fturn); bools.Add(B5Fturn);
+            this._winners = 0;
+            this._flop = 1;
+            this._turn = 2;
+            this._river = 3;
+            this._end = 4;
+            this._maxLeft = 6;
+            this._raisedTurn = 1;
+            this._last = 123;
+            this.secondsLeft = 60;
+            this.rounds = 0;
+            this.raise = 0;
+            this.bigBlindValue = 500;
+            this.smallBlindValue = 250;
+            this._up = 10000000;
             this.neededChipsToCall = this.bigBlindValue;
-            MaximizeBox = false;
-            MinimizeBox = false;
-            _updates.Start();
-            InitializeComponent();
-            _width = this.Width;
-            _height = this.Height;
-            Shuffle();
-            textBoxPot.Enabled = false;
-            textBoxPlayerChips.Enabled = false;
-            textBoxBotOneChips.Enabled = false;
-            textBoxBotTwoChips.Enabled = false;
-            textBoxBotThreeChips.Enabled = false;
-            textBoxBotFourChips.Enabled = false;
-            textBoxBotFiveChips.Enabled = false;
-            textBoxPlayerChips.Text = "Chips : " + this.player.Chips.ToString();
-            textBoxBotOneChips.Text = "Chips : " + this.bots[0].Chips.ToString();
-            textBoxBotTwoChips.Text = "Chips : " + this.bots[1].Chips.ToString();
-            textBoxBotThreeChips.Text = "Chips : " + this.bots[2].Chips.ToString();
-            textBoxBotFourChips.Text = "Chips : " + this.bots[3].Chips.ToString();
-            textBoxBotFiveChips.Text = "Chips : " + this.bots[4].Chips.ToString();
-            _timer.Interval = (1 * 1 * 1000);
-            _timer.Tick += TimerTick;
-            _updates.Interval = (1 * 1 * 100);
-            _updates.Tick += UpdateTick;
-            textBoxBigBlind.Visible = true;
-            textBoxSmallBlind.Visible = true;
-            buttonBigBlind.Visible = true;
-            buttonSmallBlind.Visible = true;
-            textBoxBigBlind.Visible = true;
-            textBoxSmallBlind.Visible = true;
-            buttonBigBlind.Visible = true;
-            buttonSmallBlind.Visible = true;
-            textBoxBigBlind.Visible = false;
-            textBoxSmallBlind.Visible = false;
-            buttonBigBlind.Visible = false;
-            buttonSmallBlind.Visible = false;
-            textBoxRaise.Text = (this.bigBlindValue * 2).ToString();
+            this._restart = false;
+            this.raising = false;
+
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+
+            this._updates.Start();
+            this.InitializeComponent();
+
+            this._width = this.Width;
+            this._height = this.Height;
+            this.Shuffle();
+
+            this.textBoxPot.Enabled = false;
+            this.textBoxPlayerChips.Enabled = false;
+            this.textBoxBotOneChips.Enabled = false;
+            this.textBoxBotTwoChips.Enabled = false;
+            this.textBoxBotThreeChips.Enabled = false;
+            this.textBoxBotFourChips.Enabled = false;
+            this.textBoxBotFiveChips.Enabled = false;
+            this.textBoxPlayerChips.Text = "Chips : " + this.player.Chips.ToString();
+            this.textBoxBotOneChips.Text = "Chips : " + this.bots[0].Chips.ToString();
+            this.textBoxBotTwoChips.Text = "Chips : " + this.bots[1].Chips.ToString();
+            this.textBoxBotThreeChips.Text = "Chips : " + this.bots[2].Chips.ToString();
+            this.textBoxBotFourChips.Text = "Chips : " + this.bots[3].Chips.ToString();
+            this.textBoxBotFiveChips.Text = "Chips : " + this.bots[4].Chips.ToString();
+            this._timer.Interval = (1 * 1 * 1000);
+            this._timer.Tick += TimerTick;
+            this._updates.Interval = (1 * 1 * 100);
+            this._updates.Tick += UpdateTick;
+            this.textBoxBigBlind.Visible = true;
+            this.textBoxSmallBlind.Visible = true;
+            this.buttonBigBlind.Visible = true;
+            this.buttonSmallBlind.Visible = true;
+            this.textBoxBigBlind.Visible = true;
+            this.textBoxSmallBlind.Visible = true;
+            this.buttonBigBlind.Visible = true;
+            this.buttonSmallBlind.Visible = true;
+            this.textBoxBigBlind.Visible = false;
+            this.textBoxSmallBlind.Visible = false;
+            this.buttonBigBlind.Visible = false;
+            this.buttonSmallBlind.Visible = false;
+            this.textBoxRaise.Text = (this.bigBlindValue * 2).ToString();
         }
 
         async Task Shuffle()
@@ -180,13 +154,13 @@
             this.gameDatabase.PlayersGameStatus.Add(this.bots[2].OutOfChips);
             this.gameDatabase.PlayersGameStatus.Add(this.bots[3].OutOfChips);
             this.gameDatabase.PlayersGameStatus.Add(this.bots[4].OutOfChips);
-            //playersGameStatus.Add(_pFturn); playersGameStatus.Add(_b1Fturn); playersGameStatus.Add(_b2Fturn); playersGameStatus.Add(_b3Fturn); playersGameStatus.Add(_b4Fturn); playersGameStatus.Add(_b5Fturn);
-            buttonCall.Enabled = false;
-            buttonRaise.Enabled = false;
-            buttonFold.Enabled = false;
-            buttonCheck.Enabled = false;
-            MaximizeBox = false;
-            MinimizeBox = false;
+
+            this.buttonCall.Enabled = false;
+            this.buttonRaise.Enabled = false;
+            this.buttonFold.Enabled = false;
+            this.buttonCheck.Enabled = false;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             bool check = false;
             Bitmap backImage = new Bitmap("..\\..\\Resources\\Assets\\Back\\Back.png");
             int horizontal = 580, vertical = 480;
