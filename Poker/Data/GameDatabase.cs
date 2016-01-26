@@ -1,11 +1,11 @@
 ﻿namespace Poker.Data
 {
-    using Interfaces;
     using System.Collections.Generic;
+    using Interfaces;
 
     public class GameDatabase : IDatabase
     {
-        //TODO: Check if name is proper, previous name - bools
+        ////TODO: Check if name is proper, previous name - bools
 
         public GameDatabase()
         {

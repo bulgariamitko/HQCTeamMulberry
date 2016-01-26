@@ -2,12 +2,44 @@
 {
     using System.Windows.Forms;
 
-    partial class MainWindow
+    public partial class MainWindow
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
+
+        private Button buttonFold;
+        private Button buttonCheck;
+        private Button buttonCall;
+        private Button buttonRaise;
+        private Button buttonAdd;
+        private Button buttonOptions;
+        private Button buttonBigBlind;
+        private Button buttonSmallBlind;
+
+        private ProgressBar progressBarTimer;
+
+        private TextBox textBoxBotOneChips;
+        private TextBox textBoxBotTwoChips;
+        private TextBox textBoxBotThreeChips;
+        private TextBox textBoxBotFourChips;
+        private TextBox textBoxBotFiveChips;
+        private TextBox textBoxPlayerChips;
+        private TextBox textBoxPot;
+
+        private TextBox textBoxSmallBlind;
+        private TextBox textBoxBigBlind;
+        private TextBox textBoxAdd;
+        private TextBox textBoxRaise;
+
+        private Label botFiveStatus;
+        private Label botFourStatus;
+        private Label botThreeStatus;
+        private Label botOneStatus;
+        private Label playerStatus;
+        private Label botTwoStatus;
+        private Label potLabel;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -15,10 +47,11 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing && (this.components != null))
             {
-                components.Dispose();
+                this.components.Dispose();
             }
+
             base.Dispose(disposing);
         }
 
@@ -362,38 +395,5 @@
         }
 
         #endregion
-
-        private Button buttonFold;
-        private Button buttonCheck;
-        private Button buttonCall;
-        private Button buttonRaise;
-        private Button buttonAdd;
-        private Button buttonOptions;
-        private Button buttonBigBlind;
-        private Button buttonSmallBlind;
-
-        private ProgressBar progressBarTimer;
-
-        private TextBox textBoxBotOneChips;
-        private TextBox textBoxBotTwoChips;
-        private TextBox textBoxBotThreeChips;
-        private TextBox textBoxBotFourChips;
-        private TextBox textBoxBotFiveChips;
-        private TextBox textBoxPlayerChips;
-        private TextBox textBoxPot;
-
-        private TextBox textBoxSmallBlind;
-        private TextBox textBoxBigBlind;
-        private TextBox textBoxAdd;
-        private TextBox textBoxRaise;
-
-        private Label botFiveStatus;
-        private Label botFourStatus;
-        private Label botThreeStatus;
-        private Label botOneStatus;
-        private Label playerStatus;
-        private Label botTwoStatus;
-        private Label potLabel;
     }
 }
-

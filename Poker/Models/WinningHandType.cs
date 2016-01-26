@@ -17,13 +17,13 @@
 
         public void HighCard(ICharacter pokerPlayer, Label sStatus, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising)
         {
-            this.playerMove.HP(pokerPlayer, sStatus, 20, 25,ref neededChipsToCall, potStatus, ref raise, ref raising);
+            this.playerMove.HP(pokerPlayer, sStatus, 20, 25, ref neededChipsToCall, potStatus, ref raise, ref raising);
         }
 
         public void PairTable(ICharacter pokerPlayer, Label sStatus, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising)
         {
-            this.playerMove.HP(pokerPlayer, sStatus, 16, 25,ref neededChipsToCall, potStatus, ref raise, ref raising);
-            //Hp(ref sChips, ref sTurn, ref sFTurn, sStatus, botPower, 16, 25);
+            this.playerMove.HP(pokerPlayer, sStatus, 16, 25, ref neededChipsToCall, potStatus, ref raise, ref raising);
+            ////Hp(ref sChips, ref sTurn, ref sFTurn, sStatus, botPower, 16, 25);
         }
 
         public void PairHand(ICharacter player, Label sStatus, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising, ref int rounds)

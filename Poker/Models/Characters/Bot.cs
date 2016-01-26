@@ -1,12 +1,11 @@
 ﻿namespace Poker.Models.Characters
 {
-    using Interfaces;
     using System.Windows.Forms;
+    using Interfaces;
 
     public class Bot : Character, IBot
     {
-        public Bot(string name, int startCard, int verticalLocationCoordinate, int horizontalLocationCoordinate,
-            AnchorStyles verticalLocation = 0, AnchorStyles horizontalLocation = 0)
+        public Bot(string name, int startCard, int verticalLocationCoordinate, int horizontalLocationCoordinate, AnchorStyles verticalLocation = 0, AnchorStyles horizontalLocation = 0)
             : base(name)
         {
             this.VerticalLocationCoordinate = verticalLocationCoordinate;

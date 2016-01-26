@@ -1,6 +1,6 @@
 ﻿namespace Poker
 {
-    class ProgressBars
+    public class ProgressBars
     {
     }
 }

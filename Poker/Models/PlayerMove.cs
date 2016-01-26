@@ -1,11 +1,17 @@
 ﻿namespace Poker.Models
 {
     using System;
-    using Interfaces;
     using System.Windows.Forms;
+    using Interfaces;
 
     public class PlayerMove : IPlayerMove
     {
+        public static double RoundN(int sChips, int n)
+        {
+            double a = Math.Round((sChips / n) / 100d, 0) * 100;
+            return a;
+        }
+
         public void Fold(ICharacter player, Label sStatus, ref bool rising)
         {
             rising = false;
@@ -40,19 +46,13 @@
             player.CanMakeTurn = false;
         }
 
-        public static double RoundN(int sChips, int n)
-        {
-            double a = Math.Round((sChips / n) / 100d, 0) * 100;
-            return a;
-        }
-
-        public void HP(ICharacter player, Label sStatus, int n, int n1,ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising)
+        public void HP(ICharacter player, Label sStatus, int n, int n1, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising)
         {
             Random rand = new Random();
             int rnd = rand.Next(1, 4);
             if (neededChipsToCall <= 0)
             {
-                Check(player, sStatus, ref raising);
+                this.Check(player, sStatus, ref raising);
             }
 
             if (neededChipsToCall > 0)
@@ -73,7 +73,7 @@
                 {
                     if (neededChipsToCall <= RoundN(player.Chips, n1))
                     {
-                        Call(player, sStatus, ref raising, ref neededChipsToCall, potStatus);
+                        this.Call(player, sStatus, ref raising, ref neededChipsToCall, potStatus);
                     }
                     else
                     {
@@ -109,7 +109,7 @@
             }
         }
 
-        public void PH(ICharacter player, Label sStatus, int n, int n1, int r,ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising,ref int rounds)
+        public void PH(ICharacter player, Label sStatus, int n, int n1, int r, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising, ref int rounds)
         {
             Random rand = new Random();
             int rnd = rand.Next(1, 3);
@@ -139,12 +139,12 @@
                             this.Call(player, sStatus, ref raising, ref neededChipsToCall, potStatus);
                         }
 
-                        if (raise <= RoundN(player.Chips, n) && raise >= (RoundN(player.Chips, n)) / 2)
+                        if (raise <= RoundN(player.Chips, n) && raise >= RoundN(player.Chips, n) / 2)
                         {
                             this.Call(player, sStatus, ref raising, ref neededChipsToCall, potStatus);
                         }
 
-                        if (raise <= (RoundN(player.Chips, n)) / 2)
+                        if (raise <= RoundN(player.Chips, n) / 2)
                         {
                             if (raise > 0)
                             {
@@ -157,7 +157,6 @@
                                 this.Raised(player, sStatus, ref raising, ref raise, ref neededChipsToCall, potStatus);
                             }
                         }
-
                     }
                 }
             }
@@ -183,12 +182,12 @@
                             this.Call(player, sStatus, ref raising, ref neededChipsToCall, potStatus);
                         }
 
-                        if (raise <= RoundN(player.Chips, n - rnd) && raise >= (RoundN(player.Chips, n - rnd)) / 2)
+                        if (raise <= RoundN(player.Chips, n - rnd) && raise >= RoundN(player.Chips, n - rnd) / 2)
                         {
                             this.Call(player, sStatus, ref raising, ref neededChipsToCall, potStatus);
                         }
 
-                        if (raise <= (RoundN(player.Chips, n - rnd)) / 2)
+                        if (raise <= RoundN(player.Chips, n - rnd) / 2)
                         {
                             if (raise > 0)
                             {

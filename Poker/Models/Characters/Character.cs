@@ -32,7 +32,9 @@
                 new Card(),
                 new Card()
             };
+
         }
+
         public string Name { get; set; }
 
         public double Power { get; set; }
@@ -47,15 +49,6 @@
 
         public double Type { get; set; }
 
-        public void InitializePanel(Point location)
-        {
-            this.Panel.Location = location;
-            this.Panel.BackColor = Color.FromArgb(16, 255, 0);
-            this.Panel.Height = DefaultPlayerPanelHeight;
-            this.Panel.Width = DefaultPlayerPanelWidth;
-            this.Panel.Visible = false;
-        }
-
         public int Call { get; set; }
 
         public int Raise { get; set; }
@@ -65,6 +58,15 @@
         public bool OutOfChips { get; set; }
 
         public bool Folded { get; set; }
+
+        public void InitializePanel(Point location)
+        {
+            this.Panel.Location = location;
+            this.Panel.BackColor = Color.FromArgb(16, 255, 0);
+            this.Panel.Height = DefaultPlayerPanelHeight;
+            this.Panel.Width = DefaultPlayerPanelWidth;
+            this.Panel.Visible = false;
+        }
 
         public void Check()
         {

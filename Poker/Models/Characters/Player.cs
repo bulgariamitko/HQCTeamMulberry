@@ -2,7 +2,7 @@
 {
     using Interfaces;
 
-    public class Player : Character , IPlayer
+    public class Player : Character, IPlayer
     {
         public Player(string name)
             : base(name)

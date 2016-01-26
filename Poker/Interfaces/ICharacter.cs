@@ -12,12 +12,13 @@
 
         int Chips { get; set; }
 
-
         IList<ICard> Cards { get; }
+
         int StartCard { get; set; }
+
         Panel Panel { get; set; }
+
         double Type { get; set; }
-        void InitializePanel(Point location);
 
         int Call { get; set; }
 
@@ -29,10 +30,7 @@
 
         bool Folded { get; set; }
 
-
-        //void Call();
-
-        //void Raise();
+        void InitializePanel(Point location);
 
         void Check();
 

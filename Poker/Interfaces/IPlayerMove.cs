@@ -12,8 +12,8 @@
 
         void Raised(ICharacter pokerPlayer, Label sStatus, ref bool raising, ref int raise, ref int neededChipsToCall, TextBox potStatus);
 
-        void HP(ICharacter pokerPlayer, Label sStatus, int n, int n1,ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising);
+        void HP(ICharacter pokerPlayer, Label sStatus, int n, int n1, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising);
 
-        void PH(ICharacter player, Label sStatus, int n, int n1, int r,ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising,ref int rounds);
+        void PH(ICharacter player, Label sStatus, int n, int n1, int r, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising, ref int rounds);
     }
 }

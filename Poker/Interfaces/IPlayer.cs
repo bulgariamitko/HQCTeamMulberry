@@ -1,6 +1,6 @@
 ﻿namespace Poker.Interfaces
 {
-    interface IPlayer : ICharacter
+    public interface IPlayer : ICharacter
     {
     }
 }
