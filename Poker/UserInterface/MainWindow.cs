@@ -1,5 +1,6 @@
 ﻿namespace Poker
 {
+    using Interfaces;
     using System;
     using System.Collections.Generic;
     using System.Drawing;
@@ -8,71 +9,89 @@
     using System.Threading.Tasks;
     using System.Windows.Forms;
 
+    using Poker.Data;
+    using Poker.Models;
+    using Poker.Models.Characters;
+
     public partial class MainWindow : Form
     {
         #region Variables
         private ProgressBar progressBar = new ProgressBar();
 
-        public const int DefaultStartingChips = 10000;
+        public const int DefaultStartingChips = 10000;      //
         public const int DefaultSetOfCards = 52;
         public const int DefaultCardsInGame = 17;
 
         private int Nm;
 
         //Players panels
-        private Panel playerPanel = new Panel();
-        private Panel bot1Panel = new Panel();
-        private Panel bot2Panel = new Panel();
-        private Panel bot3Panel = new Panel();
-        private Panel bot4Panel = new Panel();
-        private Panel bot5Panel = new Panel();
+        //private Panel this.player.Panel = new Panel();
+        //private Panel this.bots[0].Panel = new Panel();
+        //private Panel this.bots[1].Panel = new Panel();
+        //private Panel this.bots[2].Panel = new Panel();
+        //private Panel this.bots[3].Panel = new Panel();
+        //private Panel this.bots[4].Panel = new Panel();
 
 
-        private int call = 500;
-        private int foldedPlayers = 5;
+        private int neededChipsToCall;
+        private int foldedPlayers;
 
+        private readonly IPlayer player;
+        private readonly IList<IBot> bots;
+        private readonly IWinningHandType winningHandType;
         //Chips
-        public int Chips = DefaultStartingChips;
-        public int Bot1Chips = DefaultStartingChips;
-        public int Bot2Chips = DefaultStartingChips;
-        public int Bot3Chips = DefaultStartingChips;
-        public int Bot4Chips = DefaultStartingChips;
-        public int Bot5Chips = DefaultStartingChips;
+        //public int Chips = DefaultStartingChips;
+        //public int this.bots[0].Chips = DefaultStartingChips;
+        //public int this.bots[1].Chips = DefaultStartingChips;
+        //public int this.bots[2].Chips = DefaultStartingChips;
+        //public int this.bots[3].Chips = DefaultStartingChips;
+        //public int this.bots[4].Chips = DefaultStartingChips;
 
         private double type;
-        private double rounds = 0;
-        private double botOnePower;
-        private double botTwoPower;
-        private double botThreePower;
-        private double botFourPower;
-        private double botFivePower;
-        private double playerPower = 0;
+        private int rounds = 0;
+        //private double this.bots[0].Power;
+        //private double this.bots[1].Power;
+        //private double this.bots[2].Power;
+        //private double this.bots[3].Power;
+        //private double this.bots[4].Power;
+        //private double this.player.Power = 0;
 
-        private double playerType = -1;
-        private double raise = 0;
-        private double botOneType = -1;
-        private double botTwoType = -1;
-        private double botThreeType = -1;
-        private double botFourType = -1;
-        private double botFiveType = -1;
+        //private double this.player.Type = -1;
+        private int raise = 0;
+        //private double this.bots[0].Type = -1;
+        //private double this.bots[1].Type = -1;
+        //private double this.bots[2].Type = -1;
+        //private double this.bots[3].Type = -1;
+        //private double this.bots[4].Type = -1;
 
-        private bool botOneTurn = false;
-        private bool botTwoTurn = false;
-        private bool botThreeTurn = false;
-        private bool botFourTurn = false;
-        private bool botFiveTurn = false;
+        //private bool botOneTurn = false;  // otivat v Character
+        //private bool botTwoTurn = false;
+        //private bool botThreeTurn = false;
+        //private bool botFourTurn = false;
+        ///private bool botFiveTurn = false;
 
-        private bool _b1Fturn = false, _b2Fturn = false, _b3Fturn = false, _b4Fturn = false, _b5Fturn = false;
-        private bool _pFolded, _b1Folded, _b2Folded, _b3Folded, _b4Folded, _b5Folded, intsadded, _changed;
-        private int _pCall = 0, _b1Call = 0, _b2Call = 0, _b3Call = 0, _b4Call = 0, _b5Call = 0, _pRaise = 0, _b1Raise = 0, _b2Raise = 0, _b3Raise = 0, _b4Raise = 0, _b5Raise = 0;
+        //private bool _b1Fturn = false, _b2Fturn = false, _b3Fturn = false, _b4Fturn = false, _b5Fturn = false; //pri igra4ite
+        //private bool _pFolded, _b1Folded, _b2Folded, _b3Folded, _b4Folded, _b5Folded  // pri igra4ite
+
+        private bool chipsAreAdded;
+        private bool changed;
+
+        //private int _pCall = 0, _b1Call = 0, _b2Call = 0, _b3Call = 0, _b4Call = 0, _b5Call = 0, _pRaise = 0, _b1Raise = 0, _b2Raise = 0, _b3Raise = 0, _b4Raise = 0, _b5Raise = 0; // pri igra4ite
         private int _height, _width, _winners = 0, _flop = 1, _turn = 2, _river = 3, _end = 4, _maxLeft = 6;
         private int _last = 123, _raisedTurn = 1;
-        private List<bool?> _bools = new List<bool?>();
-        private List<Type> _win = new List<Type>();
-        private List<string> _checkWinners = new List<string>();
-        private List<int> ints = new List<int>();
-        private bool _pFturn = false, _pturn = true, _restart = false, _raising = false;
-        private Poker.Type _sorted;
+
+        private IDatabase gameDatabase;
+        //private List<bool?> playersGameStatus = new List<bool?>(); // database
+        //private List<Type> win = new List<Type>(); // database
+        //private List<string> _checkWinners = new List<string>(); // database
+        //private List<int> ints = new List<int>();  // database
+
+        //private bool _pFturn = false; // pri player
+        //private bool _pturn = true; // pri player
+        private bool _restart = false;
+
+        private bool raising = false;
+        private Type _sorted;
         private string[] cardsImageLocation = Directory.GetFiles("..\\..\\Resources\\Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
         /*string[] cardsImageLocation ={
                    "Assets\\Cards\\33.png","Assets\\Cards\\22.png",
@@ -90,13 +109,30 @@
         private PictureBox[] cardsPictureBoxArray = new PictureBox[52];
         private Timer _timer = new Timer();
         private Timer _updates = new Timer();
-        private int _t = 60, i, bb = 500, _sb = 250, _up = 10000000, _turnCount = 0;
+        private int secondsLeft = 60, i, bigBlindValue = 500, smallBlindValue = 250, _up = 10000000;
+
+        private int turnCount;
 
         #endregion
         public MainWindow()
         {
+            this.player = new Player("Player");
+            this.bots = new List<IBot>()
+                            {
+                                new Bot("Bot 1", 2, 420, 15, AnchorStyles.Bottom, AnchorStyles.Left),
+                                new Bot("Bot 2", 4, 65, 75, AnchorStyles.Top, AnchorStyles.Left),
+                                new Bot("Bot 3", 6, 25, 590, AnchorStyles.Top, 0),
+                                new Bot("Bot 4", 8, 65, 1115, AnchorStyles.Top, AnchorStyles.Right),
+                                new Bot("Bot 5", 10, 420, 1160, AnchorStyles.Bottom, AnchorStyles.Right)
+                            };
+            this.winningHandType = new WinningHandType();
+            this.neededChipsToCall = 500;
+            this.foldedPlayers = 5;
+            this.gameDatabase = new GameDatabase();
+            this.turnCount = 0;
+
             //bools.Add(PFturn); bools.Add(B1Fturn); bools.Add(B2Fturn); bools.Add(B3Fturn); bools.Add(B4Fturn); bools.Add(B5Fturn);
-            call = bb;
+            this.neededChipsToCall = this.bigBlindValue;
             MaximizeBox = false;
             MinimizeBox = false;
             _updates.Start();
@@ -111,12 +147,12 @@
             textBoxBotThreeChips.Enabled = false;
             textBoxBotFourChips.Enabled = false;
             textBoxBotFiveChips.Enabled = false;
-            textBoxPlayerChips.Text = "Chips : " + Chips.ToString();
-            textBoxBotOneChips.Text = "Chips : " + Bot1Chips.ToString();
-            textBoxBotTwoChips.Text = "Chips : " + Bot2Chips.ToString();
-            textBoxBotThreeChips.Text = "Chips : " + Bot3Chips.ToString();
-            textBoxBotFourChips.Text = "Chips : " + Bot4Chips.ToString();
-            textBoxBotFiveChips.Text = "Chips : " + Bot5Chips.ToString();
+            textBoxPlayerChips.Text = "Chips : " + this.player.Chips.ToString();
+            textBoxBotOneChips.Text = "Chips : " + this.bots[0].Chips.ToString();
+            textBoxBotTwoChips.Text = "Chips : " + this.bots[1].Chips.ToString();
+            textBoxBotThreeChips.Text = "Chips : " + this.bots[2].Chips.ToString();
+            textBoxBotFourChips.Text = "Chips : " + this.bots[3].Chips.ToString();
+            textBoxBotFiveChips.Text = "Chips : " + this.bots[4].Chips.ToString();
             _timer.Interval = (1 * 1 * 1000);
             _timer.Tick += TimerTick;
             _updates.Interval = (1 * 1 * 100);
@@ -133,12 +169,18 @@
             textBoxSmallBlind.Visible = false;
             buttonBigBlind.Visible = false;
             buttonSmallBlind.Visible = false;
-            textBoxRaise.Text = (bb * 2).ToString();
+            textBoxRaise.Text = (this.bigBlindValue * 2).ToString();
         }
 
         async Task Shuffle()
         {
-            _bools.Add(_pFturn); _bools.Add(_b1Fturn); _bools.Add(_b2Fturn); _bools.Add(_b3Fturn); _bools.Add(_b4Fturn); _bools.Add(_b5Fturn);
+            this.gameDatabase.PlayersGameStatus.Add(this.player.OutOfChips);
+            this.gameDatabase.PlayersGameStatus.Add(this.bots[0].OutOfChips);
+            this.gameDatabase.PlayersGameStatus.Add(this.bots[1].OutOfChips);
+            this.gameDatabase.PlayersGameStatus.Add(this.bots[2].OutOfChips);
+            this.gameDatabase.PlayersGameStatus.Add(this.bots[3].OutOfChips);
+            this.gameDatabase.PlayersGameStatus.Add(this.bots[4].OutOfChips);
+            //playersGameStatus.Add(_pFturn); playersGameStatus.Add(_b1Fturn); playersGameStatus.Add(_b2Fturn); playersGameStatus.Add(_b3Fturn); playersGameStatus.Add(_b4Fturn); playersGameStatus.Add(_b5Fturn);
             buttonCall.Enabled = false;
             buttonRaise.Enabled = false;
             buttonFold.Enabled = false;
@@ -157,26 +199,26 @@
                 cardsImageLocation[i - 1] = k;
             }
 
-            for (i = 0; i < 17; i++)
+            for (int cardNumber = 0; cardNumber < 17; cardNumber++)
             {
-                gameCardsAsImages[i] = Image.FromFile(cardsImageLocation[i]);
+                gameCardsAsImages[cardNumber] = Image.FromFile(cardsImageLocation[cardNumber]);
                 var charsToRemove = new string[] { "..\\..\\Resources\\Assets\\Cards\\", ".png" };
                 foreach (var c in charsToRemove)
                 {
-                    cardsImageLocation[i] = cardsImageLocation[i].Replace(c, string.Empty);
+                    cardsImageLocation[cardNumber] = cardsImageLocation[cardNumber].Replace(c, string.Empty);
                 }
 
-                reservedGameCardsIndexes[i] = int.Parse(cardsImageLocation[i]) - 1;
-                cardsPictureBoxArray[i] = new PictureBox();
-                cardsPictureBoxArray[i].SizeMode = PictureBoxSizeMode.StretchImage;
-                cardsPictureBoxArray[i].Height = 130;
-                cardsPictureBoxArray[i].Width = 80;
-                this.Controls.Add(cardsPictureBoxArray[i]);
-                cardsPictureBoxArray[i].Name = "pb" + i.ToString();
+                reservedGameCardsIndexes[cardNumber] = int.Parse(cardsImageLocation[cardNumber]) - 1;
+                cardsPictureBoxArray[cardNumber] = new PictureBox();
+                cardsPictureBoxArray[cardNumber].SizeMode = PictureBoxSizeMode.StretchImage;
+                cardsPictureBoxArray[cardNumber].Height = 130;
+                cardsPictureBoxArray[cardNumber].Width = 80;
+                this.Controls.Add(cardsPictureBoxArray[cardNumber]);
+                cardsPictureBoxArray[cardNumber].Name = "pb" + cardNumber.ToString();
                 await Task.Delay(200);
 
                 #region Throwing Cards
-                if (i < 2)
+                if (cardNumber < 2)
                 {
                     if (cardsPictureBoxArray[0].Tag != null)
                     {
@@ -184,23 +226,19 @@
                     }
 
                     cardsPictureBoxArray[0].Tag = reservedGameCardsIndexes[0];
-                    cardsPictureBoxArray[i].Image = gameCardsAsImages[i];
-                    cardsPictureBoxArray[i].Anchor = (AnchorStyles.Bottom);
-                    //Holder[i].Dock = DockStyle.Top;
-                    cardsPictureBoxArray[i].Location = new Point(horizontal, vertical);
-                    horizontal += cardsPictureBoxArray[i].Width;
-                    this.Controls.Add(playerPanel);
-                    playerPanel.Location = new Point(cardsPictureBoxArray[0].Left - 10, cardsPictureBoxArray[0].Top - 10);
-                    playerPanel.BackColor = Color.DarkBlue;
-                    playerPanel.Height = 150;
-                    playerPanel.Width = 180;
-                    playerPanel.Visible = false;
+                    cardsPictureBoxArray[cardNumber].Image = gameCardsAsImages[cardNumber];
+                    cardsPictureBoxArray[cardNumber].Anchor = (AnchorStyles.Bottom);
+                    //Holder[cardNumber].Dock = DockStyle.Top;
+                    cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
+                    horizontal += cardsPictureBoxArray[cardNumber].Width;
+                    this.Controls.Add(this.player.Panel);
+                    this.player.InitializePanel(new Point(this.cardsPictureBoxArray[0].Left - 10, this.cardsPictureBoxArray[0].Top - 10));
                 }
-
-                if (Bot1Chips > 0)
+                
+                if (this.bots[0].Chips > 0)
                 {
                     foldedPlayers--;
-                    if (i >= 2 && i < 4)
+                    if (cardNumber >= 2 && cardNumber < 4)
                     {
                         if (cardsPictureBoxArray[2].Tag != null)
                         {
@@ -215,29 +253,29 @@
                         }
 
                         check = true;
-                        cardsPictureBoxArray[i].Anchor = (AnchorStyles.Bottom | AnchorStyles.Left);
-                        cardsPictureBoxArray[i].Image = backImage;
+                        cardsPictureBoxArray[cardNumber].Anchor = (AnchorStyles.Bottom | AnchorStyles.Left);
+                        cardsPictureBoxArray[cardNumber].Image = backImage;
                         //Holder[i].Image = Deck[i];
-                        cardsPictureBoxArray[i].Location = new Point(horizontal, vertical);
-                        horizontal += cardsPictureBoxArray[i].Width;
-                        cardsPictureBoxArray[i].Visible = true;
-                        this.Controls.Add(bot1Panel);
-                        bot1Panel.Location = new Point(cardsPictureBoxArray[2].Left - 10, cardsPictureBoxArray[2].Top - 10);
-                        bot1Panel.BackColor = Color.DarkBlue;
-                        bot1Panel.Height = 150;
-                        bot1Panel.Width = 180;
-                        bot1Panel.Visible = false;
-                        if (i == 3)
+                        cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
+                        horizontal += cardsPictureBoxArray[cardNumber].Width;
+                        cardsPictureBoxArray[cardNumber].Visible = true;
+                        this.Controls.Add(this.bots[0].Panel);
+                        this.bots[0].Panel.Location = new Point(cardsPictureBoxArray[2].Left - 10, cardsPictureBoxArray[2].Top - 10);
+                        this.bots[0].Panel.BackColor = Color.DarkBlue;
+                        this.bots[0].Panel.Height = 150;
+                        this.bots[0].Panel.Width = 180;
+                        this.bots[0].Panel.Visible = false;
+                        if (cardNumber == 3)
                         {
                             check = false;
                         }
                     }
                 }
 
-                if (Bot2Chips > 0)
+                if (this.bots[1].Chips > 0)
                 {
                     foldedPlayers--;
-                    if (i >= 4 && i < 6)
+                    if (cardNumber >= 4 && cardNumber < 6)
                     {
                         if (cardsPictureBoxArray[4].Tag != null)
                         {
@@ -252,29 +290,29 @@
                         }
 
                         check = true;
-                        cardsPictureBoxArray[i].Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-                        cardsPictureBoxArray[i].Image = backImage;
+                        cardsPictureBoxArray[cardNumber].Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+                        cardsPictureBoxArray[cardNumber].Image = backImage;
                         //Holder[i].Image = Deck[i];
-                        cardsPictureBoxArray[i].Location = new Point(horizontal, vertical);
-                        horizontal += cardsPictureBoxArray[i].Width;
-                        cardsPictureBoxArray[i].Visible = true;
-                        this.Controls.Add(bot2Panel);
-                        bot2Panel.Location = new Point(cardsPictureBoxArray[4].Left - 10, cardsPictureBoxArray[4].Top - 10);
-                        bot2Panel.BackColor = Color.DarkBlue;
-                        bot2Panel.Height = 150;
-                        bot2Panel.Width = 180;
-                        bot2Panel.Visible = false;
-                        if (i == 5)
+                        cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
+                        horizontal += cardsPictureBoxArray[cardNumber].Width;
+                        cardsPictureBoxArray[cardNumber].Visible = true;
+                        this.Controls.Add(this.bots[1].Panel);
+                        this.bots[1].Panel.Location = new Point(cardsPictureBoxArray[4].Left - 10, cardsPictureBoxArray[4].Top - 10);
+                        this.bots[1].Panel.BackColor = Color.DarkBlue;
+                        this.bots[1].Panel.Height = 150;
+                        this.bots[1].Panel.Width = 180;
+                        this.bots[1].Panel.Visible = false;
+                        if (cardNumber == 5)
                         {
                             check = false;
                         }
                     }
                 }
 
-                if (Bot3Chips > 0)
+                if (this.bots[2].Chips > 0)
                 {
                     foldedPlayers--;
-                    if (i >= 6 && i < 8)
+                    if (cardNumber >= 6 && cardNumber < 8)
                     {
                         if (cardsPictureBoxArray[6].Tag != null)
                         {
@@ -289,29 +327,29 @@
                         }
 
                         check = true;
-                        cardsPictureBoxArray[i].Anchor = (AnchorStyles.Top);
-                        cardsPictureBoxArray[i].Image = backImage;
+                        cardsPictureBoxArray[cardNumber].Anchor = (AnchorStyles.Top);
+                        cardsPictureBoxArray[cardNumber].Image = backImage;
                         //Holder[i].Image = Deck[i];
-                        cardsPictureBoxArray[i].Location = new Point(horizontal, vertical);
-                        horizontal += cardsPictureBoxArray[i].Width;
-                        cardsPictureBoxArray[i].Visible = true;
-                        this.Controls.Add(bot3Panel);
-                        bot3Panel.Location = new Point(cardsPictureBoxArray[6].Left - 10, cardsPictureBoxArray[6].Top - 10);
-                        bot3Panel.BackColor = Color.DarkBlue;
-                        bot3Panel.Height = 150;
-                        bot3Panel.Width = 180;
-                        bot3Panel.Visible = false;
-                        if (i == 7)
+                        cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
+                        horizontal += cardsPictureBoxArray[cardNumber].Width;
+                        cardsPictureBoxArray[cardNumber].Visible = true;
+                        this.Controls.Add(this.bots[2].Panel);
+                        this.bots[2].Panel.Location = new Point(cardsPictureBoxArray[6].Left - 10, cardsPictureBoxArray[6].Top - 10);
+                        this.bots[2].Panel.BackColor = Color.DarkBlue;
+                        this.bots[2].Panel.Height = 150;
+                        this.bots[2].Panel.Width = 180;
+                        this.bots[2].Panel.Visible = false;
+                        if (cardNumber == 7)
                         {
                             check = false;
                         }
                     }
                 }
 
-                if (Bot4Chips > 0)
+                if (this.bots[3].Chips > 0)
                 {
                     foldedPlayers--;
-                    if (i >= 8 && i < 10)
+                    if (cardNumber >= 8 && cardNumber < 10)
                     {
                         if (cardsPictureBoxArray[8].Tag != null)
                         {
@@ -324,28 +362,28 @@
                             vertical = 65;
                         }
                         check = true;
-                        cardsPictureBoxArray[i].Anchor = (AnchorStyles.Top | AnchorStyles.Right);
-                        cardsPictureBoxArray[i].Image = backImage;
+                        cardsPictureBoxArray[cardNumber].Anchor = (AnchorStyles.Top | AnchorStyles.Right);
+                        cardsPictureBoxArray[cardNumber].Image = backImage;
                         //Holder[i].Image = Deck[i];
-                        cardsPictureBoxArray[i].Location = new Point(horizontal, vertical);
-                        horizontal += cardsPictureBoxArray[i].Width;
-                        cardsPictureBoxArray[i].Visible = true;
-                        this.Controls.Add(bot4Panel);
-                        bot4Panel.Location = new Point(cardsPictureBoxArray[8].Left - 10, cardsPictureBoxArray[8].Top - 10);
-                        bot4Panel.BackColor = Color.DarkBlue;
-                        bot4Panel.Height = 150;
-                        bot4Panel.Width = 180;
-                        bot4Panel.Visible = false;
-                        if (i == 9)
+                        cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
+                        horizontal += cardsPictureBoxArray[cardNumber].Width;
+                        cardsPictureBoxArray[cardNumber].Visible = true;
+                        this.Controls.Add(this.bots[3].Panel);
+                        this.bots[3].Panel.Location = new Point(cardsPictureBoxArray[8].Left - 10, cardsPictureBoxArray[8].Top - 10);
+                        this.bots[3].Panel.BackColor = Color.DarkBlue;
+                        this.bots[3].Panel.Height = 150;
+                        this.bots[3].Panel.Width = 180;
+                        this.bots[3].Panel.Visible = false;
+                        if (cardNumber == 9)
                         {
                             check = false;
                         }
                     }
                 }
-                if (Bot5Chips > 0)
+                if (this.bots[4].Chips > 0)
                 {
                     foldedPlayers--;
-                    if (i >= 10 && i < 12)
+                    if (cardNumber >= 10 && cardNumber < 12)
                     {
                         if (cardsPictureBoxArray[10].Tag != null)
                         {
@@ -358,33 +396,44 @@
                             vertical = 420;
                         }
                         check = true;
-                        cardsPictureBoxArray[i].Anchor = (AnchorStyles.Bottom | AnchorStyles.Right);
-                        cardsPictureBoxArray[i].Image = backImage;
+                        cardsPictureBoxArray[cardNumber].Anchor = (AnchorStyles.Bottom | AnchorStyles.Right);
+                        cardsPictureBoxArray[cardNumber].Image = backImage;
                         //Holder[i].Image = Deck[i];
-                        cardsPictureBoxArray[i].Location = new Point(horizontal, vertical);
-                        horizontal += cardsPictureBoxArray[i].Width;
-                        cardsPictureBoxArray[i].Visible = true;
-                        this.Controls.Add(bot5Panel);
-                        bot5Panel.Location = new Point(cardsPictureBoxArray[10].Left - 10, cardsPictureBoxArray[10].Top - 10);
-                        bot5Panel.BackColor = Color.DarkBlue;
-                        bot5Panel.Height = 150;
-                        bot5Panel.Width = 180;
-                        bot5Panel.Visible = false;
-                        if (i == 11)
+                        cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
+                        horizontal += cardsPictureBoxArray[cardNumber].Width;
+                        cardsPictureBoxArray[cardNumber].Visible = true;
+                        this.Controls.Add(this.bots[4].Panel);
+                        this.bots[4].Panel.Location = new Point(cardsPictureBoxArray[10].Left - 10, cardsPictureBoxArray[10].Top - 10);
+                        this.bots[4].Panel.BackColor = Color.DarkBlue;
+                        this.bots[4].Panel.Height = 150;
+                        this.bots[4].Panel.Width = 180;
+                        this.bots[4].Panel.Visible = false;
+                        if (cardNumber == 11)
                         {
                             check = false;
                         }
                     }
                 }
-                if (i >= 12)
+                
+
+                if (cardNumber >= 12)
                 {
-                    cardsPictureBoxArray[12].Tag = reservedGameCardsIndexes[12];
-                    if (i > 12) cardsPictureBoxArray[13].Tag = reservedGameCardsIndexes[13];
-                    if (i > 13) cardsPictureBoxArray[14].Tag = reservedGameCardsIndexes[14];
-                    if (i > 14) cardsPictureBoxArray[15].Tag = reservedGameCardsIndexes[15];
-                    if (i > 15)
+                    this.cardsPictureBoxArray[12].Tag = this.reservedGameCardsIndexes[12];
+                    if (cardNumber > 12)
                     {
-                        cardsPictureBoxArray[16].Tag = reservedGameCardsIndexes[16];
+                        this.cardsPictureBoxArray[13].Tag = this.reservedGameCardsIndexes[13];
+                    }
+                    if (cardNumber > 13)
+                    {
+                        this.cardsPictureBoxArray[14].Tag = this.reservedGameCardsIndexes[14];
+                    }
+                    if (cardNumber > 14)
+                    {
+                        this.cardsPictureBoxArray[15].Tag = this.reservedGameCardsIndexes[15];
+                    }
+                    if (cardNumber > 15)
+                    {
+                        this.cardsPictureBoxArray[16].Tag = this.reservedGameCardsIndexes[16];
 
                     }
                     if (!check)
@@ -393,26 +442,27 @@
                         vertical = 265;
                     }
                     check = true;
-                    if (cardsPictureBoxArray[i] != null)
+                    if (cardsPictureBoxArray[cardNumber] != null)
                     {
-                        cardsPictureBoxArray[i].Anchor = AnchorStyles.None;
-                        cardsPictureBoxArray[i].Image = backImage;
-                        //Holder[i].Image = Deck[i];
-                        cardsPictureBoxArray[i].Location = new Point(horizontal, vertical);
+                        cardsPictureBoxArray[cardNumber].Anchor = AnchorStyles.None;
+                        cardsPictureBoxArray[cardNumber].Image = backImage;
+                        //Holder[cardNumber].Image = Deck[cardNumber];
+                        cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
                         horizontal += 110;
                     }
                 }
                 #endregion
-                if (Bot1Chips <= 0)
+
+                if (this.bots[0].Chips <= 0)
                 {
-                    _b1Fturn = true;
+                    this.bots[0].OutOfChips = true;
                     cardsPictureBoxArray[2].Visible = false;
                     cardsPictureBoxArray[3].Visible = false;
                 }
                 else
                 {
-                    _b1Fturn = false;
-                    if (i == 3)
+                    this.bots[0].OutOfChips = false;
+                    if (cardNumber == 3)
                     {
                         if (cardsPictureBoxArray[3] != null)
                         {
@@ -421,16 +471,16 @@
                         }
                     }
                 }
-                if (Bot2Chips <= 0)
+                if (this.bots[1].Chips <= 0)
                 {
-                    _b2Fturn = true;
+                    this.bots[1].OutOfChips = true;
                     cardsPictureBoxArray[4].Visible = false;
                     cardsPictureBoxArray[5].Visible = false;
                 }
                 else
                 {
-                    _b2Fturn = false;
-                    if (i == 5)
+                    this.bots[1].OutOfChips = false;
+                    if (cardNumber == 5)
                     {
                         if (cardsPictureBoxArray[5] != null)
                         {
@@ -439,16 +489,16 @@
                         }
                     }
                 }
-                if (Bot3Chips <= 0)
+                if (this.bots[2].Chips <= 0)
                 {
-                    _b3Fturn = true;
+                    this.bots[2].OutOfChips = true;
                     cardsPictureBoxArray[6].Visible = false;
                     cardsPictureBoxArray[7].Visible = false;
                 }
                 else
                 {
-                    _b3Fturn = false;
-                    if (i == 7)
+                    this.bots[2].OutOfChips = false;
+                    if (cardNumber == 7)
                     {
                         if (cardsPictureBoxArray[7] != null)
                         {
@@ -457,16 +507,16 @@
                         }
                     }
                 }
-                if (Bot4Chips <= 0)
+                if (this.bots[3].Chips <= 0)
                 {
-                    _b4Fturn = true;
+                    this.bots[3].OutOfChips = true;
                     cardsPictureBoxArray[8].Visible = false;
                     cardsPictureBoxArray[9].Visible = false;
                 }
                 else
                 {
-                    _b4Fturn = false;
-                    if (i == 9)
+                    this.bots[3].OutOfChips = false;
+                    if (cardNumber == 9)
                     {
                         if (cardsPictureBoxArray[9] != null)
                         {
@@ -475,16 +525,16 @@
                         }
                     }
                 }
-                if (Bot5Chips <= 0)
+                if (this.bots[4].Chips <= 0)
                 {
-                    _b5Fturn = true;
+                    this.bots[4].OutOfChips = true;
                     cardsPictureBoxArray[10].Visible = false;
                     cardsPictureBoxArray[11].Visible = false;
                 }
                 else
                 {
-                    _b5Fturn = false;
-                    if (i == 11)
+                    this.bots[4].OutOfChips = false;
+                    if (cardNumber == 11)
                     {
                         if (cardsPictureBoxArray[11] != null)
                         {
@@ -493,7 +543,7 @@
                         }
                     }
                 }
-                if (i == 16)
+                if (cardNumber == 16)
                 {
                     if (!_restart)
                     {
@@ -502,6 +552,8 @@
                     }
                     _timer.Start();
                 }
+
+                this.i = cardNumber + 1;
             }
             if (foldedPlayers == 5)
             {
@@ -528,18 +580,59 @@
                 buttonFold.Enabled = true;
             }
         }
+        /* TODO metod za razdavane na kartite na bots
+        private void DealCardsForBots(IBot currentBot, int cardNumber, Bitmap backImage,
+            ref bool check, ref int horizontal, ref int vertical)
+        {
+            if (currentBot.Chips > 0)
+            {
+                this.foldedPlayers--;
+                if (cardNumber >= currentBot.StartCard && cardNumber < currentBot.StartCard + 2)
+                {
+                    if (this.cardsPictureBoxArray[currentBot.StartCard].Tag != null)
+                    {
+                        this.cardsPictureBoxArray[currentBot.StartCard + 1].Tag = this.reservedGameCardsIndexes[currentBot.StartCard + 1];
+                    }
+                    this.cardsPictureBoxArray[currentBot.StartCard].Tag = this.reservedGameCardsIndexes[currentBot.StartCard];
+                    if (!check)
+                    {
+                        vertical = currentBot.VerticalLocationCoordinate;
+                        horizontal = currentBot.HorizontalLocationCoordinate;
+                    }
+
+                    check = true;
+                    this.cardsPictureBoxArray[cardNumber].Anchor = currentBot.GetAnchorStyles();
+                    this.cardsPictureBoxArray[cardNumber].Image = backImage;
+                    this.cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
+                    horizontal += this.cardsPictureBoxArray[cardNumber].Width;
+                    this.cardsPictureBoxArray[cardNumber].Visible = true;
+                    this.Controls.Add(currentBot.Panel);
+                    currentBot.Panel.Visible = false;
+                    currentBot.InitializePanel(new Point(
+                        this.cardsPictureBoxArray[currentBot.StartCard].Left - 10,
+                        this.cardsPictureBoxArray[currentBot.StartCard].Top - 10));
+
+                    if (cardNumber == currentBot.StartCard + 1)
+                    {
+                        check = false;
+                    }
+                    
+                }
+            }
+        }
+        */
         async Task Turns()
         {
             #region Rotating
-            if (!_pFturn)
+            if (!this.player.OutOfChips)
             {
-                if (_pturn)
+                if (this.player.CanMakeTurn)
                 {
-                    FixCall(playerStatus, ref _pCall, ref _pRaise, 1);
+                    this.FixCall(playerStatus, this.player, 1);
                     //MessageBox.Show("Player's Turn");
-                    progressBarTimer.Visible = true;
-                    progressBarTimer.Value = 1000;
-                    _t = 60;
+                    this.progressBarTimer.Visible = true;
+                    this.progressBarTimer.Value = 1000;
+                    this.secondsLeft = 60;
                     _up = 10000000;
                     _timer.Start();
                     buttonRaise.Enabled = true;
@@ -547,21 +640,21 @@
                     buttonRaise.Enabled = true;
                     buttonRaise.Enabled = true;
                     buttonFold.Enabled = true;
-                    _turnCount++;
-                    FixCall(playerStatus, ref _pCall, ref _pRaise, 2);
+                    this.turnCount++;
+                    FixCall(playerStatus, this.player, 2);
                 }
             }
-            if (_pFturn || !_pturn)
+            if (this.player.OutOfChips || !this.player.CanMakeTurn)
             {
                 await AllIn();
-                if (_pFturn && !_pFolded)
+                if (this.player.OutOfChips && !this.player.Folded)
                 {
                     if (buttonCall.Text.Contains("All in") == false || buttonRaise.Text.Contains("All in") == false)
                     {
-                        _bools.RemoveAt(0);
-                        _bools.Insert(0, null);
+                        this.gameDatabase.PlayersGameStatus.RemoveAt(0);
+                        this.gameDatabase.PlayersGameStatus.Insert(0, null);
                         _maxLeft--;
-                        _pFolded = true;
+                        this.player.Folded = true;
                     }
                 }
                 await CheckRaise(0, 0);
@@ -572,149 +665,149 @@
                 buttonRaise.Enabled = false;
                 buttonFold.Enabled = false;
                 _timer.Stop();
-                botOneTurn = true;
-                if (!_b1Fturn)
+                this.bots[0].CanMakeTurn = true; //botOneTurn
+                if (!this.bots[0].OutOfChips)
                 {
-                    if (botOneTurn)
+                    if (this.bots[0].CanMakeTurn)
                     {
-                        FixCall(botOneStatus, ref _b1Call, ref _b1Raise, 1);
-                        FixCall(botOneStatus, ref _b1Call, ref _b1Raise, 2);
-                        Rules(2, 3, "Bot 1", ref botOneType, ref botOnePower, _b1Fturn);
+                        FixCall(this.botOneStatus, this.bots[0], 1);
+                        FixCall(this.botOneStatus, this.bots[0], 2);
+                        Rules(2, 3, this.bots[0]); //this.bots[0].Name, this.bots[0].Type, this.bots[0].Power, this.bots[0].OutOfChips
                         MessageBox.Show("Bot 1's Turn");
-                        Ai(2, 3, ref Bot1Chips, ref botOneTurn, ref _b1Fturn, botOneStatus, 0, botOnePower, botOneType);
-                        _turnCount++;
+                        AI(2, 3, this.botOneStatus, 0, this.bots[0]);
+                        this.turnCount++;
                         _last = 1;
-                        botOneTurn = false;
-                        botTwoTurn = true;
+                        this.bots[0].CanMakeTurn = false;
+                        this.bots[1].CanMakeTurn = true;
                     }
                 }
-                if (_b1Fturn && !_b1Folded)
+                if (this.bots[0].OutOfChips && !this.bots[0].Folded)
                 {
-                    _bools.RemoveAt(1);
-                    _bools.Insert(1, null);
+                    this.gameDatabase.PlayersGameStatus.RemoveAt(1);
+                    this.gameDatabase.PlayersGameStatus.Insert(1, null);
                     _maxLeft--;
-                    _b1Folded = true;
+                    this.bots[0].Folded = true;
                 }
-                if (_b1Fturn || !botOneTurn)
+                if (this.bots[0].OutOfChips || !this.bots[0].CanMakeTurn)
                 {
                     await CheckRaise(1, 1);
-                    botTwoTurn = true;
+                    this.bots[1].CanMakeTurn = true;
                 }
-                if (!_b2Fturn)
+                if (!this.bots[1].OutOfChips)
                 {
-                    if (botTwoTurn)
+                    if (this.bots[1].CanMakeTurn)
                     {
-                        FixCall(botTwoStatus, ref _b2Call, ref _b2Raise, 1);
-                        FixCall(botTwoStatus, ref _b2Call, ref _b2Raise, 2);
-                        Rules(4, 5, "Bot 2", ref botTwoType, ref botTwoPower, _b2Fturn);
+                        FixCall(this.botTwoStatus, this.bots[1], 1);
+                        FixCall(this.botTwoStatus, this.bots[1], 2);
+                        Rules(4, 5, this.bots[1]);
                         MessageBox.Show("Bot 2's Turn");
-                        Ai(4, 5, ref Bot2Chips, ref botTwoTurn, ref _b2Fturn, botTwoStatus, 1, botTwoPower, botTwoType);
-                        _turnCount++;
+                        AI(4, 5, this.botTwoStatus, 1, this.bots[1]);
+                        this.turnCount++;
                         _last = 2;
-                        botTwoTurn = false;
-                        botThreeTurn = true;
+                        this.bots[1].CanMakeTurn = false;
+                        this.bots[2].CanMakeTurn = true;
                     }
                 }
-                if (_b2Fturn && !_b2Folded)
+                if (this.bots[1].OutOfChips && !this.bots[1].Folded)
                 {
-                    _bools.RemoveAt(2);
-                    _bools.Insert(2, null);
+                    this.gameDatabase.PlayersGameStatus.RemoveAt(2);
+                    this.gameDatabase.PlayersGameStatus.Insert(2, null);
                     _maxLeft--;
-                    _b2Folded = true;
+                    this.bots[1].Folded = true;
                 }
-                if (_b2Fturn || !botTwoTurn)
+                if (this.bots[1].OutOfChips || !this.bots[1].CanMakeTurn)
                 {
                     await CheckRaise(2, 2);
-                    botThreeTurn = true;
+                    this.bots[2].CanMakeTurn = true;
                 }
-                if (!_b3Fturn)
+                if (!this.bots[2].OutOfChips)
                 {
-                    if (botThreeTurn)
+                    if (this.bots[2].CanMakeTurn)
                     {
-                        FixCall(botThreeStatus, ref _b3Call, ref _b3Raise, 1);
-                        FixCall(botThreeStatus, ref _b3Call, ref _b3Raise, 2);
-                        Rules(6, 7, "Bot 3", ref botThreeType, ref botThreePower, _b3Fturn);
+                        FixCall(this.botThreeStatus, this.bots[2], 1);
+                        FixCall(this.botThreeStatus, this.bots[2], 2);
+                        Rules(6, 7, this.bots[2]);
                         MessageBox.Show("Bot 3's Turn");
-                        Ai(6, 7, ref Bot3Chips, ref botThreeTurn, ref _b3Fturn, botThreeStatus, 2, botThreePower, botThreeType);
-                        _turnCount++;
+                        AI(6, 7, this.botThreeStatus, 2, this.bots[2]);
+                        this.turnCount++;
                         _last = 3;
-                        botThreeTurn = false;
-                        botFourTurn = true;
+                        this.bots[2].CanMakeTurn = false;
+                        this.bots[3].CanMakeTurn = true;
                     }
                 }
-                if (_b3Fturn && !_b3Folded)
+                if (this.bots[2].OutOfChips && !this.bots[2].Folded)
                 {
-                    _bools.RemoveAt(3);
-                    _bools.Insert(3, null);
+                    this.gameDatabase.PlayersGameStatus.RemoveAt(3);
+                    this.gameDatabase.PlayersGameStatus.Insert(3, null);
                     _maxLeft--;
-                    _b3Folded = true;
+                    this.bots[2].Folded = true;
                 }
-                if (_b3Fturn || !botThreeTurn)
+                if (this.bots[2].OutOfChips || !this.bots[2].CanMakeTurn)
                 {
                     await CheckRaise(3, 3);
-                    botFourTurn = true;
+                    this.bots[3].CanMakeTurn = true;
                 }
-                if (!_b4Fturn)
+                if (!this.bots[3].OutOfChips)
                 {
-                    if (botFourTurn)
+                    if (this.bots[3].CanMakeTurn)
                     {
-                        FixCall(botFourStatus, ref _b4Call, ref _b4Raise, 1);
-                        FixCall(botFourStatus, ref _b4Call, ref _b4Raise, 2);
-                        Rules(8, 9, "Bot 4", ref botFourType, ref botFourPower, _b4Fturn);
+                        FixCall(this.botFourStatus, this.bots[3], 1);
+                        FixCall(this.botFourStatus, this.bots[3], 2);
+                        Rules(8, 9, this.bots[3]);
                         MessageBox.Show("Bot 4's Turn");
-                        Ai(8, 9, ref Bot4Chips, ref botFourTurn, ref _b4Fturn, botFourStatus, 3, botFourPower, botFourType);
-                        _turnCount++;
+                        AI(8, 9, this.botFourStatus, 3, this.bots[3]);
+                        this.turnCount++;
                         _last = 4;
-                        botFourTurn = false;
-                        botFiveTurn = true;
+                        this.bots[3].CanMakeTurn = false;
+                        this.bots[4].CanMakeTurn = true;
                     }
                 }
-                if (_b4Fturn && !_b4Folded)
+                if (this.bots[3].OutOfChips && !this.bots[3].Folded)
                 {
-                    _bools.RemoveAt(4);
-                    _bools.Insert(4, null);
+                    this.gameDatabase.PlayersGameStatus.RemoveAt(4);
+                    this.gameDatabase.PlayersGameStatus.Insert(4, null);
                     _maxLeft--;
-                    _b4Folded = true;
+                    this.bots[3].Folded = true;
                 }
-                if (_b4Fturn || !botFourTurn)
+                if (this.bots[3].OutOfChips || !this.bots[3].CanMakeTurn)
                 {
                     await CheckRaise(4, 4);
-                    botFiveTurn = true;
+                    this.bots[4].CanMakeTurn = true;
                 }
-                if (!_b5Fturn)
+                if (!this.bots[4].OutOfChips)
                 {
-                    if (botFiveTurn)
+                    if (this.bots[4].CanMakeTurn)
                     {
-                        FixCall(botFiveStatus, ref _b5Call, ref _b5Raise, 1);
-                        FixCall(botFiveStatus, ref _b5Call, ref _b5Raise, 2);
-                        Rules(10, 11, "Bot 5", ref botFiveType, ref botFivePower, _b5Fturn);
+                        FixCall(this.botFiveStatus, this.bots[4], 1);
+                        FixCall(this.botFiveStatus, this.bots[4], 2);
+                        Rules(10, 11, this.bots[4]);
                         MessageBox.Show("Bot 5's Turn");
-                        Ai(10, 11, ref Bot5Chips, ref botFiveTurn, ref _b5Fturn, botFiveStatus, 4, botFivePower, botFiveType);
-                        _turnCount++;
+                        AI(10, 11, this.botFiveStatus, 4, this.bots[4]);
+                        this.turnCount++;
                         _last = 5;
-                        botFiveTurn = false;
+                        this.bots[4].CanMakeTurn = false;
                     }
                 }
-                if (_b5Fturn && !_b5Folded)
+                if (this.bots[4].OutOfChips && !this.bots[4].Folded)
                 {
-                    _bools.RemoveAt(5);
-                    _bools.Insert(5, null);
+                    this.gameDatabase.PlayersGameStatus.RemoveAt(5);
+                    this.gameDatabase.PlayersGameStatus.Insert(5, null);
                     _maxLeft--;
-                    _b5Folded = true;
+                    this.bots[4].Folded = true;
                 }
-                if (_b5Fturn || !botFiveTurn)
+                if (this.bots[4].OutOfChips || !this.bots[4].CanMakeTurn)
                 {
                     await CheckRaise(5, 5);
-                    _pturn = true;
+                    this.player.CanMakeTurn = true;
                 }
-                if (_pFturn && !_pFolded)
+                if (this.player.OutOfChips && !this.player.Folded)
                 {
                     if (buttonCall.Text.Contains("All in") == false || buttonRaise.Text.Contains("All in") == false)
                     {
-                        _bools.RemoveAt(0);
-                        _bools.Insert(0, null);
+                        this.gameDatabase.PlayersGameStatus.RemoveAt(0);
+                        this.gameDatabase.PlayersGameStatus.Insert(0, null);
                         _maxLeft--;
-                        _pFolded = true;
+                        this.player.Folded = true;
                     }
                 }
                 #endregion
@@ -727,24 +820,24 @@
             }
         }
 
-        private void Rules(int c1, int c2, string currentText, ref double current, ref double power, bool foldedTurn)
+        private void Rules(int card1, int card2, ICharacter currentPlayer)//string currentText, double current, double power, bool foldedTurn
         {
-            if (c1 == 0 && c2 == 1)
+            if (card1 == 0 && card2 == 1)
             {
             }
-            if (!foldedTurn || c1 == 0 && c2 == 1 && playerStatus.Text.Contains("Fold") == false)
+            if (!currentPlayer.OutOfChips || card1 == 0 && card2 == 1 && playerStatus.Text.Contains("Fold") == false)
             {
                 #region Variables
                 bool done = false, vf = false;
-                int[] straight1 = new int[5];
+                int[] cardsOnBoard = new int[5];
                 int[] straight = new int[7];
-                straight[0] = reservedGameCardsIndexes[c1];
-                straight[1] = reservedGameCardsIndexes[c2];
-                straight1[0] = straight[2] = reservedGameCardsIndexes[12];
-                straight1[1] = straight[3] = reservedGameCardsIndexes[13];
-                straight1[2] = straight[4] = reservedGameCardsIndexes[14];
-                straight1[3] = straight[5] = reservedGameCardsIndexes[15];
-                straight1[4] = straight[6] = reservedGameCardsIndexes[16];
+                straight[0] = reservedGameCardsIndexes[card1];
+                straight[1] = reservedGameCardsIndexes[card2];
+                cardsOnBoard[0] = straight[2] = reservedGameCardsIndexes[12];
+                cardsOnBoard[1] = straight[3] = reservedGameCardsIndexes[13];
+                cardsOnBoard[2] = straight[4] = reservedGameCardsIndexes[14];
+                cardsOnBoard[3] = straight[5] = reservedGameCardsIndexes[15];
+                cardsOnBoard[4] = straight[6] = reservedGameCardsIndexes[16];
                 var a = straight.Where(o => o % 4 == 0).ToArray();
                 var b = straight.Where(o => o % 4 == 1).ToArray();
                 var c = straight.Where(o => o % 4 == 2).ToArray();
@@ -757,154 +850,154 @@
                 #endregion
                 for (i = 0; i < 16; i++)
                 {
-                    if (reservedGameCardsIndexes[i] == int.Parse(cardsPictureBoxArray[c1].Tag.ToString()) && reservedGameCardsIndexes[i + 1] == int.Parse(cardsPictureBoxArray[c2].Tag.ToString()))
+                    if (reservedGameCardsIndexes[i] == int.Parse(cardsPictureBoxArray[card1].Tag.ToString()) && reservedGameCardsIndexes[i + 1] == int.Parse(cardsPictureBoxArray[card2].Tag.ToString()))
                     {
                         //Pair from Hand current = 1
 
-                        RPairFromHand(ref current, ref power);
+                        RPairFromHand(currentPlayer);
 
                         #region Pair or Two Pair from Table current = 2 || 0
-                        RPairTwoPair(ref current, ref power);
+                        RPairTwoPair(currentPlayer);
                         #endregion
 
                         #region Two Pair current = 2
-                        RTwoPair(ref current, ref power);
+                        RTwoPair(currentPlayer);
                         #endregion
 
                         #region Three of a kind current = 3
-                        RThreeOfAKind(ref current, ref power, straight);
+                        RThreeOfAKind(currentPlayer, straight); //ref currentPlayer.Type, ref currentPlayer.Power, straight
                         #endregion
 
                         #region Straight current = 4
-                        RStraight(ref current, ref power, straight);
+                        RStraight(currentPlayer, straight);
                         #endregion
 
                         #region Flush current = 5 || 5.5
-                        RFlush(ref current, ref power, ref vf, straight1);
+                        RFlush(currentPlayer, ref vf, cardsOnBoard);
                         #endregion
 
                         #region Full House current = 6
-                        RFullHouse(ref current, ref power, ref done, straight);
+                        RFullHouse(currentPlayer, ref done, straight);
                         #endregion
 
                         #region Four of a Kind current = 7
-                        RFourOfAKind(ref current, ref power, straight);
+                        RFourOfAKind(currentPlayer, straight);
                         #endregion
 
                         #region Straight Flush current = 8 || 9
-                        RStraightFlush(ref current, ref power, st1, st2, st3, st4);
+                        RStraightFlush(currentPlayer, st1, st2, st3, st4);
                         #endregion
 
                         #region High Card current = -1
-                        RHighCard(ref current, ref power);
+                        RHighCard(currentPlayer);
                         #endregion
                     }
                 }
             }
         }
-        private void RStraightFlush(ref double current, ref double power, int[] st1, int[] st2, int[] st3, int[] st4)
+        private void RStraightFlush(ICharacter currentPlayer, int[] st1, int[] st2, int[] st3, int[] st4)
         {
-            if (current >= -1)
+            if (currentPlayer.Type >= -1)
             {
                 if (st1.Length >= 5)
                 {
                     if (st1[0] + 4 == st1[4])
                     {
-                        current = 8;
-                        power = (st1.Max()) / 4 + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 8 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 8;
+                        currentPlayer.Power = (st1.Max()) / 4 + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 8 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                     if (st1[0] == 0 && st1[1] == 9 && st1[2] == 10 && st1[3] == 11 && st1[0] + 12 == st1[4])
                     {
-                        current = 9;
-                        power = (st1.Max()) / 4 + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 9 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 9;
+                        currentPlayer.Power = (st1.Max()) / 4 + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 9 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                 }
                 if (st2.Length >= 5)
                 {
                     if (st2[0] + 4 == st2[4])
                     {
-                        current = 8;
-                        power = (st2.Max()) / 4 + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 8 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 8;
+                        currentPlayer.Power = (st2.Max()) / 4 + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 8 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                     if (st2[0] == 0 && st2[1] == 9 && st2[2] == 10 && st2[3] == 11 && st2[0] + 12 == st2[4])
                     {
-                        current = 9;
-                        power = (st2.Max()) / 4 + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 9 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 9;
+                        currentPlayer.Power = (st2.Max()) / 4 + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 9 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                 }
                 if (st3.Length >= 5)
                 {
                     if (st3[0] + 4 == st3[4])
                     {
-                        current = 8;
-                        power = (st3.Max()) / 4 + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 8 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 8;
+                        currentPlayer.Power = (st3.Max()) / 4 + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 8 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                     if (st3[0] == 0 && st3[1] == 9 && st3[2] == 10 && st3[3] == 11 && st3[0] + 12 == st3[4])
                     {
-                        current = 9;
-                        power = (st3.Max() / 4) + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 9 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 9;
+                        currentPlayer.Power = (st3.Max() / 4) + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 9 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                 }
                 if (st4.Length >= 5)
                 {
                     if (st4[0] + 4 == st4[4])
                     {
-                        current = 8;
-                        power = (st4.Max()) / 4 + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 8 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 8;
+                        currentPlayer.Power = (st4.Max()) / 4 + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 8 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                     if (st4[0] == 0 && st4[1] == 9 && st4[2] == 10 && st4[3] == 11 && st4[0] + 12 == st4[4])
                     {
-                        current = 9;
-                        power = (st4.Max()) / 4 + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 9 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 9;
+                        currentPlayer.Power = (st4.Max()) / 4 + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 9 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                 }
             }
         }
-        private void RFourOfAKind(ref double current, ref double power, int[] straight)
+        private void RFourOfAKind(ICharacter currentPlayer, int[] straight)
         {
-            if (current >= -1)
+            if (currentPlayer.Type >= -1)
             {
                 for (int j = 0; j <= 3; j++)
                 {
                     if (straight[j] / 4 == straight[j + 1] / 4 && straight[j] / 4 == straight[j + 2] / 4 &&
                         straight[j] / 4 == straight[j + 3] / 4)
                     {
-                        current = 7;
-                        power = (straight[j] / 4) * 4 + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 7 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 7;
+                        currentPlayer.Power = (straight[j] / 4) * 4 + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 7 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                     if (straight[j] / 4 == 0 && straight[j + 1] / 4 == 0 && straight[j + 2] / 4 == 0 && straight[j + 3] / 4 == 0)
                     {
-                        current = 7;
-                        power = 13 * 4 + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 7 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 7;
+                        currentPlayer.Power = 13 * 4 + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 7 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                 }
             }
         }
-        private void RFullHouse(ref double current, ref double power, ref bool done, int[] straight)
+        private void RFullHouse(ICharacter currentPlayer, ref bool done, int[] straight)
         {
-            if (current >= -1)
+            if (currentPlayer.Type >= -1)
             {
-                type = power;
+                this.type = currentPlayer.Power;
                 for (int j = 0; j <= 12; j++)
                 {
                     var fh = straight.Where(o => o / 4 == j).ToArray();
@@ -914,18 +1007,18 @@
                         {
                             if (fh.Max() / 4 == 0)
                             {
-                                current = 6;
-                                power = 13 * 2 + current * 100;
-                                _win.Add(new Type() { Power = power, Current = 6 });
-                                _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                                currentPlayer.Type = 6;
+                                currentPlayer.Power = 13 * 2 + currentPlayer.Type * 100;
+                                this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 6 });
+                                _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                                 break;
                             }
                             if (fh.Max() / 4 > 0)
                             {
-                                current = 6;
-                                power = fh.Max() / 4 * 2 + current * 100;
-                                _win.Add(new Type() { Power = power, Current = 6 });
-                                _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                                currentPlayer.Type = 6;
+                                currentPlayer.Power = fh.Max() / 4 * 2 + currentPlayer.Type * 100;
+                                this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 6 });
+                                _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                                 break;
                             }
                         }
@@ -933,59 +1026,59 @@
                         {
                             if (fh.Max() / 4 == 0)
                             {
-                                power = 13;
+                                currentPlayer.Power = 13;
                                 done = true;
                                 j = -1;
                             }
                             else
                             {
-                                power = fh.Max() / 4;
+                                currentPlayer.Power = fh.Max() / 4;
                                 done = true;
                                 j = -1;
                             }
                         }
                     }
                 }
-                if (current != 6)
+                if (currentPlayer.Type != 6)
                 {
-                    power = type;
+                    currentPlayer.Power = this.type;
                 }
             }
         }
-        private void RFlush(ref double current, ref double power, ref bool vf, int[] straight1)
+        private void RFlush(ICharacter currentPlayer, ref bool vf, int[] cardsOnBoard)
         {
-            if (current >= -1)
+            if (currentPlayer.Type >= -1)
             {
-                var f1 = straight1.Where(o => o % 4 == 0).ToArray();
-                var f2 = straight1.Where(o => o % 4 == 1).ToArray();
-                var f3 = straight1.Where(o => o % 4 == 2).ToArray();
-                var f4 = straight1.Where(o => o % 4 == 3).ToArray();
+                var f1 = cardsOnBoard.Where(o => o % 4 == 0).ToArray();
+                var f2 = cardsOnBoard.Where(o => o % 4 == 1).ToArray();
+                var f3 = cardsOnBoard.Where(o => o % 4 == 2).ToArray();
+                var f4 = cardsOnBoard.Where(o => o % 4 == 3).ToArray();
                 if (f1.Length == 3 || f1.Length == 4)
                 {
                     if (reservedGameCardsIndexes[i] % 4 == reservedGameCardsIndexes[i + 1] % 4 && reservedGameCardsIndexes[i] % 4 == f1[0] % 4)
                     {
                         if (reservedGameCardsIndexes[i] / 4 > f1.Max() / 4)
                         {
-                            current = 5;
-                            power = reservedGameCardsIndexes[i] + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         if (reservedGameCardsIndexes[i + 1] / 4 > f1.Max() / 4)
                         {
-                            current = 5;
-                            power = reservedGameCardsIndexes[i + 1] + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else if (reservedGameCardsIndexes[i] / 4 < f1.Max() / 4 && reservedGameCardsIndexes[i + 1] / 4 < f1.Max() / 4)
                         {
-                            current = 5;
-                            power = f1.Max() + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = f1.Max() + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -996,18 +1089,18 @@
                     {
                         if (reservedGameCardsIndexes[i] / 4 > f1.Max() / 4)
                         {
-                            current = 5;
-                            power = reservedGameCardsIndexes[i] + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else
                         {
-                            current = 5;
-                            power = f1.Max() + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = f1.Max() + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -1015,18 +1108,18 @@
                     {
                         if (reservedGameCardsIndexes[i + 1] / 4 > f1.Max() / 4)
                         {
-                            current = 5;
-                            power = reservedGameCardsIndexes[i + 1] + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else
                         {
-                            current = 5;
-                            power = f1.Max() + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = f1.Max() + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -1035,26 +1128,26 @@
                 {
                     if (reservedGameCardsIndexes[i] % 4 == f1[0] % 4 && reservedGameCardsIndexes[i] / 4 > f1.Min() / 4)
                     {
-                        current = 5;
-                        power = reservedGameCardsIndexes[i] + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 5 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 5;
+                        currentPlayer.Power = reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
                     if (reservedGameCardsIndexes[i + 1] % 4 == f1[0] % 4 && reservedGameCardsIndexes[i + 1] / 4 > f1.Min() / 4)
                     {
-                        current = 5;
-                        power = reservedGameCardsIndexes[i + 1] + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 5 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 5;
+                        currentPlayer.Power = reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
                     else if (reservedGameCardsIndexes[i] / 4 < f1.Min() / 4 && reservedGameCardsIndexes[i + 1] / 4 < f1.Min())
                     {
-                        current = 5;
-                        power = f1.Max() + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 5 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 5;
+                        currentPlayer.Power = f1.Max() + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
                 }
@@ -1065,26 +1158,26 @@
                     {
                         if (reservedGameCardsIndexes[i] / 4 > f2.Max() / 4)
                         {
-                            current = 5;
-                            power = reservedGameCardsIndexes[i] + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         if (reservedGameCardsIndexes[i + 1] / 4 > f2.Max() / 4)
                         {
-                            current = 5;
-                            power = reservedGameCardsIndexes[i + 1] + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else if (reservedGameCardsIndexes[i] / 4 < f2.Max() / 4 && reservedGameCardsIndexes[i + 1] / 4 < f2.Max() / 4)
                         {
-                            current = 5;
-                            power = f2.Max() + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = f2.Max() + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -1095,18 +1188,18 @@
                     {
                         if (reservedGameCardsIndexes[i] / 4 > f2.Max() / 4)
                         {
-                            current = 5;
-                            power = reservedGameCardsIndexes[i] + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else
                         {
-                            current = 5;
-                            power = f2.Max() + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = f2.Max() + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -1114,18 +1207,18 @@
                     {
                         if (reservedGameCardsIndexes[i + 1] / 4 > f2.Max() / 4)
                         {
-                            current = 5;
-                            power = reservedGameCardsIndexes[i + 1] + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else
                         {
-                            current = 5;
-                            power = f2.Max() + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = f2.Max() + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -1134,26 +1227,26 @@
                 {
                     if (reservedGameCardsIndexes[i] % 4 == f2[0] % 4 && reservedGameCardsIndexes[i] / 4 > f2.Min() / 4)
                     {
-                        current = 5;
-                        power = reservedGameCardsIndexes[i] + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 5 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 5;
+                        currentPlayer.Power = reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
                     if (reservedGameCardsIndexes[i + 1] % 4 == f2[0] % 4 && reservedGameCardsIndexes[i + 1] / 4 > f2.Min() / 4)
                     {
-                        current = 5;
-                        power = reservedGameCardsIndexes[i + 1] + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 5 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 5;
+                        currentPlayer.Power = reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
                     else if (reservedGameCardsIndexes[i] / 4 < f2.Min() / 4 && reservedGameCardsIndexes[i + 1] / 4 < f2.Min())
                     {
-                        current = 5;
-                        power = f2.Max() + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 5 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 5;
+                        currentPlayer.Power = f2.Max() + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
                 }
@@ -1164,26 +1257,26 @@
                     {
                         if (reservedGameCardsIndexes[i] / 4 > f3.Max() / 4)
                         {
-                            current = 5;
-                            power = reservedGameCardsIndexes[i] + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         if (reservedGameCardsIndexes[i + 1] / 4 > f3.Max() / 4)
                         {
-                            current = 5;
-                            power = reservedGameCardsIndexes[i + 1] + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else if (reservedGameCardsIndexes[i] / 4 < f3.Max() / 4 && reservedGameCardsIndexes[i + 1] / 4 < f3.Max() / 4)
                         {
-                            current = 5;
-                            power = f3.Max() + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = f3.Max() + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -1194,18 +1287,18 @@
                     {
                         if (reservedGameCardsIndexes[i] / 4 > f3.Max() / 4)
                         {
-                            current = 5;
-                            power = reservedGameCardsIndexes[i] + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else
                         {
-                            current = 5;
-                            power = f3.Max() + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = f3.Max() + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -1213,18 +1306,18 @@
                     {
                         if (reservedGameCardsIndexes[i + 1] / 4 > f3.Max() / 4)
                         {
-                            current = 5;
-                            power = reservedGameCardsIndexes[i + 1] + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else
                         {
-                            current = 5;
-                            power = f3.Max() + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = f3.Max() + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -1233,26 +1326,26 @@
                 {
                     if (reservedGameCardsIndexes[i] % 4 == f3[0] % 4 && reservedGameCardsIndexes[i] / 4 > f3.Min() / 4)
                     {
-                        current = 5;
-                        power = reservedGameCardsIndexes[i] + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 5 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 5;
+                        currentPlayer.Power = reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
                     if (reservedGameCardsIndexes[i + 1] % 4 == f3[0] % 4 && reservedGameCardsIndexes[i + 1] / 4 > f3.Min() / 4)
                     {
-                        current = 5;
-                        power = reservedGameCardsIndexes[i + 1] + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 5 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 5;
+                        currentPlayer.Power = reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
                     else if (reservedGameCardsIndexes[i] / 4 < f3.Min() / 4 && reservedGameCardsIndexes[i + 1] / 4 < f3.Min())
                     {
-                        current = 5;
-                        power = f3.Max() + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 5 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 5;
+                        currentPlayer.Power = f3.Max() + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
                 }
@@ -1263,26 +1356,26 @@
                     {
                         if (reservedGameCardsIndexes[i] / 4 > f4.Max() / 4)
                         {
-                            current = 5;
-                            power = reservedGameCardsIndexes[i] + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         if (reservedGameCardsIndexes[i + 1] / 4 > f4.Max() / 4)
                         {
-                            current = 5;
-                            power = reservedGameCardsIndexes[i + 1] + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else if (reservedGameCardsIndexes[i] / 4 < f4.Max() / 4 && reservedGameCardsIndexes[i + 1] / 4 < f4.Max() / 4)
                         {
-                            current = 5;
-                            power = f4.Max() + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = f4.Max() + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -1293,18 +1386,18 @@
                     {
                         if (reservedGameCardsIndexes[i] / 4 > f4.Max() / 4)
                         {
-                            current = 5;
-                            power = reservedGameCardsIndexes[i] + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else
                         {
-                            current = 5;
-                            power = f4.Max() + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = f4.Max() + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -1312,18 +1405,18 @@
                     {
                         if (reservedGameCardsIndexes[i + 1] / 4 > f4.Max() / 4)
                         {
-                            current = 5;
-                            power = reservedGameCardsIndexes[i + 1] + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else
                         {
-                            current = 5;
-                            power = f4.Max() + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 5 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 5;
+                            currentPlayer.Power = f4.Max() + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -1332,26 +1425,26 @@
                 {
                     if (reservedGameCardsIndexes[i] % 4 == f4[0] % 4 && reservedGameCardsIndexes[i] / 4 > f4.Min() / 4)
                     {
-                        current = 5;
-                        power = reservedGameCardsIndexes[i] + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 5 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 5;
+                        currentPlayer.Power = reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
                     if (reservedGameCardsIndexes[i + 1] % 4 == f4[0] % 4 && reservedGameCardsIndexes[i + 1] / 4 > f4.Min() / 4)
                     {
-                        current = 5;
-                        power = reservedGameCardsIndexes[i + 1] + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 5 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 5;
+                        currentPlayer.Power = reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
                     else if (reservedGameCardsIndexes[i] / 4 < f4.Min() / 4 && reservedGameCardsIndexes[i + 1] / 4 < f4.Min())
                     {
-                        current = 5;
-                        power = f4.Max() + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 5 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 5;
+                        currentPlayer.Power = f4.Max() + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
                 }
@@ -1360,75 +1453,75 @@
                 {
                     if (reservedGameCardsIndexes[i] / 4 == 0 && reservedGameCardsIndexes[i] % 4 == f1[0] % 4 && vf && f1.Length > 0)
                     {
-                        current = 5.5;
-                        power = 13 + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 5.5 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 5.5;
+                        currentPlayer.Power = 13 + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5.5 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                     if (reservedGameCardsIndexes[i + 1] / 4 == 0 && reservedGameCardsIndexes[i + 1] % 4 == f1[0] % 4 && vf && f1.Length > 0)
                     {
-                        current = 5.5;
-                        power = 13 + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 5.5 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 5.5;
+                        currentPlayer.Power = 13 + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5.5 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                 }
                 if (f2.Length > 0)
                 {
                     if (reservedGameCardsIndexes[i] / 4 == 0 && reservedGameCardsIndexes[i] % 4 == f2[0] % 4 && vf && f2.Length > 0)
                     {
-                        current = 5.5;
-                        power = 13 + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 5.5 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 5.5;
+                        currentPlayer.Power = 13 + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5.5 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                     if (reservedGameCardsIndexes[i + 1] / 4 == 0 && reservedGameCardsIndexes[i + 1] % 4 == f2[0] % 4 && vf && f2.Length > 0)
                     {
-                        current = 5.5;
-                        power = 13 + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 5.5 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 5.5;
+                        currentPlayer.Power = 13 + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5.5 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                 }
                 if (f3.Length > 0)
                 {
                     if (reservedGameCardsIndexes[i] / 4 == 0 && reservedGameCardsIndexes[i] % 4 == f3[0] % 4 && vf && f3.Length > 0)
                     {
-                        current = 5.5;
-                        power = 13 + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 5.5 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 5.5;
+                        currentPlayer.Power = 13 + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5.5 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                     if (reservedGameCardsIndexes[i + 1] / 4 == 0 && reservedGameCardsIndexes[i + 1] % 4 == f3[0] % 4 && vf && f3.Length > 0)
                     {
-                        current = 5.5;
-                        power = 13 + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 5.5 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 5.5;
+                        currentPlayer.Power = 13 + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5.5 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                 }
                 if (f4.Length > 0)
                 {
                     if (reservedGameCardsIndexes[i] / 4 == 0 && reservedGameCardsIndexes[i] % 4 == f4[0] % 4 && vf && f4.Length > 0)
                     {
-                        current = 5.5;
-                        power = 13 + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 5.5 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 5.5;
+                        currentPlayer.Power = 13 + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5.5 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                     if (reservedGameCardsIndexes[i + 1] / 4 == 0 && reservedGameCardsIndexes[i + 1] % 4 == f4[0] % 4 && vf)
                     {
-                        current = 5.5;
-                        power = 13 + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 5.5 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 5.5;
+                        currentPlayer.Power = 13 + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5.5 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                 }
             }
         }
-        private void RStraight(ref double current, ref double power, int[] straight)
+        private void RStraight(ICharacter currentPlayer, int[] straight)
         {
-            if (current >= -1)
+            if (currentPlayer.Type >= -1)
             {
                 var op = straight.Select(o => o / 4).Distinct().ToArray();
                 for (int j = 0; j < op.Length - 4; j++)
@@ -1437,32 +1530,32 @@
                     {
                         if (op.Max() - 4 == op[j])
                         {
-                            current = 4;
-                            power = op.Max() + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 4 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 4;
+                            currentPlayer.Power = op.Max() + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 4 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         }
                         else
                         {
-                            current = 4;
-                            power = op[j + 4] + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 4 });
-                            _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            currentPlayer.Type = 4;
+                            currentPlayer.Power = op[j + 4] + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 4 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         }
                     }
                     if (op[j] == 0 && op[j + 1] == 9 && op[j + 2] == 10 && op[j + 3] == 11 && op[j + 4] == 12)
                     {
-                        current = 4;
-                        power = 13 + current * 100;
-                        _win.Add(new Type() { Power = power, Current = 4 });
-                        _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        currentPlayer.Type = 4;
+                        currentPlayer.Power = 13 + currentPlayer.Type * 100;
+                        this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 4 });
+                        _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                 }
             }
         }
-        private void RThreeOfAKind(ref double current, ref double power, int[] straight)
+        private void RThreeOfAKind(ICharacter currentPlayer, int[] straight)
         {
-            if (current >= -1)
+            if (currentPlayer.Type >= -1)
             {
                 for (int j = 0; j <= 12; j++)
                 {
@@ -1471,25 +1564,25 @@
                     {
                         if (fh.Max() / 4 == 0)
                         {
-                            current = 3;
-                            power = 13 * 3 + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 3 });
-                            _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                            currentPlayer.Type = 3;
+                            currentPlayer.Power = 13 * 3 + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 3 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                         }
                         else
                         {
-                            current = 3;
-                            power = fh[0] / 4 + fh[1] / 4 + fh[2] / 4 + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 3 });
-                            _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                            currentPlayer.Type = 3;
+                            currentPlayer.Power = fh[0] / 4 + fh[1] / 4 + fh[2] / 4 + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 3 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                         }
                     }
                 }
             }
         }
-        private void RTwoPair(ref double current, ref double power)
+        private void RTwoPair(ICharacter currentPlayer) //ref double current, ref double power
         {
-            if (current >= -1)
+            if (currentPlayer.Type >= -1)
             {
                 bool msgbox = false;
                 for (int tc = 16; tc >= 12; tc--)
@@ -1512,24 +1605,24 @@
                                     {
                                         if (reservedGameCardsIndexes[i] / 4 == 0)
                                         {
-                                            current = 2;
-                                            power = 13 * 4 + (reservedGameCardsIndexes[i + 1] / 4) * 2 + current * 100;
-                                            _win.Add(new Type() { Power = power, Current = 2 });
-                                            _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                                            currentPlayer.Type = 2;
+                                            currentPlayer.Power = 13 * 4 + (reservedGameCardsIndexes[i + 1] / 4) * 2 + currentPlayer.Type * 100;
+                                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 2 });
+                                            _sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                         }
                                         if (reservedGameCardsIndexes[i + 1] / 4 == 0)
                                         {
-                                            current = 2;
-                                            power = 13 * 4 + (reservedGameCardsIndexes[i] / 4) * 2 + current * 100;
-                                            _win.Add(new Type() { Power = power, Current = 2 });
-                                            _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                                            currentPlayer.Type = 2;
+                                            currentPlayer.Power = 13 * 4 + (reservedGameCardsIndexes[i] / 4) * 2 + currentPlayer.Type * 100;
+                                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 2 });
+                                            _sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                         }
                                         if (reservedGameCardsIndexes[i + 1] / 4 != 0 && reservedGameCardsIndexes[i] / 4 != 0)
                                         {
-                                            current = 2;
-                                            power = (reservedGameCardsIndexes[i] / 4) * 2 + (reservedGameCardsIndexes[i + 1] / 4) * 2 + current * 100;
-                                            _win.Add(new Type() { Power = power, Current = 2 });
-                                            _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                                            currentPlayer.Type = 2;
+                                            currentPlayer.Power = (reservedGameCardsIndexes[i] / 4) * 2 + (reservedGameCardsIndexes[i + 1] / 4) * 2 + currentPlayer.Type * 100;
+                                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 2 });
+                                            _sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                         }
                                     }
                                     msgbox = true;
@@ -1540,9 +1633,9 @@
                 }
             }
         }
-        private void RPairTwoPair(ref double current, ref double power)
+        private void RPairTwoPair(ICharacter currentPlayer) //ref double current, ref double power
         {
-            if (current >= -1)
+            if (currentPlayer.Type >= -1)
             {
                 bool msgbox = false;
                 bool msgbox1 = false;
@@ -1559,42 +1652,42 @@
                         {
                             if (reservedGameCardsIndexes[tc] / 4 == reservedGameCardsIndexes[tc - k] / 4)
                             {
-                                if (reservedGameCardsIndexes[tc] / 4 != reservedGameCardsIndexes[i] / 4 && reservedGameCardsIndexes[tc] / 4 != reservedGameCardsIndexes[i + 1] / 4 && current == 1)
+                                if (reservedGameCardsIndexes[tc] / 4 != reservedGameCardsIndexes[i] / 4 && reservedGameCardsIndexes[tc] / 4 != reservedGameCardsIndexes[i + 1] / 4 && currentPlayer.Type == 1)
                                 {
                                     if (!msgbox)
                                     {
                                         if (reservedGameCardsIndexes[i + 1] / 4 == 0)
                                         {
-                                            current = 2;
-                                            power = (reservedGameCardsIndexes[i] / 4) * 2 + 13 * 4 + current * 100;
-                                            _win.Add(new Type() { Power = power, Current = 2 });
-                                            _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                                            currentPlayer.Type = 2;
+                                            currentPlayer.Power = (reservedGameCardsIndexes[i] / 4) * 2 + 13 * 4 + currentPlayer.Type * 100;
+                                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 2 });
+                                            _sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                         }
                                         if (reservedGameCardsIndexes[i] / 4 == 0)
                                         {
-                                            current = 2;
-                                            power = (reservedGameCardsIndexes[i + 1] / 4) * 2 + 13 * 4 + current * 100;
-                                            _win.Add(new Type() { Power = power, Current = 2 });
-                                            _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                                            currentPlayer.Type = 2;
+                                            currentPlayer.Power = (reservedGameCardsIndexes[i + 1] / 4) * 2 + 13 * 4 + currentPlayer.Type * 100;
+                                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 2 });
+                                            _sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                         }
                                         if (reservedGameCardsIndexes[i + 1] / 4 != 0)
                                         {
-                                            current = 2;
-                                            power = (reservedGameCardsIndexes[tc] / 4) * 2 + (reservedGameCardsIndexes[i + 1] / 4) * 2 + current * 100;
-                                            _win.Add(new Type() { Power = power, Current = 2 });
-                                            _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                                            currentPlayer.Type = 2;
+                                            currentPlayer.Power = (reservedGameCardsIndexes[tc] / 4) * 2 + (reservedGameCardsIndexes[i + 1] / 4) * 2 + currentPlayer.Type * 100;
+                                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 2 });
+                                            _sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                         }
                                         if (reservedGameCardsIndexes[i] / 4 != 0)
                                         {
-                                            current = 2;
-                                            power = (reservedGameCardsIndexes[tc] / 4) * 2 + (reservedGameCardsIndexes[i] / 4) * 2 + current * 100;
-                                            _win.Add(new Type() { Power = power, Current = 2 });
-                                            _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                                            currentPlayer.Type = 2;
+                                            currentPlayer.Power = (reservedGameCardsIndexes[tc] / 4) * 2 + (reservedGameCardsIndexes[i] / 4) * 2 + currentPlayer.Type * 100;
+                                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 2 });
+                                            _sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                         }
                                     }
                                     msgbox = true;
                                 }
-                                if (current == -1)
+                                if (currentPlayer.Type == -1)
                                 {
                                     if (!msgbox1)
                                     {
@@ -1602,34 +1695,34 @@
                                         {
                                             if (reservedGameCardsIndexes[tc] / 4 == 0)
                                             {
-                                                current = 0;
-                                                power = 13 + reservedGameCardsIndexes[i] / 4 + current * 100;
-                                                _win.Add(new Type() { Power = power, Current = 1 });
-                                                _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                                                currentPlayer.Type = 0;
+                                                currentPlayer.Power = 13 + reservedGameCardsIndexes[i] / 4 + currentPlayer.Type * 100;
+                                                this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 1 });
+                                                _sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                             }
                                             else
                                             {
-                                                current = 0;
-                                                power = reservedGameCardsIndexes[tc] / 4 + reservedGameCardsIndexes[i] / 4 + current * 100;
-                                                _win.Add(new Type() { Power = power, Current = 1 });
-                                                _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                                                currentPlayer.Type = 0;
+                                                currentPlayer.Power = reservedGameCardsIndexes[tc] / 4 + reservedGameCardsIndexes[i] / 4 + currentPlayer.Type * 100;
+                                                this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 1 });
+                                                _sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                             }
                                         }
                                         else
                                         {
                                             if (reservedGameCardsIndexes[tc] / 4 == 0)
                                             {
-                                                current = 0;
-                                                power = 13 + reservedGameCardsIndexes[i + 1] + current * 100;
-                                                _win.Add(new Type() { Power = power, Current = 1 });
-                                                _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                                                currentPlayer.Type = 0;
+                                                currentPlayer.Power = 13 + reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
+                                                this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 1 });
+                                                _sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                             }
                                             else
                                             {
-                                                current = 0;
-                                                power = reservedGameCardsIndexes[tc] / 4 + reservedGameCardsIndexes[i + 1] / 4 + current * 100;
-                                                _win.Add(new Type() { Power = power, Current = 1 });
-                                                _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                                                currentPlayer.Type = 0;
+                                                currentPlayer.Power = reservedGameCardsIndexes[tc] / 4 + reservedGameCardsIndexes[i + 1] / 4 + currentPlayer.Type * 100;
+                                                this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 1 });
+                                                _sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                                             }
                                         }
                                     }
@@ -1641,9 +1734,9 @@
                 }
             }
         }
-        private void RPairFromHand(ref double current, ref double power)
+        private void RPairFromHand(ICharacter currentPlayer) //ref double current, ref double power
         {
-            if (current >= -1)
+            if (currentPlayer.Type >= -1)
             {
                 bool msgbox = false;
                 if (reservedGameCardsIndexes[i] / 4 == reservedGameCardsIndexes[i + 1] / 4)
@@ -1652,17 +1745,17 @@
                     {
                         if (reservedGameCardsIndexes[i] / 4 == 0)
                         {
-                            current = 1;
-                            power = 13 * 4 + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 1 });
-                            _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                            currentPlayer.Type = 1;
+                            currentPlayer.Power = 13 * 4 + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 1 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                         }
                         else
                         {
-                            current = 1;
-                            power = (reservedGameCardsIndexes[i + 1] / 4) * 4 + current * 100;
-                            _win.Add(new Type() { Power = power, Current = 1 });
-                            _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                            currentPlayer.Type = 1;
+                            currentPlayer.Power = (reservedGameCardsIndexes[i + 1] / 4) * 4 + currentPlayer.Type * 100;
+                            this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 1 });
+                            _sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                         }
                     }
                     msgbox = true;
@@ -1675,17 +1768,17 @@
                         {
                             if (reservedGameCardsIndexes[i + 1] / 4 == 0)
                             {
-                                current = 1;
-                                power = 13 * 4 + reservedGameCardsIndexes[i] / 4 + current * 100;
-                                _win.Add(new Type() { Power = power, Current = 1 });
-                                _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                                currentPlayer.Type = 1;
+                                currentPlayer.Power = 13 * 4 + reservedGameCardsIndexes[i] / 4 + currentPlayer.Type * 100;
+                                this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 1 });
+                                _sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                             }
                             else
                             {
-                                current = 1;
-                                power = (reservedGameCardsIndexes[i + 1] / 4) * 4 + reservedGameCardsIndexes[i] / 4 + current * 100;
-                                _win.Add(new Type() { Power = power, Current = 1 });
-                                _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                                currentPlayer.Type = 1;
+                                currentPlayer.Power = (reservedGameCardsIndexes[i + 1] / 4) * 4 + reservedGameCardsIndexes[i] / 4 + currentPlayer.Type * 100;
+                                this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 1 });
+                                _sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                             }
                         }
                         msgbox = true;
@@ -1696,17 +1789,17 @@
                         {
                             if (reservedGameCardsIndexes[i] / 4 == 0)
                             {
-                                current = 1;
-                                power = 13 * 4 + reservedGameCardsIndexes[i + 1] / 4 + current * 100;
-                                _win.Add(new Type() { Power = power, Current = 1 });
-                                _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                                currentPlayer.Type = 1;
+                                currentPlayer.Power = 13 * 4 + reservedGameCardsIndexes[i + 1] / 4 + currentPlayer.Type * 100;
+                                this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 1 });
+                                _sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                             }
                             else
                             {
-                                current = 1;
-                                power = (reservedGameCardsIndexes[tc] / 4) * 4 + reservedGameCardsIndexes[i + 1] / 4 + current * 100;
-                                _win.Add(new Type() { Power = power, Current = 1 });
-                                _sorted = _win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                                currentPlayer.Type = 1;
+                                currentPlayer.Power = (reservedGameCardsIndexes[tc] / 4) * 4 + reservedGameCardsIndexes[i + 1] / 4 + currentPlayer.Type * 100;
+                                this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 1 });
+                                _sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                             }
                         }
                         msgbox = true;
@@ -1714,35 +1807,35 @@
                 }
             }
         }
-        private void RHighCard(ref double current, ref double power)
+        private void RHighCard(ICharacter currentPlayer)
         {
-            if (current == -1)
+            if (currentPlayer.Type == -1)
             {
                 if (reservedGameCardsIndexes[i] / 4 > reservedGameCardsIndexes[i + 1] / 4)
                 {
-                    current = -1;
-                    power = reservedGameCardsIndexes[i] / 4;
-                    _win.Add(new Type() { Power = power, Current = -1 });
-                    _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                    currentPlayer.Type = -1;
+                    currentPlayer.Power = reservedGameCardsIndexes[i] / 4;
+                    this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = -1 });
+                    _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                 }
                 else
                 {
-                    current = -1;
-                    power = reservedGameCardsIndexes[i + 1] / 4;
-                    _win.Add(new Type() { Power = power, Current = -1 });
-                    _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                    currentPlayer.Type = -1;
+                    currentPlayer.Power = reservedGameCardsIndexes[i + 1] / 4;
+                    this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = -1 });
+                    _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                 }
                 if (reservedGameCardsIndexes[i] / 4 == 0 || reservedGameCardsIndexes[i + 1] / 4 == 0)
                 {
-                    current = -1;
-                    power = 13;
-                    _win.Add(new Type() { Power = power, Current = -1 });
-                    _sorted = _win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                    currentPlayer.Type = -1;
+                    currentPlayer.Power = 13;
+                    this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = -1 });
+                    _sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                 }
             }
         }
 
-        void Winner(double current, double power, string currentText, int chips, string lastly)
+        void Winner(ICharacter currentPlayer, string lastly) //this.player.Type, this.player.Power, "Player", this.player.Chips, fixedLast
         {
             if (lastly == " ")
             {
@@ -1754,133 +1847,133 @@
                 if (cardsPictureBoxArray[j].Visible)
                     cardsPictureBoxArray[j].Image = gameCardsAsImages[j];
             }
-            if (current == _sorted.Current)
+            if (currentPlayer.Type == _sorted.Current)
             {
-                if (power == _sorted.Power)
+                if (currentPlayer.Power == _sorted.Power)
                 {
                     _winners++;
-                    _checkWinners.Add(currentText);
-                    if (current == -1)
+                    this.gameDatabase.CheckWinners.Add(currentPlayer.Name);
+                    if (currentPlayer.Type == -1)
                     {
-                        MessageBox.Show(currentText + " High Card ");
+                        MessageBox.Show(currentPlayer.Name + " High Card ");
                     }
-                    if (current == 1 || current == 0)
+                    if (currentPlayer.Type == 1 || currentPlayer.Type == 0)
                     {
-                        MessageBox.Show(currentText + " Pair ");
+                        MessageBox.Show(currentPlayer.Name + " Pair ");
                     }
-                    if (current == 2)
+                    if (currentPlayer.Type == 2)
                     {
-                        MessageBox.Show(currentText + " Two Pair ");
+                        MessageBox.Show(currentPlayer.Name + " Two Pair ");
                     }
-                    if (current == 3)
+                    if (currentPlayer.Type == 3)
                     {
-                        MessageBox.Show(currentText + " Three of a Kind ");
+                        MessageBox.Show(currentPlayer.Name + " Three of a Kind ");
                     }
-                    if (current == 4)
+                    if (currentPlayer.Type == 4)
                     {
-                        MessageBox.Show(currentText + " Straight ");
+                        MessageBox.Show(currentPlayer.Name + " Straight ");
                     }
-                    if (current == 5 || current == 5.5)
+                    if (currentPlayer.Type == 5 || currentPlayer.Type == 5.5)
                     {
-                        MessageBox.Show(currentText + " Flush ");
+                        MessageBox.Show(currentPlayer.Name + " Flush ");
                     }
-                    if (current == 6)
+                    if (currentPlayer.Type == 6)
                     {
-                        MessageBox.Show(currentText + " Full House ");
+                        MessageBox.Show(currentPlayer.Name + " Full House ");
                     }
-                    if (current == 7)
+                    if (currentPlayer.Type == 7)
                     {
-                        MessageBox.Show(currentText + " Four of a Kind ");
+                        MessageBox.Show(currentPlayer.Name + " Four of a Kind ");
                     }
-                    if (current == 8)
+                    if (currentPlayer.Type == 8)
                     {
-                        MessageBox.Show(currentText + " Straight Flush ");
+                        MessageBox.Show(currentPlayer.Name + " Straight Flush ");
                     }
-                    if (current == 9)
+                    if (currentPlayer.Type == 9)
                     {
-                        MessageBox.Show(currentText + " Royal Flush ! ");
+                        MessageBox.Show(currentPlayer.Name + " Royal Flush ! ");
                     }
                 }
             }
-            if (currentText == lastly)//lastfixed
+            if (currentPlayer.Name == lastly)//lastfixed
             {
                 if (_winners > 1)
                 {
-                    if (_checkWinners.Contains("Player"))
+                    if (this.gameDatabase.CheckWinners.Contains(this.player.Name))
                     {
-                        Chips += int.Parse(textBoxPot.Text) / _winners;
-                        textBoxPlayerChips.Text = Chips.ToString();
+                        this.player.Chips += int.Parse(textBoxPot.Text) / _winners;
+                        textBoxPlayerChips.Text = this.player.ToString();
                         //pPanel.Visible = true;
 
                     }
-                    if (_checkWinners.Contains("Bot 1"))
+                    if (this.gameDatabase.CheckWinners.Contains(this.bots[0].Name))
                     {
-                        Bot1Chips += int.Parse(textBoxPot.Text) / _winners;
-                        textBoxBotOneChips.Text = Bot1Chips.ToString();
+                        this.bots[0].Chips += int.Parse(textBoxPot.Text) / _winners;
+                        textBoxBotOneChips.Text = this.bots[0].Chips.ToString();
                         //b1Panel.Visible = true;
                     }
-                    if (_checkWinners.Contains("Bot 2"))
+                    if (this.gameDatabase.CheckWinners.Contains(this.bots[1].Name))
                     {
-                        Bot2Chips += int.Parse(textBoxPot.Text) / _winners;
-                        textBoxBotTwoChips.Text = Bot2Chips.ToString();
+                        this.bots[1].Chips += int.Parse(textBoxPot.Text) / _winners;
+                        textBoxBotTwoChips.Text = this.bots[1].Chips.ToString();
                         //b2Panel.Visible = true;
                     }
-                    if (_checkWinners.Contains("Bot 3"))
+                    if (this.gameDatabase.CheckWinners.Contains(this.bots[2].Name))
                     {
-                        Bot3Chips += int.Parse(textBoxPot.Text) / _winners;
-                        textBoxBotThreeChips.Text = Bot3Chips.ToString();
+                        this.bots[2].Chips += int.Parse(textBoxPot.Text) / _winners;
+                        textBoxBotThreeChips.Text = this.bots[2].Chips.ToString();
                         //b3Panel.Visible = true;
                     }
-                    if (_checkWinners.Contains("Bot 4"))
+                    if (this.gameDatabase.CheckWinners.Contains(this.bots[3].Name))
                     {
-                        Bot4Chips += int.Parse(textBoxPot.Text) / _winners;
-                        textBoxBotFourChips.Text = Bot4Chips.ToString();
+                        this.bots[3].Chips += int.Parse(textBoxPot.Text) / _winners;
+                        textBoxBotFourChips.Text = this.bots[3].Chips.ToString();
                         //b4Panel.Visible = true;
                     }
-                    if (_checkWinners.Contains("Bot 5"))
+                    if (this.gameDatabase.CheckWinners.Contains(this.bots[4].Name))
                     {
-                        Bot5Chips += int.Parse(textBoxPot.Text) / _winners;
-                        textBoxBotFiveChips.Text = Bot5Chips.ToString();
+                        this.bots[4].Chips += int.Parse(textBoxPot.Text) / _winners;
+                        textBoxBotFiveChips.Text = this.bots[4].Chips.ToString();
                         //b5Panel.Visible = true;
                     }
                     //await Finish(1);
                 }
                 if (_winners == 1)
                 {
-                    if (_checkWinners.Contains("Player"))
+                    if (this.gameDatabase.CheckWinners.Contains(this.player.Name))
                     {
-                        Chips += int.Parse(textBoxPot.Text);
+                        this.player.Chips += int.Parse(textBoxPot.Text);
                         //await Finish(1);
                         //pPanel.Visible = true;
                     }
-                    if (_checkWinners.Contains("Bot 1"))
+                    if (this.gameDatabase.CheckWinners.Contains(this.bots[0].Name))
                     {
-                        Bot1Chips += int.Parse(textBoxPot.Text);
+                        this.bots[0].Chips += int.Parse(textBoxPot.Text);
                         //await Finish(1);
                         //b1Panel.Visible = true;
                     }
-                    if (_checkWinners.Contains("Bot 2"))
+                    if (this.gameDatabase.CheckWinners.Contains(this.bots[1].Name))
                     {
-                        Bot2Chips += int.Parse(textBoxPot.Text);
+                        this.bots[1].Chips += int.Parse(textBoxPot.Text);
                         //await Finish(1);
                         //b2Panel.Visible = true;
 
                     }
-                    if (_checkWinners.Contains("Bot 3"))
+                    if (this.gameDatabase.CheckWinners.Contains(this.bots[2].Name))
                     {
-                        Bot3Chips += int.Parse(textBoxPot.Text);
+                        this.bots[2].Chips += int.Parse(textBoxPot.Text);
                         //await Finish(1);
                         //b3Panel.Visible = true;
                     }
-                    if (_checkWinners.Contains("Bot 4"))
+                    if (this.gameDatabase.CheckWinners.Contains(this.bots[3].Name))
                     {
-                        Bot4Chips += int.Parse(textBoxPot.Text);
+                        this.bots[3].Chips += int.Parse(textBoxPot.Text);
                         //await Finish(1);
                         //b4Panel.Visible = true;
                     }
-                    if (_checkWinners.Contains("Bot 5"))
+                    if (this.gameDatabase.CheckWinners.Contains(this.bots[4].Name))
                     {
-                        Bot5Chips += int.Parse(textBoxPot.Text);
+                        this.bots[4].Chips += int.Parse(textBoxPot.Text);
                         //await Finish(1);
                         //b5Panel.Visible = true;
                     }
@@ -1889,36 +1982,36 @@
         }
         async Task CheckRaise(int currentTurn, int raiseTurn)
         {
-            if (_raising)
+            if (this.raising)
             {
-                _turnCount = 0;
-                _raising = false;
+                this.turnCount = 0;
+                this.raising = false;
                 _raisedTurn = currentTurn;
-                _changed = true;
+                this.changed = true;
             }
             else
             {
-                if (_turnCount >= _maxLeft - 1 || !_changed && _turnCount == _maxLeft)
+                if (this.turnCount >= _maxLeft - 1 || !this.changed && this.turnCount == _maxLeft)
                 {
-                    if (currentTurn == _raisedTurn - 1 || !_changed && _turnCount == _maxLeft || _raisedTurn == 0 && currentTurn == 5)
+                    if (currentTurn == _raisedTurn - 1 || !this.changed && this.turnCount == _maxLeft || _raisedTurn == 0 && currentTurn == 5)
                     {
-                        _changed = false;
-                        _turnCount = 0;
+                        this.changed = false;
+                        this.turnCount = 0;
                         raise = 0;
-                        call = 0;
+                        this.neededChipsToCall = 0;
                         _raisedTurn = 123;
                         rounds++;
-                        if (!_pFturn)
+                        if (!this.player.OutOfChips)
                             playerStatus.Text = "";
-                        if (!_b1Fturn)
+                        if (!this.bots[0].OutOfChips)
                             botOneStatus.Text = "";
-                        if (!_b2Fturn)
+                        if (!this.bots[1].OutOfChips)
                             botTwoStatus.Text = "";
-                        if (!_b3Fturn)
+                        if (!this.bots[2].OutOfChips)
                             botThreeStatus.Text = "";
-                        if (!_b4Fturn)
+                        if (!this.bots[3].OutOfChips)
                             botFourStatus.Text = "";
-                        if (!_b5Fturn)
+                        if (!this.bots[4].OutOfChips)
                             botFiveStatus.Text = "";
                     }
                 }
@@ -1930,12 +2023,12 @@
                     if (cardsPictureBoxArray[j].Image != gameCardsAsImages[j])
                     {
                         cardsPictureBoxArray[j].Image = gameCardsAsImages[j];
-                        _pCall = 0; _pRaise = 0;
-                        _b1Call = 0; _b1Raise = 0;
-                        _b2Call = 0; _b2Raise = 0;
-                        _b3Call = 0; _b3Raise = 0;
-                        _b4Call = 0; _b4Raise = 0;
-                        _b5Call = 0; _b5Raise = 0;
+                        this.player.Call = 0; this.player.Raise = 0;
+                        this.bots[0].Call = 0; this.bots[0].Raise = 0;
+                        this.bots[1].Call = 0; this.bots[1].Raise = 0;
+                        this.bots[2].Call = 0; this.bots[2].Raise = 0;
+                        this.bots[3].Call = 0; this.bots[3].Raise = 0;
+                        this.bots[4].Call = 0; this.bots[4].Raise = 0;
                     }
                 }
             }
@@ -1946,12 +2039,12 @@
                     if (cardsPictureBoxArray[j].Image != gameCardsAsImages[j])
                     {
                         cardsPictureBoxArray[j].Image = gameCardsAsImages[j];
-                        _pCall = 0; _pRaise = 0;
-                        _b1Call = 0; _b1Raise = 0;
-                        _b2Call = 0; _b2Raise = 0;
-                        _b3Call = 0; _b3Raise = 0;
-                        _b4Call = 0; _b4Raise = 0;
-                        _b5Call = 0; _b5Raise = 0;
+                        this.player.Call = 0; this.player.Raise = 0;
+                        this.bots[0].Call = 0; this.bots[0].Raise = 0;
+                        this.bots[1].Call = 0; this.bots[1].Raise = 0;
+                        this.bots[2].Call = 0; this.bots[2].Raise = 0;
+                        this.bots[3].Call = 0; this.bots[3].Raise = 0;
+                        this.bots[4].Call = 0; this.bots[4].Raise = 0;
                     }
                 }
             }
@@ -1962,12 +2055,12 @@
                     if (cardsPictureBoxArray[j].Image != gameCardsAsImages[j])
                     {
                         cardsPictureBoxArray[j].Image = gameCardsAsImages[j];
-                        _pCall = 0; _pRaise = 0;
-                        _b1Call = 0; _b1Raise = 0;
-                        _b2Call = 0; _b2Raise = 0;
-                        _b3Call = 0; _b3Raise = 0;
-                        _b4Call = 0; _b4Raise = 0;
-                        _b5Call = 0; _b5Raise = 0;
+                        this.player.Call = 0; this.player.Raise = 0;
+                        this.bots[0].Call = 0; this.bots[0].Raise = 0;
+                        this.bots[1].Call = 0; this.bots[1].Raise = 0;
+                        this.bots[2].Call = 0; this.bots[2].Raise = 0;
+                        this.bots[3].Call = 0; this.bots[3].Raise = 0;
+                        this.bots[4].Call = 0; this.bots[4].Raise = 0;
                     }
                 }
             }
@@ -1977,87 +2070,87 @@
                 if (!playerStatus.Text.Contains("Fold"))
                 {
                     fixedLast = "Player";
-                    Rules(0, 1, "Player", ref playerType, ref playerPower, _pFturn);
+                    Rules(0, 1, this.player);
                 }
                 if (!botOneStatus.Text.Contains("Fold"))
                 {
                     fixedLast = "Bot 1";
-                    Rules(2, 3, "Bot 1", ref botOneType, ref botOnePower, _b1Fturn);
+                    Rules(2, 3, this.bots[0]);
                 }
                 if (!botTwoStatus.Text.Contains("Fold"))
                 {
                     fixedLast = "Bot 2";
-                    Rules(4, 5, "Bot 2", ref botTwoType, ref botTwoPower, _b2Fturn);
+                    Rules(4, 5, this.bots[1]);
                 }
                 if (!botThreeStatus.Text.Contains("Fold"))
                 {
                     fixedLast = "Bot 3";
-                    Rules(6, 7, "Bot 3", ref botThreeType, ref botThreePower, _b3Fturn);
+                    Rules(6, 7, this.bots[2]);
                 }
                 if (!botFourStatus.Text.Contains("Fold"))
                 {
                     fixedLast = "Bot 4";
-                    Rules(8, 9, "Bot 4", ref botFourType, ref botFourPower, _b4Fturn);
+                    Rules(8, 9, this.bots[3]);
                 }
                 if (!botFiveStatus.Text.Contains("Fold"))
                 {
                     fixedLast = "Bot 5";
-                    Rules(10, 11, "Bot 5", ref botFiveType, ref botFivePower, _b5Fturn);
+                    Rules(10, 11, this.bots[4]);
                 }
-                Winner(playerType, playerPower, "Player", Chips, fixedLast);
-                Winner(botOneType, botOnePower, "Bot 1", Bot1Chips, fixedLast);
-                Winner(botTwoType, botTwoPower, "Bot 2", Bot2Chips, fixedLast);
-                Winner(botThreeType, botThreePower, "Bot 3", Bot3Chips, fixedLast);
-                Winner(botFourType, botFourPower, "Bot 4", Bot4Chips, fixedLast);
-                Winner(botFiveType, botFivePower, "Bot 5", Bot5Chips, fixedLast);
+                this.Winner(this.player, fixedLast); //this.player.Type, this.player.Power, "Player", this.player.Chips, fixedLast
+                this.Winner(this.bots[0], fixedLast);
+                this.Winner(this.bots[1], fixedLast);
+                this.Winner(this.bots[2], fixedLast);
+                this.Winner(this.bots[3], fixedLast);
+                this.Winner(this.bots[4], fixedLast);
                 _restart = true;
-                _pturn = true;
-                _pFturn = false;
-                _b1Fturn = false;
-                _b2Fturn = false;
-                _b3Fturn = false;
-                _b4Fturn = false;
-                _b5Fturn = false;
-                if (Chips <= 0)
+                this.player.CanMakeTurn = true;
+                this.player.OutOfChips = false;
+                this.bots[0].OutOfChips = false;
+                this.bots[1].OutOfChips = false;
+                this.bots[2].OutOfChips = false;
+                this.bots[3].OutOfChips = false;
+                this.bots[4].OutOfChips = false;
+                if (this.player.Chips <= 0)
                 {
-                    AddChips f2 = new AddChips();
-                    f2.ShowDialog();
-                    if (f2.A != 0)
+                    AddChips chipAdder = new AddChips();
+                    chipAdder.ShowDialog();
+                    if (chipAdder.A != 0)
                     {
-                        Chips = f2.A;
-                        Bot1Chips += f2.A;
-                        Bot2Chips += f2.A;
-                        Bot3Chips += f2.A;
-                        Bot4Chips += f2.A;
-                        Bot5Chips += f2.A;
-                        _pFturn = false;
-                        _pturn = true;
+                        this.player.Chips = chipAdder.A;
+                        this.bots[0].Chips += chipAdder.A;
+                        this.bots[1].Chips += chipAdder.A;
+                        this.bots[2].Chips += chipAdder.A;
+                        this.bots[3].Chips += chipAdder.A;
+                        this.bots[4].Chips += chipAdder.A;
+                        this.player.OutOfChips = false;
+                        this.player.CanMakeTurn = true;
                         buttonRaise.Enabled = true;
                         buttonFold.Enabled = true;
                         buttonCheck.Enabled = true;
                         buttonRaise.Text = "Raise";
                     }
                 }
-                playerPanel.Visible = false; bot1Panel.Visible = false; bot2Panel.Visible = false; bot3Panel.Visible = false; bot4Panel.Visible = false; bot5Panel.Visible = false;
-                _pCall = 0; _pRaise = 0;
-                _b1Call = 0; _b1Raise = 0;
-                _b2Call = 0; _b2Raise = 0;
-                _b3Call = 0; _b3Raise = 0;
-                _b4Call = 0; _b4Raise = 0;
-                _b5Call = 0; _b5Raise = 0;
+                this.player.Panel.Visible = false; this.bots[0].Panel.Visible = false; this.bots[1].Panel.Visible = false; this.bots[2].Panel.Visible = false; this.bots[3].Panel.Visible = false; this.bots[4].Panel.Visible = false;
+                this.player.Call = 0; this.player.Raise = 0;
+                this.bots[0].Call = 0; this.bots[0].Raise = 0;
+                this.bots[1].Call = 0; this.bots[1].Raise = 0;
+                this.bots[2].Call = 0; this.bots[2].Raise = 0;
+                this.bots[3].Call = 0; this.bots[3].Raise = 0;
+                this.bots[4].Call = 0; this.bots[4].Raise = 0;
                 _last = 0;
-                call = bb;
+                this.neededChipsToCall = this.bigBlindValue;
                 raise = 0;
                 cardsImageLocation = Directory.GetFiles("..\\..\\Resources\\Assets\\Cards", "*.png", SearchOption.TopDirectoryOnly);
-                _bools.Clear();
+                this.gameDatabase.PlayersGameStatus.Clear();
                 rounds = 0;
-                playerPower = 0; playerType = -1;
-                type = 0; botOnePower = 0; botTwoPower = 0; botThreePower = 0; botFourPower = 0; botFivePower = 0;
-                botOneType = -1; botTwoType = -1; botThreeType = -1; botFourType = -1; botFiveType = -1;
-                ints.Clear();
-                _checkWinners.Clear();
+                this.player.Power = 0; this.player.Type = -1;
+                type = 0; this.bots[0].Power = 0; this.bots[1].Power = 0; this.bots[2].Power = 0; this.bots[3].Power = 0; this.bots[4].Power = 0;
+                this.bots[0].Type = -1; this.bots[1].Type = -1; this.bots[2].Type = -1; this.bots[3].Type = -1; this.bots[4].Type = -1;
+                this.gameDatabase.Chips.Clear();
+                this.gameDatabase.CheckWinners.Clear();
                 _winners = 0;
-                _win.Clear();
+                this.gameDatabase.Win.Clear();
                 _sorted.Current = 0;
                 _sorted.Power = 0;
                 for (int os = 0; os < 17; os++)
@@ -2072,7 +2165,7 @@
                 await Turns();
             }
         }
-        void FixCall(Label status, ref int cCall, ref int cRaise, int options)
+        void FixCall(Label status, ICharacter currentPlayer, int options) //ref int cCall, ref int cRaise
         {
             if (rounds != 4)
             {
@@ -2081,32 +2174,32 @@
                     if (status.Text.Contains("Raise"))
                     {
                         var changeRaise = status.Text.Substring(6);
-                        cRaise = int.Parse(changeRaise);
+                        currentPlayer.Raise = int.Parse(changeRaise);
                     }
                     if (status.Text.Contains("Call"))
                     {
                         var changeCall = status.Text.Substring(5);
-                        cCall = int.Parse(changeCall);
+                        currentPlayer.Call = int.Parse(changeCall);
                     }
                     if (status.Text.Contains("Check"))
                     {
-                        cRaise = 0;
-                        cCall = 0;
+                        currentPlayer.Raise = 0;
+                        currentPlayer.Call = 0;
                     }
                 }
                 if (options == 2)
                 {
-                    if (cRaise != raise && cRaise <= raise)
+                    if (currentPlayer.Raise != raise && currentPlayer.Raise <= raise)
                     {
-                        call = Convert.ToInt32(raise) - cRaise;
+                        this.neededChipsToCall = Convert.ToInt32(raise) - currentPlayer.Raise;
                     }
-                    if (cCall != call || cCall <= call)
+                    if (currentPlayer.Call != this.neededChipsToCall || currentPlayer.Call <= this.neededChipsToCall)
                     {
-                        call = call - cCall;
+                        this.neededChipsToCall = this.neededChipsToCall - currentPlayer.Call;
                     }
-                    if (cRaise == raise && raise > 0)
+                    if (currentPlayer.Raise == raise && raise > 0)
                     {
-                        call = 0;
+                        this.neededChipsToCall = 0;
                         buttonCall.Enabled = false;
                         buttonCall.Text = "Callisfuckedup";
                     }
@@ -2116,120 +2209,120 @@
         async Task AllIn()
         {
             #region All in
-            if (Chips <= 0 && !intsadded)
+            if (this.player.Chips <= 0 && !this.chipsAreAdded)
             {
                 if (playerStatus.Text.Contains("Raise"))
                 {
-                    ints.Add(Chips);
-                    intsadded = true;
+                    this.gameDatabase.Chips.Add(this.player.Chips);
+                    this.chipsAreAdded = true;
                 }
                 if (playerStatus.Text.Contains("Call"))
                 {
-                    ints.Add(Chips);
-                    intsadded = true;
+                    this.gameDatabase.Chips.Add(this.player.Chips);
+                    this.chipsAreAdded = true;
                 }
             }
-            intsadded = false;
-            if (Bot1Chips <= 0 && !_b1Fturn)
+            this.chipsAreAdded = false;
+            if (this.bots[0].Chips <= 0 && !this.bots[0].OutOfChips)
             {
-                if (!intsadded)
+                if (!this.chipsAreAdded)
                 {
-                    ints.Add(Bot1Chips);
-                    intsadded = true;
+                    this.gameDatabase.Chips.Add(this.bots[0].Chips);
+                    this.chipsAreAdded = true;
                 }
-                intsadded = false;
+                this.chipsAreAdded = false;
             }
-            if (Bot2Chips <= 0 && !_b2Fturn)
+            if (this.bots[1].Chips <= 0 && !this.bots[1].OutOfChips)
             {
-                if (!intsadded)
+                if (!this.chipsAreAdded)
                 {
-                    ints.Add(Bot2Chips);
-                    intsadded = true;
+                    this.gameDatabase.Chips.Add(this.bots[1].Chips);
+                    this.chipsAreAdded = true;
                 }
-                intsadded = false;
+                this.chipsAreAdded = false;
             }
-            if (Bot3Chips <= 0 && !_b3Fturn)
+            if (this.bots[2].Chips <= 0 && !this.bots[2].OutOfChips)
             {
-                if (!intsadded)
+                if (!this.chipsAreAdded)
                 {
-                    ints.Add(Bot3Chips);
-                    intsadded = true;
+                    this.gameDatabase.Chips.Add(this.bots[2].Chips);
+                    this.chipsAreAdded = true;
                 }
-                intsadded = false;
+                this.chipsAreAdded = false;
             }
-            if (Bot4Chips <= 0 && !_b4Fturn)
+            if (this.bots[3].Chips <= 0 && !this.bots[3].OutOfChips)
             {
-                if (!intsadded)
+                if (!this.chipsAreAdded)
                 {
-                    ints.Add(Bot4Chips);
-                    intsadded = true;
+                    this.gameDatabase.Chips.Add(this.bots[3].Chips);
+                    this.chipsAreAdded = true;
                 }
-                intsadded = false;
+                this.chipsAreAdded = false;
             }
-            if (Bot5Chips <= 0 && !_b5Fturn)
+            if (this.bots[4].Chips <= 0 && !this.bots[4].OutOfChips)
             {
-                if (!intsadded)
+                if (!this.chipsAreAdded)
                 {
-                    ints.Add(Bot5Chips);
-                    intsadded = true;
+                    this.gameDatabase.Chips.Add(this.bots[4].Chips);
+                    this.chipsAreAdded = true;
                 }
             }
-            if (ints.ToArray().Length == _maxLeft)
+            if (this.gameDatabase.Chips.ToArray().Length == _maxLeft)
             {
                 await Finish(2);
             }
             else
             {
-                ints.Clear();
+                this.gameDatabase.Chips.Clear();
             }
             #endregion
 
-            var abc = _bools.Count(x => x == false);
+            var abc = this.gameDatabase.PlayersGameStatus.Count(x => x == false);
 
             #region LastManStanding
             if (abc == 1)
             {
-                int index = _bools.IndexOf(false);
+                int index = this.gameDatabase.PlayersGameStatus.IndexOf(false);
                 if (index == 0)
                 {
-                    Chips += int.Parse(textBoxPot.Text);
-                    textBoxPlayerChips.Text = Chips.ToString();
-                    playerPanel.Visible = true;
+                    this.player.Chips += int.Parse(textBoxPot.Text);
+                    textBoxPlayerChips.Text = this.player.Chips.ToString();
+                    this.player.Panel.Visible = true;
                     MessageBox.Show("Player Wins");
                 }
                 if (index == 1)
                 {
-                    Bot1Chips += int.Parse(textBoxPot.Text);
-                    textBoxPlayerChips.Text = Bot1Chips.ToString();
-                    bot1Panel.Visible = true;
+                    this.bots[0].Chips += int.Parse(textBoxPot.Text);
+                    textBoxPlayerChips.Text = this.bots[0].Chips.ToString();
+                    this.bots[0].Panel.Visible = true;
                     MessageBox.Show("Bot 1 Wins");
                 }
                 if (index == 2)
                 {
-                    Bot2Chips += int.Parse(textBoxPot.Text);
-                    textBoxPlayerChips.Text = Bot2Chips.ToString();
-                    bot2Panel.Visible = true;
+                    this.bots[1].Chips += int.Parse(textBoxPot.Text);
+                    textBoxPlayerChips.Text = this.bots[1].Chips.ToString();
+                    this.bots[1].Panel.Visible = true;
                     MessageBox.Show("Bot 2 Wins");
                 }
                 if (index == 3)
                 {
-                    Bot3Chips += int.Parse(textBoxPot.Text);
-                    textBoxPlayerChips.Text = Bot3Chips.ToString();
-                    bot3Panel.Visible = true;
+                    this.bots[2].Chips += int.Parse(textBoxPot.Text);
+                    textBoxPlayerChips.Text = this.bots[2].Chips.ToString();
+                    this.bots[2].Panel.Visible = true;
                     MessageBox.Show("Bot 3 Wins");
                 }
                 if (index == 4)
                 {
-                    Bot4Chips += int.Parse(textBoxPot.Text);
-                    textBoxPlayerChips.Text = Bot4Chips.ToString();
-                    bot4Panel.Visible = true;
+                    this.bots[3].Chips += int.Parse(textBoxPot.Text);
+                    textBoxPlayerChips.Text = this.bots[3].Chips.ToString();
+                    this.bots[3].Panel.Visible = true;
                     MessageBox.Show("Bot 4 Wins");
                 }
                 if (index == 5)
                 {
-                    Bot5Chips += int.Parse(textBoxPot.Text);
-                    textBoxPlayerChips.Text = Bot5Chips.ToString();
-                    bot5Panel.Visible = true;
+                    this.bots[4].Chips += int.Parse(textBoxPot.Text);
+                    textBoxPlayerChips.Text = this.bots[4].Chips.ToString();
+                    this.bots[4].Panel.Visible = true;
                     MessageBox.Show("Bot 5 Wins");
                 }
                 for (int j = 0; j <= 16; j++)
@@ -2238,7 +2331,7 @@
                 }
                 await Finish(1);
             }
-            intsadded = false;
+            this.chipsAreAdded = false;
             #endregion
 
             #region FiveOrLessLeft
@@ -2256,71 +2349,71 @@
             {
                 FixWinners();
             }
-            playerPanel.Visible = false;
-            bot1Panel.Visible = false;
-            bot2Panel.Visible = false;
-            bot3Panel.Visible = false;
-            bot4Panel.Visible = false;
-            bot5Panel.Visible = false;
+            this.player.Panel.Visible = false;
+            this.bots[0].Panel.Visible = false;
+            this.bots[1].Panel.Visible = false;
+            this.bots[2].Panel.Visible = false;
+            this.bots[3].Panel.Visible = false;
+            this.bots[4].Panel.Visible = false;
 
-            call = bb;
+            this.neededChipsToCall = bigBlindValue;
             raise = 0;
             foldedPlayers = 5;
 
             type = 0;
             rounds = 0;
-            botOnePower = 0;
-            botTwoPower = 0;
-            botThreePower = 0;
-            botFourPower = 0;
-            botFivePower = 0;
-            playerPower = 0;
+            this.bots[0].Power = 0;
+            this.bots[1].Power = 0;
+            this.bots[2].Power = 0;
+            this.bots[3].Power = 0;
+            this.bots[4].Power = 0;
+            this.player.Power = 0;
 
-            playerType = -1;
+            this.player.Type = -1;
             raise = 0;
-            botOneType = -1;
-            botTwoType = -1;
-            botThreeType = -1;
-            botFourType = -1;
-            botFiveType = -1;
+            this.bots[0].Type = -1;
+            this.bots[1].Type = -1;
+            this.bots[2].Type = -1;
+            this.bots[3].Type = -1;
+            this.bots[4].Type = -1;
 
-            _pturn = true;
-            botOneTurn = false;
-            botTwoTurn = false;
-            botThreeTurn = false;
-            botFourTurn = false;
-            botFiveTurn = false;
+            this.player.CanMakeTurn = true;
+            this.bots[0].CanMakeTurn = false;
+            this.bots[1].CanMakeTurn = false;
+            this.bots[2].CanMakeTurn = false;
+            this.bots[3].CanMakeTurn = false;
+            this.bots[4].CanMakeTurn = false;
 
-            _pFturn = false;
-            _b1Fturn = false;
-            _b2Fturn = false;
-            _b3Fturn = false;
-            _b4Fturn = false;
-            _b5Fturn = false;
+            this.player.OutOfChips = false;
+            this.bots[0].OutOfChips = false;
+            this.bots[1].OutOfChips = false;
+            this.bots[2].OutOfChips = false;
+            this.bots[3].OutOfChips = false;
+            this.bots[4].OutOfChips = false;
 
-            _pFolded = false;
-            _b1Folded = false;
-            _b2Folded = false;
-            _b3Folded = false;
-            _b4Folded = false;
-            _b5Folded = false;
+            this.player.Folded = false;
+            this.bots[0].Folded = false;
+            this.bots[1].Folded = false;
+            this.bots[2].Folded = false;
+            this.bots[3].Folded = false;
+            this.bots[4].Folded = false;
 
             _restart = false;
-            _raising = false;
+            this.raising = false;
 
-            _pCall = 0;
-            _b1Call = 0;
-            _b2Call = 0;
-            _b3Call = 0;
-            _b4Call = 0;
-            _b5Call = 0;
+            this.player.Call = 0;
+            this.bots[0].Call = 0;
+            this.bots[1].Call = 0;
+            this.bots[2].Call = 0;
+            this.bots[3].Call = 0;
+            this.bots[4].Call = 0;
 
-            _pRaise = 0;
-            _b1Raise = 0;
-            _b2Raise = 0;
-            _b3Raise = 0;
-            _b4Raise = 0;
-            _b5Raise = 0;
+            this.player.Raise = 0;
+            this.bots[0].Raise = 0;
+            this.bots[1].Raise = 0;
+            this.bots[2].Raise = 0;
+            this.bots[3].Raise = 0;
+            this.bots[4].Raise = 0;
 
             _height = 0;
             _width = 0;
@@ -2331,34 +2424,34 @@
             _end = 4;
             _maxLeft = 6;
             _last = 123; _raisedTurn = 1;
-            _bools.Clear();
-            _checkWinners.Clear();
-            ints.Clear();
-            _win.Clear();
+            this.gameDatabase.PlayersGameStatus.Clear();
+            this.gameDatabase.CheckWinners.Clear();
+            this.gameDatabase.Chips.Clear();
+            this.gameDatabase.Win.Clear();
             _sorted.Current = 0;
             _sorted.Power = 0;
             textBoxPot.Text = "0";
-            _t = 60; _up = 10000000; _turnCount = 0;
+            this.secondsLeft = 60; _up = 10000000; this.turnCount = 0;
             playerStatus.Text = "";
             botOneStatus.Text = "";
             botTwoStatus.Text = "";
             botThreeStatus.Text = "";
             botFourStatus.Text = "";
             botFiveStatus.Text = "";
-            if (Chips <= 0)
+            if (this.player.Chips <= 0)
             {
                 AddChips f2 = new AddChips();
                 f2.ShowDialog();
                 if (f2.A != 0)
                 {
-                    Chips = f2.A;
-                    Bot1Chips += f2.A;
-                    Bot2Chips += f2.A;
-                    Bot3Chips += f2.A;
-                    Bot4Chips += f2.A;
-                    Bot5Chips += f2.A;
-                    _pFturn = false;
-                    _pturn = true;
+                    this.player.Chips = f2.A;
+                    this.bots[0].Chips += f2.A;
+                    this.bots[1].Chips += f2.A;
+                    this.bots[2].Chips += f2.A;
+                    this.bots[3].Chips += f2.A;
+                    this.bots[4].Chips += f2.A;
+                    this.player.OutOfChips = false;
+                    this.player.CanMakeTurn = true;
                     buttonRaise.Enabled = true;
                     buttonFold.Enabled = true;
                     buttonCheck.Enabled = true;
@@ -2377,47 +2470,49 @@
         }
         void FixWinners()
         {
-            _win.Clear();
+            this.gameDatabase.Win.Clear();
             _sorted.Current = 0;
             _sorted.Power = 0;
             string fixedLast = "qwerty";
             if (!playerStatus.Text.Contains("Fold"))
             {
                 fixedLast = "Player";
-                Rules(0, 1, "Player", ref playerType, ref playerPower, _pFturn);
+                Rules(0, 1, this.player);
             }
             if (!botOneStatus.Text.Contains("Fold"))
             {
                 fixedLast = "Bot 1";
-                Rules(2, 3, "Bot 1", ref botOneType, ref botOnePower, _b1Fturn);
+                Rules(2, 3, this.bots[0]);
             }
             if (!botTwoStatus.Text.Contains("Fold"))
             {
                 fixedLast = "Bot 2";
-                Rules(4, 5, "Bot 2", ref botTwoType, ref botTwoPower, _b2Fturn);
+                Rules(4, 5, this.bots[1]);
             }
             if (!botThreeStatus.Text.Contains("Fold"))
             {
                 fixedLast = "Bot 3";
-                Rules(6, 7, "Bot 3", ref botThreeType, ref botThreePower, _b3Fturn);
+                Rules(6, 7, this.bots[2]);
             }
             if (!botFourStatus.Text.Contains("Fold"))
             {
                 fixedLast = "Bot 4";
-                Rules(8, 9, "Bot 4", ref botFourType, ref botFourPower, _b4Fturn);
+                Rules(8, 9, this.bots[3]);
             }
             if (!botFiveStatus.Text.Contains("Fold"))
             {
                 fixedLast = "Bot 5";
-                Rules(10, 11, "Bot 5", ref botFiveType, ref botFivePower, _b5Fturn);
+                Rules(10, 11, this.bots[4]);
             }
-            Winner(playerType, playerPower, "Player", Chips, fixedLast);
-            Winner(botOneType, botOnePower, "Bot 1", Bot1Chips, fixedLast);
-            Winner(botTwoType, botTwoPower, "Bot 2", Bot2Chips, fixedLast);
-            Winner(botThreeType, botThreePower, "Bot 3", Bot3Chips, fixedLast);
-            Winner(botFourType, botFourPower, "Bot 4", Bot4Chips, fixedLast);
-            Winner(botFiveType, botFivePower, "Bot 5", Bot5Chips, fixedLast);
+            this.Winner(this.player, fixedLast);
+            this.Winner(this.bots[0], fixedLast);
+            this.Winner(this.bots[1], fixedLast);
+            this.Winner(this.bots[2], fixedLast);
+            this.Winner(this.bots[3], fixedLast);
+            this.Winner(this.bots[4], fixedLast);
         }
+
+        /* staro Ai
         void Ai(int c1, int c2, ref int sChips, ref bool sTurn, ref bool sFTurn, Label sStatus, int name, double botPower, double botCurrent)
         {
             if (!sFTurn)
@@ -2469,6 +2564,69 @@
                 cardsPictureBoxArray[c2].Visible = false;
             }
         }
+        */
+        private void AI(int card1, int card2, Label sStatus, int name, ICharacter player)
+        {
+            if (!player.OutOfChips)
+            {
+                if (player.Type == -1)
+                {
+                    this.winningHandType.HighCard(player, sStatus, ref this.neededChipsToCall, this.textBoxPot, ref this.raise, ref this.raising);
+                }
+
+                if (player.Type == 0)
+                {
+                    this.winningHandType.PairTable(player, sStatus, ref this.neededChipsToCall, this.textBoxPot, ref this.raise, ref this.raising);
+                }
+
+                if (player.Type == 1)
+                {
+                    this.winningHandType.PairHand(player, sStatus, ref this.neededChipsToCall, this.textBoxPot, ref this.raise, ref this.raising, ref this.rounds);
+                }
+
+                if (player.Type == 2)
+                {
+                    this.winningHandType.TwoPair(player, sStatus, ref this.neededChipsToCall, this.textBoxPot, ref this.raise, ref this.raising, ref this.rounds);
+                }
+
+                if (player.Type == 3)
+                {
+                    this.winningHandType.ThreeOfAKind(player, sStatus, name, ref this.neededChipsToCall, this.textBoxPot, ref this.raise, ref this.raising, ref this.rounds);
+                }
+
+                if (player.Type == 4)
+                {
+                    this.winningHandType.Straight(player, sStatus, name, ref this.neededChipsToCall, this.textBoxPot, ref this.raise, ref this.raising, ref this.rounds);
+                }
+
+                if (player.Type == 5 || player.Type == 5.5)
+                {
+                    this.winningHandType.Flush(player, sStatus, name, ref this.neededChipsToCall, this.textBoxPot, ref this.raise, ref this.raising, ref this.rounds);
+                }
+
+                if (player.Type == 6)
+                {
+                    this.winningHandType.FullHouse(player, sStatus, name, ref this.neededChipsToCall, this.textBoxPot, ref this.raise, ref this.raising, ref this.rounds);
+                }
+
+                if (player.Type == 7)
+                {
+                    this.winningHandType.FourOfAKind(player, sStatus, name, ref this.neededChipsToCall, this.textBoxPot, ref this.raise, ref this.raising, ref this.rounds);
+                }
+
+                if (player.Type == 8 || player.Type == 9)
+                {
+                    this.winningHandType.StraightFlush(player, sStatus, name, ref this.neededChipsToCall, this.textBoxPot, ref this.raise, ref this.raising, ref this.rounds);
+                }
+            }
+
+            if (player.OutOfChips)
+            {
+                this.cardsPictureBoxArray[card1].Visible = false;
+                this.cardsPictureBoxArray[card2].Visible = false;
+            }
+        }
+        /* // otiva v WinningHandType
         private void HighCard(ref int sChips, ref bool sTurn, ref bool sFTurn, Label sStatus, double botPower)
         {
             Hp(ref sChips, ref sTurn, ref sFTurn, sStatus, botPower, 20, 25);
@@ -2590,10 +2748,12 @@
                 Smooth(ref sChips, ref sTurn, ref sFTurn, sStatus, name, sfCall, sfRaise);
             }
         }
+        */
 
+        /* otiva v PlayerMove
         private void Fold(ref bool sTurn, ref bool sFTurn, Label sStatus)
         {
-            _raising = false;
+            this.raising = false;
             sStatus.Text = "Fold";
             sTurn = false;
             sFTurn = true;
@@ -2602,23 +2762,23 @@
         {
             cStatus.Text = "Check";
             cTurn = false;
-            _raising = false;
+            this.raising = false;
         }
         private void Call(ref int sChips, ref bool sTurn, Label sStatus)
         {
-            _raising = false;
+            this.raising = false;
             sTurn = false;
-            sChips -= call;
-            sStatus.Text = "Call " + call;
-            textBoxPot.Text = (int.Parse(textBoxPot.Text) + call).ToString();
+            sChips -= this.neededChipsToCall;
+            sStatus.Text = "Call " + this.neededChipsToCall;
+            textBoxPot.Text = (int.Parse(textBoxPot.Text) + this.neededChipsToCall).ToString();
         }
         private void Raised(ref int sChips, ref bool sTurn, Label sStatus)
         {
             sChips -= Convert.ToInt32(raise);
             sStatus.Text = "Raise " + raise;
             textBoxPot.Text = (int.Parse(textBoxPot.Text) + Convert.ToInt32(raise)).ToString();
-            call = Convert.ToInt32(raise);
-            _raising = true;
+            this.neededChipsToCall = Convert.ToInt32(raise);
+            this.raising = true;
             sTurn = false;
         }
         private static double RoundN(int sChips, int n)
@@ -2626,19 +2786,21 @@
             double a = Math.Round((sChips / n) / 100d, 0) * 100;
             return a;
         }
+        */
+        /* // otiva v WinningHandType
         private void Hp(ref int sChips, ref bool sTurn, ref bool sFTurn, Label sStatus, double botPower, int n, int n1)
         {
             Random rand = new Random();
             int rnd = rand.Next(1, 4);
-            if (call <= 0)
+            if (this.neededChipsToCall <= 0)
             {
                 Check(ref sTurn, sStatus);
             }
-            if (call > 0)
+            if (this.neededChipsToCall > 0)
             {
                 if (rnd == 1)
                 {
-                    if (call <= RoundN(sChips, n))
+                    if (this.neededChipsToCall <= RoundN(sChips, n))
                     {
                         Call(ref sChips, ref sTurn, sStatus);
                     }
@@ -2649,7 +2811,7 @@
                 }
                 if (rnd == 2)
                 {
-                    if (call <= RoundN(sChips, n1))
+                    if (this.neededChipsToCall <= RoundN(sChips, n1))
                     {
                         Call(ref sChips, ref sTurn, sStatus);
                     }
@@ -2663,14 +2825,14 @@
             {
                 if (raise == 0)
                 {
-                    raise = call * 2;
+                    raise = this.neededChipsToCall * 2;
                     Raised(ref sChips, ref sTurn, sStatus);
                 }
                 else
                 {
                     if (raise <= RoundN(sChips, n))
                     {
-                        raise = call * 2;
+                        raise = this.neededChipsToCall * 2;
                         Raised(ref sChips, ref sTurn, sStatus);
                     }
                     else
@@ -2690,13 +2852,13 @@
             int rnd = rand.Next(1, 3);
             if (rounds < 2)
             {
-                if (call <= 0)
+                if (this.neededChipsToCall <= 0)
                 {
                     Check(ref sTurn, sStatus);
                 }
-                if (call > 0)
+                if (this.neededChipsToCall > 0)
                 {
-                    if (call >= RoundN(sChips, n1))
+                    if (this.neededChipsToCall >= RoundN(sChips, n1))
                     {
                         Fold(ref sTurn, ref sFTurn, sStatus);
                     }
@@ -2706,7 +2868,7 @@
                     }
                     if (!sFTurn)
                     {
-                        if (call >= RoundN(sChips, n) && call <= RoundN(sChips, n1))
+                        if (this.neededChipsToCall >= RoundN(sChips, n) && this.neededChipsToCall <= RoundN(sChips, n1))
                         {
                             Call(ref sChips, ref sTurn, sStatus);
                         }
@@ -2718,12 +2880,12 @@
                         {
                             if (raise > 0)
                             {
-                                raise = RoundN(sChips, n);
+                                raise = (int)RoundN(sChips, n);
                                 Raised(ref sChips, ref sTurn, sStatus);
                             }
                             else
                             {
-                                raise = call * 2;
+                                raise = this.neededChipsToCall * 2;
                                 Raised(ref sChips, ref sTurn, sStatus);
                             }
                         }
@@ -2733,9 +2895,9 @@
             }
             if (rounds >= 2)
             {
-                if (call > 0)
+                if (this.neededChipsToCall > 0)
                 {
-                    if (call >= RoundN(sChips, n1 - rnd))
+                    if (this.neededChipsToCall >= RoundN(sChips, n1 - rnd))
                     {
                         Fold(ref sTurn, ref sFTurn, sStatus);
                     }
@@ -2745,7 +2907,7 @@
                     }
                     if (!sFTurn)
                     {
-                        if (call >= RoundN(sChips, n - rnd) && call <= RoundN(sChips, n1 - rnd))
+                        if (this.neededChipsToCall >= RoundN(sChips, n - rnd) && this.neededChipsToCall <= RoundN(sChips, n1 - rnd))
                         {
                             Call(ref sChips, ref sTurn, sStatus);
                         }
@@ -2757,20 +2919,20 @@
                         {
                             if (raise > 0)
                             {
-                                raise = RoundN(sChips, n - rnd);
+                                raise = (int)RoundN(sChips, n - rnd);
                                 Raised(ref sChips, ref sTurn, sStatus);
                             }
                             else
                             {
-                                raise = call * 2;
+                                raise = this.neededChipsToCall * 2;
                                 Raised(ref sChips, ref sTurn, sStatus);
                             }
                         }
                     }
                 }
-                if (call <= 0)
+                if (this.neededChipsToCall <= 0)
                 {
-                    raise = RoundN(sChips, r - rnd);
+                    raise = (int)RoundN(sChips, r - rnd);
                     Raised(ref sChips, ref sTurn, sStatus);
                 }
             }
@@ -2785,21 +2947,21 @@
         {
             Random rand = new Random();
             int rnd = rand.Next(1, 3);
-            if (call <= 0)
+            if (this.neededChipsToCall <= 0)
             {
                 Check(ref botTurn, botStatus);
             }
             else
             {
-                if (call >= RoundN(botChips, n))
+                if (this.neededChipsToCall >= RoundN(botChips, n))
                 {
-                    if (botChips > call)
+                    if (botChips > this.neededChipsToCall)
                     {
                         Call(ref botChips, ref botTurn, botStatus);
                     }
-                    else if (botChips <= call)
+                    else if (botChips <= this.neededChipsToCall)
                     {
-                        _raising = false;
+                        this.raising = false;
                         botTurn = false;
                         botChips = 0;
                         botStatus.Text = "Call " + botChips;
@@ -2822,7 +2984,7 @@
                     }
                     else
                     {
-                        raise = call * 2;
+                        raise = this.neededChipsToCall * 2;
                         Raised(ref botChips, ref botTurn, botStatus);
                     }
                 }
@@ -2832,57 +2994,58 @@
                 botFTurn = true;
             }
         }
+        */
 
         #region UI
         private async void TimerTick(object sender, object e)
         {
             if (progressBarTimer.Value <= 0)
             {
-                _pFturn = true;
+                this.player.OutOfChips = true;
                 await Turns();
             }
-            if (_t > 0)
+            if (this.secondsLeft > 0)
             {
-                _t--;
-                progressBarTimer.Value = (_t / 6) * 100;
+                this.secondsLeft--;
+                progressBarTimer.Value = (this.secondsLeft / 6) * 100;
             }
         }
         private void UpdateTick(object sender, object e)
         {
-            if (Chips <= 0)
+            if (this.player.Chips <= 0)
             {
                 textBoxPlayerChips.Text = "Chips : 0";
             }
-            if (Bot1Chips <= 0)
+            if (this.bots[0].Chips <= 0)
             {
                 textBoxBotOneChips.Text = "Chips : 0";
             }
-            if (Bot2Chips <= 0)
+            if (this.bots[1].Chips <= 0)
             {
                 textBoxBotTwoChips.Text = "Chips : 0";
             }
-            if (Bot3Chips <= 0)
+            if (this.bots[2].Chips <= 0)
             {
                 textBoxBotThreeChips.Text = "Chips : 0";
             }
-            if (Bot4Chips <= 0)
+            if (this.bots[3].Chips <= 0)
             {
                 textBoxBotFourChips.Text = "Chips : 0";
             }
-            if (Bot5Chips <= 0)
+            if (this.bots[4].Chips <= 0)
             {
                 textBoxBotFiveChips.Text = "Chips : 0";
             }
-            textBoxPlayerChips.Text = "Chips : " + Chips.ToString();
-            textBoxBotOneChips.Text = "Chips : " + Bot1Chips.ToString();
-            textBoxBotTwoChips.Text = "Chips : " + Bot2Chips.ToString();
-            textBoxBotThreeChips.Text = "Chips : " + Bot3Chips.ToString();
-            textBoxBotFourChips.Text = "Chips : " + Bot4Chips.ToString();
-            textBoxBotFiveChips.Text = "Chips : " + Bot5Chips.ToString();
-            if (Chips <= 0)
+            textBoxPlayerChips.Text = "Chips : " + this.player.Chips.ToString();
+            textBoxBotOneChips.Text = "Chips : " + this.bots[0].Chips.ToString();
+            textBoxBotTwoChips.Text = "Chips : " + this.bots[1].Chips.ToString();
+            textBoxBotThreeChips.Text = "Chips : " + this.bots[2].Chips.ToString();
+            textBoxBotFourChips.Text = "Chips : " + this.bots[3].Chips.ToString();
+            textBoxBotFiveChips.Text = "Chips : " + this.bots[4].Chips.ToString();
+            if (this.player.Chips <= 0)
             {
-                _pturn = false;
-                _pFturn = true;
+                this.player.CanMakeTurn = false;
+                this.player.OutOfChips = true;
                 buttonCall.Enabled = false;
                 buttonRaise.Enabled = false;
                 buttonFold.Enabled = false;
@@ -2892,26 +3055,26 @@
             {
                 _up--;
             }
-            if (Chips >= call)
+            if (this.player.Chips >= this.neededChipsToCall)
             {
-                buttonCall.Text = "Call " + call.ToString();
+                buttonCall.Text = "Call " + this.neededChipsToCall.ToString();
             }
             else
             {
                 buttonCall.Text = "All in";
                 buttonRaise.Enabled = false;
             }
-            if (call > 0)
+            if (this.neededChipsToCall > 0)
             {
                 buttonCheck.Enabled = false;
             }
-            if (call <= 0)
+            if (this.neededChipsToCall <= 0)
             {
                 buttonCheck.Enabled = true;
                 buttonCall.Text = "Call";
                 buttonCall.Enabled = false;
             }
-            if (Chips <= 0)
+            if (this.player.Chips <= 0)
             {
                 buttonRaise.Enabled = false;
             }
@@ -2919,7 +3082,7 @@
 
             if (textBoxRaise.Text != "" && int.TryParse(textBoxRaise.Text, out parsedValue))
             {
-                if (Chips <= int.Parse(textBoxRaise.Text))
+                if (this.player.Chips <= int.Parse(textBoxRaise.Text))
                 {
                     buttonRaise.Text = "All in";
                 }
@@ -2928,7 +3091,7 @@
                     buttonRaise.Text = "Raise";
                 }
             }
-            if (Chips < call)
+            if (this.player.Chips < this.neededChipsToCall)
             {
                 buttonRaise.Enabled = false;
             }
@@ -2937,16 +3100,16 @@
         private async void bFold_Click(object sender, EventArgs e)
         {
             playerStatus.Text = "Fold";
-            _pturn = false;
-            _pFturn = true;
+            this.player.CanMakeTurn = false;
+            this.player.OutOfChips = true;
             await Turns();
         }
 
         private async void bCheck_Click(object sender, EventArgs e)
         {
-            if (call <= 0)
+            if (this.neededChipsToCall <= 0)
             {
-                _pturn = false;
+                this.player.CanMakeTurn = false;
                 playerStatus.Text = "Check";
             }
             else
@@ -2959,42 +3122,42 @@
         }
         private async void bCall_Click(object sender, EventArgs e)
         {
-            Rules(0, 1, "Player", ref playerType, ref playerPower, _pFturn);
-            if (Chips >= call)
+            Rules(0, 1, this.player);
+            if (this.player.Chips >= this.neededChipsToCall)
             {
-                Chips -= call;
-                textBoxPlayerChips.Text = "Chips : " + Chips.ToString();
+                this.player.Chips -= this.neededChipsToCall;
+                textBoxPlayerChips.Text = "Chips : " + this.player.Chips.ToString();
                 if (textBoxPot.Text != "")
                 {
-                    textBoxPot.Text = (int.Parse(textBoxPot.Text) + call).ToString();
+                    textBoxPot.Text = (int.Parse(textBoxPot.Text) + this.neededChipsToCall).ToString();
                 }
                 else
                 {
-                    textBoxPot.Text = call.ToString();
+                    textBoxPot.Text = this.neededChipsToCall.ToString();
                 }
-                _pturn = false;
-                playerStatus.Text = "Call " + call;
-                _pCall = call;
+                this.player.CanMakeTurn = false;
+                playerStatus.Text = "Call " + this.neededChipsToCall;
+                this.player.Call = this.neededChipsToCall;
             }
-            else if (Chips <= call && call > 0)
+            else if (this.player.Chips <= this.neededChipsToCall && this.neededChipsToCall > 0)
             {
-                textBoxPot.Text = (int.Parse(textBoxPot.Text) + Chips).ToString();
-                playerStatus.Text = "All in " + Chips;
-                Chips = 0;
-                textBoxPlayerChips.Text = "Chips : " + Chips.ToString();
-                _pturn = false;
+                textBoxPot.Text = (int.Parse(textBoxPot.Text) + this.player.Chips).ToString();
+                playerStatus.Text = "All in " + this.player.Chips;
+                this.player.Chips = 0;
+                textBoxPlayerChips.Text = "Chips : " + this.player.Chips.ToString();
+                this.player.CanMakeTurn = false;
                 buttonFold.Enabled = false;
-                _pCall = Chips;
+                this.player.Call = this.player.Chips;
             }
             await Turns();
         }
         private async void bRaise_Click(object sender, EventArgs e)
         {
-            Rules(0, 1, "Player", ref playerType, ref playerPower, _pFturn);
+            Rules(0, 1, this.player);
             int parsedValue;
             if (textBoxRaise.Text != "" && int.TryParse(textBoxRaise.Text, out parsedValue))
             {
-                if (Chips > call)
+                if (this.player.Chips > this.neededChipsToCall)
                 {
                     if (raise * 2 > int.Parse(textBoxRaise.Text))
                     {
@@ -3004,28 +3167,28 @@
                     }
                     else
                     {
-                        if (Chips >= int.Parse(textBoxRaise.Text))
+                        if (this.player.Chips >= int.Parse(textBoxRaise.Text))
                         {
-                            call = int.Parse(textBoxRaise.Text);
+                            this.neededChipsToCall = int.Parse(textBoxRaise.Text);
                             raise = int.Parse(textBoxRaise.Text);
-                            playerStatus.Text = "Raise " + call.ToString();
-                            textBoxPot.Text = (int.Parse(textBoxPot.Text) + call).ToString();
+                            playerStatus.Text = "Raise " + this.neededChipsToCall.ToString();
+                            textBoxPot.Text = (int.Parse(textBoxPot.Text) + this.neededChipsToCall).ToString();
                             buttonCall.Text = "Call";
-                            Chips -= int.Parse(textBoxRaise.Text);
-                            _raising = true;
+                            this.player.Chips -= int.Parse(textBoxRaise.Text);
+                            this.raising = true;
                             _last = 0;
-                            _pRaise = Convert.ToInt32(raise);
+                            this.player.Raise = Convert.ToInt32(raise);
                         }
                         else
                         {
-                            call = Chips;
-                            raise = Chips;
-                            textBoxPot.Text = (int.Parse(textBoxPot.Text) + Chips).ToString();
-                            playerStatus.Text = "Raise " + call.ToString();
-                            Chips = 0;
-                            _raising = true;
+                            this.neededChipsToCall = this.player.Chips;
+                            raise = this.player.Chips;
+                            textBoxPot.Text = (int.Parse(textBoxPot.Text) + this.player.Chips).ToString();
+                            playerStatus.Text = "Raise " + this.neededChipsToCall.ToString();
+                            this.player.Chips = 0;
+                            this.raising = true;
                             _last = 0;
-                            _pRaise = Convert.ToInt32(raise);
+                            this.player.Raise = Convert.ToInt32(raise);
                         }
                     }
                 }
@@ -3035,7 +3198,7 @@
                 MessageBox.Show("This is a number only field");
                 return;
             }
-            _pturn = false;
+            this.player.CanMakeTurn = false;
             await Turns();
         }
         private void bAdd_Click(object sender, EventArgs e)
@@ -3043,19 +3206,19 @@
             if (textBoxAdd.Text == "") { }
             else
             {
-                Chips += int.Parse(textBoxAdd.Text);
-                Bot1Chips += int.Parse(textBoxAdd.Text);
-                Bot2Chips += int.Parse(textBoxAdd.Text);
-                Bot3Chips += int.Parse(textBoxAdd.Text);
-                Bot4Chips += int.Parse(textBoxAdd.Text);
-                Bot5Chips += int.Parse(textBoxAdd.Text);
+                this.player.Chips += int.Parse(textBoxAdd.Text);
+                this.bots[0].Chips += int.Parse(textBoxAdd.Text);
+                this.bots[1].Chips += int.Parse(textBoxAdd.Text);
+                this.bots[2].Chips += int.Parse(textBoxAdd.Text);
+                this.bots[3].Chips += int.Parse(textBoxAdd.Text);
+                this.bots[4].Chips += int.Parse(textBoxAdd.Text);
             }
-            textBoxPlayerChips.Text = "Chips : " + Chips.ToString();
+            textBoxPlayerChips.Text = "Chips : " + this.player.Chips.ToString();
         }
         private void bOptions_Click(object sender, EventArgs e)
         {
-            textBoxBigBlind.Text = bb.ToString();
-            textBoxSmallBlind.Text = _sb.ToString();
+            textBoxBigBlind.Text = bigBlindValue.ToString();
+            textBoxSmallBlind.Text = smallBlindValue.ToString();
             if (textBoxBigBlind.Visible == false)
             {
                 textBoxBigBlind.Visible = true;
@@ -3077,19 +3240,19 @@
             if (textBoxSmallBlind.Text.Contains(",") || textBoxSmallBlind.Text.Contains("."))
             {
                 MessageBox.Show("The Small Blind can be only round number !");
-                textBoxSmallBlind.Text = _sb.ToString();
+                textBoxSmallBlind.Text = smallBlindValue.ToString();
                 return;
             }
             if (!int.TryParse(textBoxSmallBlind.Text, out parsedValue))
             {
                 MessageBox.Show("This is a number only field");
-                textBoxSmallBlind.Text = _sb.ToString();
+                textBoxSmallBlind.Text = smallBlindValue.ToString();
                 return;
             }
             if (int.Parse(textBoxSmallBlind.Text) > 100000)
             {
                 MessageBox.Show("The maximum of the Small Blind is 100 000 $");
-                textBoxSmallBlind.Text = _sb.ToString();
+                textBoxSmallBlind.Text = smallBlindValue.ToString();
             }
             if (int.Parse(textBoxSmallBlind.Text) < 250)
             {
@@ -3097,7 +3260,7 @@
             }
             if (int.Parse(textBoxSmallBlind.Text) >= 250 && int.Parse(textBoxSmallBlind.Text) <= 100000)
             {
-                _sb = int.Parse(textBoxSmallBlind.Text);
+                smallBlindValue = int.Parse(textBoxSmallBlind.Text);
                 MessageBox.Show("The changes have been saved ! They will become available the next hand you play. ");
             }
         }
@@ -3107,19 +3270,19 @@
             if (textBoxBigBlind.Text.Contains(",") || textBoxBigBlind.Text.Contains("."))
             {
                 MessageBox.Show("The Big Blind can be only round number !");
-                textBoxBigBlind.Text = bb.ToString();
+                textBoxBigBlind.Text = bigBlindValue.ToString();
                 return;
             }
             if (!int.TryParse(textBoxSmallBlind.Text, out parsedValue))
             {
                 MessageBox.Show("This is a number only field");
-                textBoxSmallBlind.Text = bb.ToString();
+                textBoxSmallBlind.Text = bigBlindValue.ToString();
                 return;
             }
             if (int.Parse(textBoxBigBlind.Text) > 200000)
             {
                 MessageBox.Show("The maximum of the Big Blind is 200 000");
-                textBoxBigBlind.Text = bb.ToString();
+                textBoxBigBlind.Text = bigBlindValue.ToString();
             }
             if (int.Parse(textBoxBigBlind.Text) < 500)
             {
@@ -3127,7 +3290,7 @@
             }
             if (int.Parse(textBoxBigBlind.Text) >= 500 && int.Parse(textBoxBigBlind.Text) <= 200000)
             {
-                bb = int.Parse(textBoxBigBlind.Text);
+                bigBlindValue = int.Parse(textBoxBigBlind.Text);
                 MessageBox.Show("The changes have been saved ! They will become available the next hand you play. ");
             }
         }

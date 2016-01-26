@@ -1,6 +1,12 @@
 ﻿namespace Poker.Models.Characters
 {
-    public class Player : Character
+    using Poker.Interfaces;
+
+    public class Player : Character , IPlayer
     {
+        public Player(string name)
+            : base(name)
+        {
+        }
     }
 }
