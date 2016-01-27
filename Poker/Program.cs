@@ -3,6 +3,8 @@
     using System;
     using System.Windows.Forms;
 
+    using Poker.UserInterface;
+
     public static class Program
     {
         /// <summary>

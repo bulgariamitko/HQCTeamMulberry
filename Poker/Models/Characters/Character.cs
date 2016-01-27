@@ -1,10 +1,12 @@
 ﻿namespace Poker.Models.Characters
 {
+    using System;
     using System.Collections.Generic;
     using System.Drawing;
     using System.Windows.Forms;
-    using Interfaces;
-    using System;
+
+    using Poker.Interfaces;
+    using Poker.UserInterface;
 
     public abstract class Character : ICharacter
     {
