@@ -37,8 +37,6 @@
         private Bitmap backImage;
         private Label[] botStatusLabels;
 
-        private int Nm;
-
         private int neededChipsToCall;
         private int foldedPlayers;
         private double type;
@@ -128,12 +126,12 @@
             this.textBoxBotThreeChips.Enabled = false;
             this.textBoxBotFourChips.Enabled = false;
             this.textBoxBotFiveChips.Enabled = false;
-            this.textBoxPlayerChips.Text = "Chips : " + this.player.Chips.ToString();
-            this.textBoxBotOneChips.Text = "Chips : " + this.bots[0].Chips.ToString();
-            this.textBoxBotTwoChips.Text = "Chips : " + this.bots[1].Chips.ToString();
-            this.textBoxBotThreeChips.Text = "Chips : " + this.bots[2].Chips.ToString();
-            this.textBoxBotFourChips.Text = "Chips : " + this.bots[3].Chips.ToString();
-            this.textBoxBotFiveChips.Text = "Chips : " + this.bots[4].Chips.ToString();
+            this.textBoxPlayerChips.Text = "Chips: " + this.player.Chips.ToString();
+            this.textBoxBotOneChips.Text = "Chips: " + this.bots[0].Chips.ToString();
+            this.textBoxBotTwoChips.Text = "Chips: " + this.bots[1].Chips.ToString();
+            this.textBoxBotThreeChips.Text = "Chips: " + this.bots[2].Chips.ToString();
+            this.textBoxBotFourChips.Text = "Chips: " + this.bots[3].Chips.ToString();
+            this.textBoxBotFiveChips.Text = "Chips: " + this.bots[4].Chips.ToString();
             this.timer.Interval = 1 * 1 * 1000;
             this.timer.Tick += TimerTick;
             this.updates.Interval = 1 * 1 * 100;
@@ -1775,13 +1773,7 @@
                 {
                     if (this.cardsPictureBoxArray[j].Image != this.gameCardsAsImages[j])
                     {
-                        this.cardsPictureBoxArray[j].Image = this.gameCardsAsImages[j];
-                        this.player.Call = 0; this.player.Raise = 0;
-                        this.bots[0].Call = 0; this.bots[0].Raise = 0;
-                        this.bots[1].Call = 0; this.bots[1].Raise = 0;
-                        this.bots[2].Call = 0; this.bots[2].Raise = 0;
-                        this.bots[3].Call = 0; this.bots[3].Raise = 0;
-                        this.bots[4].Call = 0; this.bots[4].Raise = 0;
+                        this.SetCallAndRaiseToZero(j);
                     }
                 }
             }
@@ -1792,13 +1784,7 @@
                 {
                     if (this.cardsPictureBoxArray[j].Image != this.gameCardsAsImages[j])
                     {
-                        this.cardsPictureBoxArray[j].Image = this.gameCardsAsImages[j];
-                        this.player.Call = 0; this.player.Raise = 0;
-                        this.bots[0].Call = 0; this.bots[0].Raise = 0;
-                        this.bots[1].Call = 0; this.bots[1].Raise = 0;
-                        this.bots[2].Call = 0; this.bots[2].Raise = 0;
-                        this.bots[3].Call = 0; this.bots[3].Raise = 0;
-                        this.bots[4].Call = 0; this.bots[4].Raise = 0;
+                        this.SetCallAndRaiseToZero(j);
                     }
                 }
             }
@@ -1809,13 +1795,7 @@
                 {
                     if (this.cardsPictureBoxArray[j].Image != this.gameCardsAsImages[j])
                     {
-                        this.cardsPictureBoxArray[j].Image = this.gameCardsAsImages[j];
-                        this.player.Call = 0; this.player.Raise = 0;
-                        this.bots[0].Call = 0; this.bots[0].Raise = 0;
-                        this.bots[1].Call = 0; this.bots[1].Raise = 0;
-                        this.bots[2].Call = 0; this.bots[2].Raise = 0;
-                        this.bots[3].Call = 0; this.bots[3].Raise = 0;
-                        this.bots[4].Call = 0; this.bots[4].Raise = 0;
+                        this.SetCallAndRaiseToZero(j);
                     }
                 }
             }
@@ -1940,6 +1920,23 @@
                 await Shuffle();
                 await Turns();
             }
+        }
+
+        private void SetCallAndRaiseToZero(int j)
+        {
+            this.cardsPictureBoxArray[j].Image = this.gameCardsAsImages[j];
+            this.player.Call = 0;
+            this.player.Raise = 0;
+            this.bots[0].Call = 0;
+            this.bots[0].Raise = 0;
+            this.bots[1].Call = 0;
+            this.bots[1].Raise = 0;
+            this.bots[2].Call = 0;
+            this.bots[2].Raise = 0;
+            this.bots[3].Call = 0;
+            this.bots[3].Raise = 0;
+            this.bots[4].Call = 0;
+            this.bots[4].Raise = 0;
         }
 
         void FixCall(Label status, ICharacter currentPlayer, int options) //ref int cCall, ref int cRaise
@@ -2378,7 +2375,7 @@
             }
         }
 
-        private async void bFold_Click(object sender, EventArgs e)
+        private async void FoldButtonClick(object sender, EventArgs e)
         {
             this.playerStatus.Text = "Fold";
             this.player.CanMakeTurn = false;
@@ -2386,7 +2383,7 @@
             await this.Turns();
         }
 
-        private async void bCheck_Click(object sender, EventArgs e)
+        private async void CheckButtonClick(object sender, EventArgs e)
         {
             if (this.neededChipsToCall <= 0)
             {
@@ -2401,7 +2398,7 @@
             await this.Turns();
         }
 
-        private async void bCall_Click(object sender, EventArgs e)
+        private async void CallButtonClick(object sender, EventArgs e)
         {
             this.Rules(0, 1, this.player);
             if (this.player.Chips >= this.neededChipsToCall)
@@ -2435,7 +2432,7 @@
             await this.Turns();
         }
 
-        private async void bRaise_Click(object sender, EventArgs e)
+        private async void RaiseButtonClick(object sender, EventArgs e)
         {
             this.Rules(0, 1, this.player);
             int parsedValue;
@@ -2447,7 +2444,6 @@
                     {
                         this.textBoxRaise.Text = (this.raise * 2).ToString();
                         MessageBox.Show("You must raise atleast twice as the current raise !");
-
                         return;
                     }
                     else
@@ -2481,7 +2477,6 @@
             else
             {
                 MessageBox.Show("This is a number only field");
-
                 return;
             }
 
@@ -2489,7 +2484,7 @@
             await this.Turns();
         }
 
-        private void bAdd_Click(object sender, EventArgs e)
+        private void AddButtonClick(object sender, EventArgs e)
         {
             if (this.textBoxAdd.Text != string.Empty)
             {
@@ -2503,7 +2498,7 @@
             this.textBoxPlayerChips.Text = "Chips : " + this.player.Chips.ToString();
         }
 
-        private void bOptions_Click(object sender, EventArgs e)
+        private void OptionsButtonClick(object sender, EventArgs e)
         {
             this.textBoxBigBlind.Text = this.bigBlindValue.ToString();
             this.textBoxSmallBlind.Text = this.smallBlindValue.ToString();
@@ -2523,7 +2518,7 @@
             }
         }
 
-        private void bSB_Click(object sender, EventArgs e)
+        private void SmallBlindButtonClick(object sender, EventArgs e)
         {
             int parsedValue;
             if (this.textBoxSmallBlind.Text.Contains(",") || this.textBoxSmallBlind.Text.Contains("."))
@@ -2565,7 +2560,7 @@
             }
         }
 
-        private void bBB_Click(object sender, EventArgs e)
+        private void BigBlindButtonClick(object sender, EventArgs e)
         {
             int parsedValue;
             if (this.textBoxBigBlind.Text.Contains(",") || this.textBoxBigBlind.Text.Contains("."))
@@ -2607,7 +2602,7 @@
             }
         }
 
-        private void Layout_Change(object sender, LayoutEventArgs e)
+        private void LayoutChange(object sender, LayoutEventArgs e)
         {
             this.width = this.Width;
             this.height = this.Height;
