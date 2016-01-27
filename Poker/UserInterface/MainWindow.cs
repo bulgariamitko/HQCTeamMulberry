@@ -31,8 +31,8 @@
         private int[] reservedGameCardsIndexes;
         private Image[] gameCardsAsImages;
         private PictureBox[] cardsPictureBoxArray;
-        private Timer _timer;
-        private Timer _updates;
+        private Timer timer;
+        private Timer updates;
         private Bitmap backImage;
         private Label[] botStatusLabels;
 
@@ -47,21 +47,21 @@
         private bool changed;
         private int _height;
         private int _width;
-        private int _winners;
-        private int _flop;
-        private int _turn;
-        private int _river;
-        private int _end;
-        private int _maxLeft;
-        private int _last;
-        private int _raisedTurn;
-        private bool _restart;
+        private int winners;
+        private int flop;
+        private int turn;
+        private int river;
+        private int end;
+        private int maxLeft;
+        private int last;
+        private int raisedTurn;
+        private bool restart;
         private bool raising;
         private int secondsLeft;
         private int i;
         private int bigBlindValue;
         private int smallBlindValue;
-        private int _up;
+        private int up;
         private int turnCount;
 
         #endregion
@@ -83,8 +83,8 @@
             this.reservedGameCardsIndexes = new int[DefaultCardsInGame];
             this.gameCardsAsImages = new Image[DefaultSetOfCards];
             this.cardsPictureBoxArray = new PictureBox[DefaultSetOfCards];
-            this._timer = new Timer();
-            this._updates = new Timer();
+            this.timer = new Timer();
+            this.updates = new Timer();
             this.backImage = new Bitmap("..\\..\\Resources\\Assets\\Back\\Back.png");
             this.botStatusLabels = new Label[DefaultNumberOfBots];
             
@@ -92,28 +92,28 @@
             this.neededChipsToCall = 500;
             this.foldedPlayers = DefaultNumberOfBots;
             this.turnCount = 0;
-            this._winners = 0;
-            this._flop = 1;
-            this._turn = 2;
-            this._river = 3;
-            this._end = 4;
-            this._maxLeft = 6;
-            this._raisedTurn = 1;
-            this._last = 123;
+            this.winners = 0;
+            this.flop = 1;
+            this.turn = 2;
+            this.river = 3;
+            this.end = 4;
+            this.maxLeft = 6;
+            this.raisedTurn = 1;
+            this.last = 123;
             this.secondsLeft = 60;
             this.rounds = 0;
             this.raise = 0;
             this.bigBlindValue = 500;
             this.smallBlindValue = 250;
-            this._up = 10000000;
+            this.up = 10000000;
             this.neededChipsToCall = this.bigBlindValue;
-            this._restart = false;
+            this.restart = false;
             this.raising = false;
 
             this.MaximizeBox = false;
             this.MinimizeBox = false;
 
-            this._updates.Start();
+            this.updates.Start();
             this.InitializeComponent();
 
             this._width = this.Width;
@@ -133,10 +133,10 @@
             this.textBoxBotThreeChips.Text = "Chips : " + this.bots[2].Chips.ToString();
             this.textBoxBotFourChips.Text = "Chips : " + this.bots[3].Chips.ToString();
             this.textBoxBotFiveChips.Text = "Chips : " + this.bots[4].Chips.ToString();
-            this._timer.Interval = (1 * 1 * 1000);
-            this._timer.Tick += TimerTick;
-            this._updates.Interval = (1 * 1 * 100);
-            this._updates.Tick += UpdateTick;
+            this.timer.Interval = (1 * 1 * 1000);
+            this.timer.Tick += TimerTick;
+            this.updates.Interval = (1 * 1 * 100);
+            this.updates.Tick += UpdateTick;
             this.textBoxBigBlind.Visible = true;
             this.textBoxSmallBlind.Visible = true;
             this.buttonBigBlind.Visible = true;
@@ -206,7 +206,7 @@
 
                     this.cardsPictureBoxArray[0].Tag = this.reservedGameCardsIndexes[0];
                     this.cardsPictureBoxArray[cardNumber].Image = this.gameCardsAsImages[cardNumber];
-                    this.cardsPictureBoxArray[cardNumber].Anchor = (AnchorStyles.Bottom);
+                    this.cardsPictureBoxArray[cardNumber].Anchor = AnchorStyles.Bottom;
                     this.cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
                     horizontal += this.cardsPictureBoxArray[cardNumber].Width;
                     this.Controls.Add(this.player.Panel);
@@ -236,7 +236,7 @@
                             }
 
                             check = true;
-                            this.cardsPictureBoxArray[cardNumber].Anchor = (AnchorStyles.Bottom | AnchorStyles.Left);
+                            this.cardsPictureBoxArray[cardNumber].Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
                             this.cardsPictureBoxArray[cardNumber].Image = this.backImage;
                             this.cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
                             horizontal += this.cardsPictureBoxArray[cardNumber].Width;
@@ -325,12 +325,12 @@
                 
                 if (cardNumber == 16)
                 {
-                    if (!this._restart)
+                    if (!this.restart)
                     {
                         MaximizeBox = true;
                         MinimizeBox = true;
                     }
-                    this._timer.Start();
+                    this.timer.Start();
                 }
 
                 this.i = cardNumber + 1;
@@ -352,6 +352,7 @@
             {
                 this.foldedPlayers = 5;
             }
+
             if (this.i == DefaultCardsInGame)
             {
                 this.buttonRaise.Enabled = true;
@@ -373,8 +374,8 @@
                     this.progressBarTimer.Visible = true;
                     this.progressBarTimer.Value = 1000;
                     this.secondsLeft = 60;
-                    this._up = 10000000;
-                    this._timer.Start();
+                    this.up = 10000000;
+                    this.timer.Start();
                     this.buttonRaise.Enabled = true;
                     this.buttonCall.Enabled = true;
                     this.buttonRaise.Enabled = true;
@@ -394,7 +395,7 @@
                     {
                         this.gameDatabase.PlayersGameStatus.RemoveAt(0);
                         this.gameDatabase.PlayersGameStatus.Insert(0, null);
-                        this._maxLeft--;
+                        this.maxLeft--;
                         this.player.Folded = true;
                     }
                 }
@@ -406,7 +407,7 @@
                 this.buttonRaise.Enabled = false;
                 this.buttonRaise.Enabled = false;
                 this.buttonFold.Enabled = false;
-                this._timer.Stop();
+                this.timer.Stop();
                 
                 for (int currentBotNumber = 0; currentBotNumber < this.bots.Count; currentBotNumber++)
                 {
@@ -423,7 +424,7 @@
                             MessageBox.Show(msg);
                             this.AI(currentBotStartCard, currentBotStartCard + 1, this.botStatusLabels[currentBotNumber], 0, this.bots[currentBotNumber]);
                             this.turnCount++;
-                            this._last = 1;
+                            this.last = 1;
                             this.bots[currentBotNumber].CanMakeTurn = false;
                         }
                     }
@@ -432,7 +433,7 @@
                     {
                         this.gameDatabase.PlayersGameStatus.RemoveAt(currentBotNumber + 1);
                         this.gameDatabase.PlayersGameStatus.Insert(currentBotNumber + 1, null);
-                        this._maxLeft--;
+                        this.maxLeft--;
                         this.bots[currentBotNumber].Folded = true;
                     }
 
@@ -449,19 +450,19 @@
                     {
                         this.gameDatabase.PlayersGameStatus.RemoveAt(0);
                         this.gameDatabase.PlayersGameStatus.Insert(0, null);
-                        this._maxLeft--;
+                        this.maxLeft--;
                         this.player.Folded = true;
                     }
                 }
                 #endregion
 
                 await AllIn();
-                if (!this._restart)
+                if (!this.restart)
                 {
                     await Turns();
                 }
 
-                this._restart = false;
+                this.restart = false;
             }
         }
 
@@ -1598,7 +1599,7 @@
             {
                 if (currentPlayer.Power == this._sorted.Power)
                 {
-                    this._winners++;
+                    this.winners++;
                     this.gameDatabase.CheckWinners.Add(currentPlayer.Name);
                     if (currentPlayer.Type == -1)
                     {
@@ -1654,46 +1655,46 @@
 
             if (currentPlayer.Name == lastly)//lastfixed
             {
-                if (this._winners > 1)
+                if (this.winners > 1)
                 {
                     if (this.gameDatabase.CheckWinners.Contains(this.player.Name))
                     {
-                        this.player.Chips += int.Parse(this.textBoxPot.Text) / this._winners;
+                        this.player.Chips += int.Parse(this.textBoxPot.Text) / this.winners;
                         this.textBoxPlayerChips.Text = this.player.ToString();
                     }
 
                     if (this.gameDatabase.CheckWinners.Contains(this.bots[0].Name))
                     {
-                        this.bots[0].Chips += int.Parse(this.textBoxPot.Text) / this._winners;
+                        this.bots[0].Chips += int.Parse(this.textBoxPot.Text) / this.winners;
                         this.textBoxBotOneChips.Text = this.bots[0].Chips.ToString();
                     }
 
                     if (this.gameDatabase.CheckWinners.Contains(this.bots[1].Name))
                     {
-                        this.bots[1].Chips += int.Parse(this.textBoxPot.Text) / this._winners;
+                        this.bots[1].Chips += int.Parse(this.textBoxPot.Text) / this.winners;
                         this.textBoxBotTwoChips.Text = this.bots[1].Chips.ToString();
                     }
 
                     if (this.gameDatabase.CheckWinners.Contains(this.bots[2].Name))
                     {
-                        this.bots[2].Chips += int.Parse(this.textBoxPot.Text) / this._winners;
+                        this.bots[2].Chips += int.Parse(this.textBoxPot.Text) / this.winners;
                         this.textBoxBotThreeChips.Text = this.bots[2].Chips.ToString();
                     }
 
                     if (this.gameDatabase.CheckWinners.Contains(this.bots[3].Name))
                     {
-                        this.bots[3].Chips += int.Parse(this.textBoxPot.Text) / this._winners;
+                        this.bots[3].Chips += int.Parse(this.textBoxPot.Text) / this.winners;
                         this.textBoxBotFourChips.Text = this.bots[3].Chips.ToString();
                     }
 
                     if (this.gameDatabase.CheckWinners.Contains(this.bots[4].Name))
                     {
-                        this.bots[4].Chips += int.Parse(this.textBoxPot.Text) / this._winners;
+                        this.bots[4].Chips += int.Parse(this.textBoxPot.Text) / this.winners;
                         this.textBoxBotFiveChips.Text = this.bots[4].Chips.ToString();
                     }
                 }
 
-                if (this._winners == 1)
+                if (this.winners == 1)
                 {
                     if (this.gameDatabase.CheckWinners.Contains(this.player.Name))
                     {
@@ -1734,21 +1735,21 @@
             {
                 this.turnCount = 0;
                 this.raising = false;
-                this._raisedTurn = currentTurn;
+                this.raisedTurn = currentTurn;
                 this.changed = true;
             }
             else
             {
-                if (this.turnCount >= (this._maxLeft - 1) || !this.changed && this.turnCount == this._maxLeft)
+                if (this.turnCount >= (this.maxLeft - 1) || !this.changed && this.turnCount == this.maxLeft)
                 {
-                    if (currentTurn == this._raisedTurn - 1 || !this.changed && this.turnCount == this._maxLeft ||
-                        this._raisedTurn == 0 && currentTurn == 5)
+                    if (currentTurn == this.raisedTurn - 1 || !this.changed && this.turnCount == this.maxLeft ||
+                        this.raisedTurn == 0 && currentTurn == 5)
                     {
                         this.changed = false;
                         this.turnCount = 0;
                         this.raise = 0;
                         this.neededChipsToCall = 0;
-                        this._raisedTurn = 123;
+                        this.raisedTurn = 123;
                         this.rounds++;
 
                         if (!this.player.OutOfChips)
@@ -1767,7 +1768,7 @@
                 }
             }
 
-            if (this.rounds == this._flop)
+            if (this.rounds == this.flop)
             {
                 for (int j = 12; j <= 14; j++)
                 {
@@ -1784,7 +1785,7 @@
                 }
             }
 
-            if (this.rounds == this._turn)
+            if (this.rounds == this.turn)
             {
                 for (int j = 14; j <= 15; j++)
                 {
@@ -1801,7 +1802,7 @@
                 }
             }
 
-            if (this.rounds == this._river)
+            if (this.rounds == this.river)
             {
                 for (int j = 15; j <= 16; j++)
                 {
@@ -1818,7 +1819,7 @@
                 }
             }
 
-            if (this.rounds == this._end && this._maxLeft == 6)
+            if (this.rounds == this.end && this.maxLeft == 6)
             {
                 string fixedLast = "qwerty";
                 if (!this.playerStatus.Text.Contains("Fold"))
@@ -1863,7 +1864,7 @@
                     this.Winner(this.bots[currentBot], fixedLast);
                 }
 
-                this._restart = true;
+                this.restart = true;
                 this.player.CanMakeTurn = true;
                 this.player.OutOfChips = false;
                 for (int currentBot = 0; currentBot < this.bots.Count; currentBot++)
@@ -1906,7 +1907,7 @@
                     this.bots[currentBot].Raise = 0;
                 }
 
-                this._last = 0;
+                this.last = 0;
                 this.neededChipsToCall = this.bigBlindValue;
                 this.raise = 0;
                 this.gameDatabase.PlayersGameStatus.Clear();
@@ -1922,7 +1923,7 @@
 
                 this.gameDatabase.Chips.Clear();
                 this.gameDatabase.CheckWinners.Clear();
-                this._winners = 0;
+                this.winners = 0;
                 this.gameDatabase.Win.Clear();
                 this._sorted.Current = 0;
                 this._sorted.Power = 0;
@@ -2021,7 +2022,7 @@
 
             this.chipsAreAdded = true;
 
-            if (this.gameDatabase.Chips.ToArray().Length == this._maxLeft)
+            if (this.gameDatabase.Chips.ToArray().Length == this.maxLeft)
             {
                 await Finish(2);
             }
@@ -2066,7 +2067,7 @@
             #endregion
 
             #region FiveOrLessLeft
-            if (abc < 6 && abc > 1 && this.rounds >= this._end)
+            if (abc < 6 && abc > 1 && this.rounds >= this.end)
             {
                 await this.Finish(2);
             }
@@ -2106,18 +2107,18 @@
             this.foldedPlayers = 5;
             this.type = 0;
             this.rounds = 0;
-            this._restart = false;
+            this.restart = false;
             this.raising = false;
             this._height = 0;
             this._width = 0;
-            this._winners = 0;
-            this._flop = 1;
-            this._turn = 2;
-            this._river = 3;
-            this._end = 4;
-            this._maxLeft = 6;
-            this._last = 123;
-            this._raisedTurn = 1;
+            this.winners = 0;
+            this.flop = 1;
+            this.turn = 2;
+            this.river = 3;
+            this.end = 4;
+            this.maxLeft = 6;
+            this.last = 123;
+            this.raisedTurn = 1;
             this.gameDatabase.PlayersGameStatus.Clear();
             this.gameDatabase.CheckWinners.Clear();
             this.gameDatabase.Chips.Clear();
@@ -2126,7 +2127,7 @@
             this._sorted.Power = 0;
             this.textBoxPot.Text = "0";
             this.secondsLeft = 60;
-            this._up = 10000000;
+            this.up = 10000000;
             this.turnCount = 0;
             this.playerStatus.Text = string.Empty;
             this.botOneStatus.Text = string.Empty;
@@ -2324,9 +2325,9 @@
                 this.buttonCheck.Enabled = false;
             }
 
-            if (this._up > 0)
+            if (this.up > 0)
             {
-                this._up--;
+                this.up--;
             }
 
             if (this.player.Chips >= this.neededChipsToCall)
@@ -2458,7 +2459,7 @@
                             this.buttonCall.Text = "Call";
                             this.player.Chips -= int.Parse(this.textBoxRaise.Text);
                             this.raising = true;
-                            this._last = 0;
+                            this.last = 0;
                             this.player.Raise = Convert.ToInt32(this.raise);
                         }
                         else
@@ -2469,7 +2470,7 @@
                             this.playerStatus.Text = "Raise " + this.neededChipsToCall.ToString();
                             this.player.Chips = 0;
                             this.raising = true;
-                            this._last = 0;
+                            this.last = 0;
                             this.player.Raise = Convert.ToInt32(raise);
                         }
                     }
