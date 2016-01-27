@@ -1,19 +1,18 @@
 ﻿namespace Poker
 {
-    using Interfaces;
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
     using System.Windows.Forms;
+
     using Poker.Data;
+    using Poker.Interfaces;
     using Poker.Models;
     using Poker.Models.Characters;
 
-    [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
     public partial class MainWindow : Form
     {
         #region Variables
