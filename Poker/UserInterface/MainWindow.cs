@@ -278,116 +278,50 @@
                     if (this.cardsPictureBoxArray[cardNumber] != null)
                     {
                         this.cardsPictureBoxArray[cardNumber].Anchor = AnchorStyles.None;
-                        this.cardsPictureBoxArray[cardNumber].Image = backImage;
+                        this.cardsPictureBoxArray[cardNumber].Image = this.backImage;
                         this.cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
                         horizontal += 110;
                     }
                 }
                 #endregion
 
-                if (this.bots[0].Chips <= 0)
+                for (int currentBotNumber = 0; currentBotNumber < this.bots.Count; currentBotNumber++)
                 {
-                    this.bots[0].OutOfChips = true;
-                    cardsPictureBoxArray[2].Visible = false;
-                    cardsPictureBoxArray[3].Visible = false;
-                }
-                else
-                {
-                    this.bots[0].OutOfChips = false;
-                    if (cardNumber == 3)
+                    int currentBotStartCard = this.bots[currentBotNumber].StartCard;
+                    if (this.bots[currentBotNumber].Chips <= 0)
                     {
-                        if (cardsPictureBoxArray[3] != null)
+                        this.bots[currentBotNumber].OutOfChips = true;
+                        this.cardsPictureBoxArray[currentBotStartCard].Visible = false;
+                        this.cardsPictureBoxArray[currentBotStartCard + 1].Visible = false;
+                    }
+                    else
+                    {
+                        this.bots[currentBotNumber].OutOfChips = false;
+                        if (cardNumber == (currentBotStartCard + 1))
                         {
-                            cardsPictureBoxArray[2].Visible = true;
-                            cardsPictureBoxArray[3].Visible = true;
+                            if (this.cardsPictureBoxArray[currentBotStartCard + 1] != null)
+                            {
+                                this.cardsPictureBoxArray[currentBotStartCard].Visible = true;
+                                this.cardsPictureBoxArray[currentBotStartCard + 1].Visible = true;
+                            }
                         }
                     }
                 }
-                if (this.bots[1].Chips <= 0)
-                {
-                    this.bots[1].OutOfChips = true;
-                    cardsPictureBoxArray[4].Visible = false;
-                    cardsPictureBoxArray[5].Visible = false;
-                }
-                else
-                {
-                    this.bots[1].OutOfChips = false;
-                    if (cardNumber == 5)
-                    {
-                        if (cardsPictureBoxArray[5] != null)
-                        {
-                            cardsPictureBoxArray[4].Visible = true;
-                            cardsPictureBoxArray[5].Visible = true;
-                        }
-                    }
-                }
-                if (this.bots[2].Chips <= 0)
-                {
-                    this.bots[2].OutOfChips = true;
-                    cardsPictureBoxArray[6].Visible = false;
-                    cardsPictureBoxArray[7].Visible = false;
-                }
-                else
-                {
-                    this.bots[2].OutOfChips = false;
-                    if (cardNumber == 7)
-                    {
-                        if (cardsPictureBoxArray[7] != null)
-                        {
-                            cardsPictureBoxArray[6].Visible = true;
-                            cardsPictureBoxArray[7].Visible = true;
-                        }
-                    }
-                }
-                if (this.bots[3].Chips <= 0)
-                {
-                    this.bots[3].OutOfChips = true;
-                    cardsPictureBoxArray[8].Visible = false;
-                    cardsPictureBoxArray[9].Visible = false;
-                }
-                else
-                {
-                    this.bots[3].OutOfChips = false;
-                    if (cardNumber == 9)
-                    {
-                        if (cardsPictureBoxArray[9] != null)
-                        {
-                            cardsPictureBoxArray[8].Visible = true;
-                            cardsPictureBoxArray[9].Visible = true;
-                        }
-                    }
-                }
-                if (this.bots[4].Chips <= 0)
-                {
-                    this.bots[4].OutOfChips = true;
-                    cardsPictureBoxArray[10].Visible = false;
-                    cardsPictureBoxArray[11].Visible = false;
-                }
-                else
-                {
-                    this.bots[4].OutOfChips = false;
-                    if (cardNumber == 11)
-                    {
-                        if (cardsPictureBoxArray[11] != null)
-                        {
-                            cardsPictureBoxArray[10].Visible = true;
-                            cardsPictureBoxArray[11].Visible = true;
-                        }
-                    }
-                }
+                
                 if (cardNumber == 16)
                 {
-                    if (!_restart)
+                    if (!this._restart)
                     {
                         MaximizeBox = true;
                         MinimizeBox = true;
                     }
-                    _timer.Start();
+                    this._timer.Start();
                 }
 
                 this.i = cardNumber + 1;
             }
-            if (foldedPlayers == 5)
+
+            if (this.foldedPlayers == 5)
             {
                 DialogResult dialogResult = MessageBox.Show("Would You Like To Play Again ?", "You Won , Congratulations ! ", MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.Yes)
@@ -401,58 +335,18 @@
             }
             else
             {
-                foldedPlayers = 5;
+                this.foldedPlayers = 5;
             }
-            if (i == 17)
+            if (this.i == 17)
             {
-                buttonRaise.Enabled = true;
-                buttonCall.Enabled = true;
-                buttonRaise.Enabled = true;
-                buttonRaise.Enabled = true;
-                buttonFold.Enabled = true;
+                this.buttonRaise.Enabled = true;
+                this.buttonCall.Enabled = true;
+                this.buttonRaise.Enabled = true;
+                this.buttonRaise.Enabled = true;
+                this.buttonFold.Enabled = true;
             }
         }
-        /* TODO metod za razdavane na kartite na bots
-        private void DealCardsForBots(IBot currentBot, int cardNumber, Bitmap backImage,
-            ref bool check, ref int horizontal, ref int vertical)
-        {
-            if (currentBot.Chips > 0)
-            {
-                this.foldedPlayers--;
-                if (cardNumber >= currentBot.StartCard && cardNumber < currentBot.StartCard + 2)
-                {
-                    if (this.cardsPictureBoxArray[currentBot.StartCard].Tag != null)
-                    {
-                        this.cardsPictureBoxArray[currentBot.StartCard + 1].Tag = this.reservedGameCardsIndexes[currentBot.StartCard + 1];
-                    }
-                    this.cardsPictureBoxArray[currentBot.StartCard].Tag = this.reservedGameCardsIndexes[currentBot.StartCard];
-                    if (!check)
-                    {
-                        vertical = currentBot.VerticalLocationCoordinate;
-                        horizontal = currentBot.HorizontalLocationCoordinate;
-                    }
 
-                    check = true;
-                    this.cardsPictureBoxArray[cardNumber].Anchor = currentBot.GetAnchorStyles();
-                    this.cardsPictureBoxArray[cardNumber].Image = backImage;
-                    this.cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
-                    horizontal += this.cardsPictureBoxArray[cardNumber].Width;
-                    this.cardsPictureBoxArray[cardNumber].Visible = true;
-                    this.Controls.Add(currentBot.Panel);
-                    currentBot.Panel.Visible = false;
-                    currentBot.InitializePanel(new Point(
-                        this.cardsPictureBoxArray[currentBot.StartCard].Left - 10,
-                        this.cardsPictureBoxArray[currentBot.StartCard].Top - 10));
-
-                    if (cardNumber == currentBot.StartCard + 1)
-                    {
-                        check = false;
-                    }
-                    
-                }
-            }
-        }
-        */
         async Task Turns()
         {
             #region Rotating
