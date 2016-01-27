@@ -4,12 +4,12 @@
 
     public interface IDatabase
     {
-        List<int> Chips { get; set; }
+        IList<int> Chips { get; set; }
 
-        List<string> CheckWinners { get; set; }
+        IList<string> CheckWinners { get; set; }
 
-        List<Type> Win { get; set; }
+        IList<Poker.Type> Win { get; set; }
 
-        List<bool?> PlayersGameStatus { get; set; }
+        IList<bool?> PlayersGameStatus { get; set; }
     }
 }
