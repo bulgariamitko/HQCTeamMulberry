@@ -26,7 +26,7 @@
         private readonly IWinningHandType winningHandType;
         private readonly IDatabase gameDatabase;
 
-        private Type _sorted;
+        private Type sorted;
         private string[] cardsImageLocation;
         private int[] reservedGameCardsIndexes;
         private Image[] gameCardsAsImages;
@@ -45,8 +45,8 @@
         private int raise;
         private bool chipsAreAdded;
         private bool changed;
-        private int _height;
-        private int _width;
+        private int height;
+        private int width;
         private int winners;
         private int flop;
         private int turn;
@@ -116,8 +116,8 @@
             this.updates.Start();
             this.InitializeComponent();
 
-            this._width = this.Width;
-            this._height = this.Height;
+            this.width = this.Width;
+            this.height = this.Height;
             this.Shuffle();
 
             this.textBoxPot.Enabled = false;
@@ -133,9 +133,9 @@
             this.textBoxBotThreeChips.Text = "Chips : " + this.bots[2].Chips.ToString();
             this.textBoxBotFourChips.Text = "Chips : " + this.bots[3].Chips.ToString();
             this.textBoxBotFiveChips.Text = "Chips : " + this.bots[4].Chips.ToString();
-            this.timer.Interval = (1 * 1 * 1000);
+            this.timer.Interval = 1 * 1 * 1000;
             this.timer.Tick += TimerTick;
-            this.updates.Interval = (1 * 1 * 100);
+            this.updates.Interval = 1 * 1 * 100;
             this.updates.Tick += UpdateTick;
             this.textBoxBigBlind.Visible = true;
             this.textBoxSmallBlind.Visible = true;
@@ -554,7 +554,7 @@
                         currentPlayer.Type = 8;
                         currentPlayer.Power = (st1.Max()) / 4 + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 8 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
 
                     if (st1[0] == 0 && st1[1] == 9 && st1[2] == 10 && st1[3] == 11 && st1[0] + 12 == st1[4])
@@ -562,7 +562,7 @@
                         currentPlayer.Type = 9;
                         currentPlayer.Power = (st1.Max()) / 4 + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 9 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                 }
 
@@ -573,7 +573,7 @@
                         currentPlayer.Type = 8;
                         currentPlayer.Power = (st2.Max()) / 4 + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 8 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
 
                     if (st2[0] == 0 && st2[1] == 9 && st2[2] == 10 && st2[3] == 11 && st2[0] + 12 == st2[4])
@@ -581,7 +581,7 @@
                         currentPlayer.Type = 9;
                         currentPlayer.Power = (st2.Max()) / 4 + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 9 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                 }
 
@@ -592,7 +592,7 @@
                         currentPlayer.Type = 8;
                         currentPlayer.Power = (st3.Max()) / 4 + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 8 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
 
                     if (st3[0] == 0 && st3[1] == 9 && st3[2] == 10 && st3[3] == 11 && st3[0] + 12 == st3[4])
@@ -600,7 +600,7 @@
                         currentPlayer.Type = 9;
                         currentPlayer.Power = (st3.Max() / 4) + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 9 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                 }
 
@@ -611,7 +611,7 @@
                         currentPlayer.Type = 8;
                         currentPlayer.Power = (st4.Max()) / 4 + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 8 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
 
                     if (st4[0] == 0 && st4[1] == 9 && st4[2] == 10 && st4[3] == 11 && st4[0] + 12 == st4[4])
@@ -619,7 +619,7 @@
                         currentPlayer.Type = 9;
                         currentPlayer.Power = (st4.Max()) / 4 + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 9 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                 }
             }
@@ -637,7 +637,7 @@
                         currentPlayer.Type = 7;
                         currentPlayer.Power = (straight[j] / 4) * 4 + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 7 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
 
                     if (straight[j] / 4 == 0 && straight[j + 1] / 4 == 0 && straight[j + 2] / 4 == 0 && straight[j + 3] / 4 == 0)
@@ -645,7 +645,7 @@
                         currentPlayer.Type = 7;
                         currentPlayer.Power = 13 * 4 + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 7 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                 }
             }
@@ -667,7 +667,7 @@
                                 currentPlayer.Type = 6;
                                 currentPlayer.Power = 13 * 2 + currentPlayer.Type * 100;
                                 this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 6 });
-                                this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                                this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                                 break;
                             }
 
@@ -676,7 +676,7 @@
                                 currentPlayer.Type = 6;
                                 currentPlayer.Power = fh.Max() / 4 * 2 + currentPlayer.Type * 100;
                                 this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 6 });
-                                this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                                this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                                 break;
                             }
                         }
@@ -723,7 +723,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = this.reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
 
@@ -732,7 +732,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = this.reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else if (this.reservedGameCardsIndexes[i] / 4 < f1.Max() / 4 && this.reservedGameCardsIndexes[i + 1] / 4 < f1.Max() / 4)
@@ -740,7 +740,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = f1.Max() + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -756,7 +756,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = this.reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else
@@ -764,7 +764,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = f1.Max() + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -777,7 +777,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = this.reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else
@@ -785,7 +785,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = f1.Max() + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -798,7 +798,7 @@
                         currentPlayer.Type = 5;
                         currentPlayer.Power = this.reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
 
@@ -807,7 +807,7 @@
                         currentPlayer.Type = 5;
                         currentPlayer.Power = reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
                     else if (this.reservedGameCardsIndexes[i] / 4 < f1.Min() / 4 && this.reservedGameCardsIndexes[i + 1] / 4 < f1.Min())
@@ -815,7 +815,7 @@
                         currentPlayer.Type = 5;
                         currentPlayer.Power = f1.Max() + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
                 }
@@ -830,7 +830,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = this.reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         if (this.reservedGameCardsIndexes[i + 1] / 4 > f2.Max() / 4)
@@ -838,7 +838,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else if (this.reservedGameCardsIndexes[i] / 4 < f2.Max() / 4 && this.reservedGameCardsIndexes[i + 1] / 4 < f2.Max() / 4)
@@ -846,7 +846,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = f2.Max() + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -862,7 +862,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = this.reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else
@@ -870,7 +870,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = f2.Max() + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -883,7 +883,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = this.reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else
@@ -891,7 +891,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = f2.Max() + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -904,7 +904,7 @@
                         currentPlayer.Type = 5;
                         currentPlayer.Power = this.reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
 
@@ -913,7 +913,7 @@
                         currentPlayer.Type = 5;
                         currentPlayer.Power = this.reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
                     else if (this.reservedGameCardsIndexes[i] / 4 < f2.Min() / 4 && this.reservedGameCardsIndexes[i + 1] / 4 < f2.Min())
@@ -921,7 +921,7 @@
                         currentPlayer.Type = 5;
                         currentPlayer.Power = f2.Max() + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
                 }
@@ -936,7 +936,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
 
@@ -945,7 +945,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = this.reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else if (this.reservedGameCardsIndexes[i] / 4 < f3.Max() / 4 && this.reservedGameCardsIndexes[i + 1] / 4 < f3.Max() / 4)
@@ -953,7 +953,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = f3.Max() + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -969,7 +969,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = this.reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else
@@ -977,7 +977,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = f3.Max() + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -990,7 +990,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = this.reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else
@@ -998,7 +998,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = f3.Max() + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -1011,7 +1011,7 @@
                         currentPlayer.Type = 5;
                         currentPlayer.Power = this.reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
 
@@ -1020,7 +1020,7 @@
                         currentPlayer.Type = 5;
                         currentPlayer.Power = this.reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
                     else if (this.reservedGameCardsIndexes[i] / 4 < f3.Min() / 4 && this.reservedGameCardsIndexes[i + 1] / 4 < f3.Min())
@@ -1028,7 +1028,7 @@
                         currentPlayer.Type = 5;
                         currentPlayer.Power = f3.Max() + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
                 }
@@ -1043,7 +1043,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = this.reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
 
@@ -1052,7 +1052,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = this.reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else if (this.reservedGameCardsIndexes[i] / 4 < f4.Max() / 4 && this.reservedGameCardsIndexes[i + 1] / 4 < f4.Max() / 4)
@@ -1060,7 +1060,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = f4.Max() + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -1076,7 +1076,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = this.reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else
@@ -1084,7 +1084,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = f4.Max() + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -1097,7 +1097,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = this.reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                         else
@@ -1105,7 +1105,7 @@
                             currentPlayer.Type = 5;
                             currentPlayer.Power = f4.Max() + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                             vf = true;
                         }
                     }
@@ -1118,7 +1118,7 @@
                         currentPlayer.Type = 5;
                         currentPlayer.Power = this.reservedGameCardsIndexes[i] + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
 
@@ -1127,7 +1127,7 @@
                         currentPlayer.Type = 5;
                         currentPlayer.Power = this.reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
                     else if (this.reservedGameCardsIndexes[i] / 4 < f4.Min() / 4 && this.reservedGameCardsIndexes[i + 1] / 4 < f4.Min())
@@ -1135,7 +1135,7 @@
                         currentPlayer.Type = 5;
                         currentPlayer.Power = f4.Max() + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         vf = true;
                     }
                 }
@@ -1147,7 +1147,7 @@
                         currentPlayer.Type = 5.5;
                         currentPlayer.Power = 13 + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5.5 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
 
                     if (this.reservedGameCardsIndexes[i + 1] / 4 == 0 && this.reservedGameCardsIndexes[i + 1] % 4 == f1[0] % 4 && vf && f1.Length > 0)
@@ -1155,7 +1155,7 @@
                         currentPlayer.Type = 5.5;
                         currentPlayer.Power = 13 + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5.5 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                 }
 
@@ -1166,7 +1166,7 @@
                         currentPlayer.Type = 5.5;
                         currentPlayer.Power = 13 + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5.5 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
 
                     if (this.reservedGameCardsIndexes[i + 1] / 4 == 0 && this.reservedGameCardsIndexes[i + 1] % 4 == f2[0] % 4 && vf && f2.Length > 0)
@@ -1174,7 +1174,7 @@
                         currentPlayer.Type = 5.5;
                         currentPlayer.Power = 13 + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5.5 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                 }
 
@@ -1185,7 +1185,7 @@
                         currentPlayer.Type = 5.5;
                         currentPlayer.Power = 13 + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5.5 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
 
                     if (this.reservedGameCardsIndexes[i + 1] / 4 == 0 && this.reservedGameCardsIndexes[i + 1] % 4 == f3[0] % 4 && vf && f3.Length > 0)
@@ -1193,7 +1193,7 @@
                         currentPlayer.Type = 5.5;
                         currentPlayer.Power = 13 + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5.5 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                 }
 
@@ -1204,7 +1204,7 @@
                         currentPlayer.Type = 5.5;
                         currentPlayer.Power = 13 + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5.5 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
 
                     if (this.reservedGameCardsIndexes[i + 1] / 4 == 0 && this.reservedGameCardsIndexes[i + 1] % 4 == f4[0] % 4 && vf)
@@ -1212,7 +1212,7 @@
                         currentPlayer.Type = 5.5;
                         currentPlayer.Power = 13 + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 5.5 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                 }
             }
@@ -1232,14 +1232,14 @@
                             currentPlayer.Type = 4;
                             currentPlayer.Power = op.Max() + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 4 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         }
                         else
                         {
                             currentPlayer.Type = 4;
                             currentPlayer.Power = op[j + 4] + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 4 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                         }
                     }
 
@@ -1248,7 +1248,7 @@
                         currentPlayer.Type = 4;
                         currentPlayer.Power = 13 + currentPlayer.Type * 100;
                         this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 4 });
-                        this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                        this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                     }
                 }
             }
@@ -1268,14 +1268,14 @@
                             currentPlayer.Type = 3;
                             currentPlayer.Power = 13 * 3 + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 3 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                         }
                         else
                         {
                             currentPlayer.Type = 3;
                             currentPlayer.Power = fh[0] / 4 + fh[1] / 4 + fh[2] / 4 + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 3 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                         }
                     }
                 }
@@ -1313,7 +1313,7 @@
                                             currentPlayer.Type = 2;
                                             currentPlayer.Power = 13 * 4 + (this.reservedGameCardsIndexes[i + 1] / 4) * 2 + currentPlayer.Type * 100;
                                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 2 });
-                                            this._sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
+                                            this.sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
                                                 .ThenByDescending(op => op.Power).First();
                                         }
 
@@ -1322,7 +1322,7 @@
                                             currentPlayer.Type = 2;
                                             currentPlayer.Power = 13 * 4 + (this.reservedGameCardsIndexes[i] / 4) * 2 + currentPlayer.Type * 100;
                                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 2 });
-                                            this._sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
+                                            this.sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
                                                 .ThenByDescending(op => op.Power).First();
                                         }
 
@@ -1332,7 +1332,7 @@
                                             currentPlayer.Power = (this.reservedGameCardsIndexes[i] / 4) * 2 + 
                                                 (this.reservedGameCardsIndexes[i + 1] / 4) * 2 + currentPlayer.Type * 100;
                                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 2 });
-                                            this._sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
+                                            this.sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
                                                 .ThenByDescending(op => op.Power).First();
                                         }
                                     }
@@ -1377,7 +1377,7 @@
                                             currentPlayer.Type = 2;
                                             currentPlayer.Power = (this.reservedGameCardsIndexes[i] / 4) * 2 + 13 * 4 + currentPlayer.Type * 100;
                                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 2 });
-                                            this._sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
+                                            this.sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
                                                 .ThenByDescending(op => op.Power).First();
                                         }
 
@@ -1386,7 +1386,7 @@
                                             currentPlayer.Type = 2;
                                             currentPlayer.Power = (this.reservedGameCardsIndexes[i + 1] / 4) * 2 + 13 * 4 + currentPlayer.Type * 100;
                                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 2 });
-                                            this._sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
+                                            this.sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
                                                 .ThenByDescending(op => op.Power).First();
                                         }
 
@@ -1396,7 +1396,7 @@
                                             currentPlayer.Power = (this.reservedGameCardsIndexes[tc] / 4) * 2 +
                                                 (this.reservedGameCardsIndexes[i + 1] / 4) * 2 + currentPlayer.Type * 100;
                                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 2 });
-                                            this._sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
+                                            this.sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
                                                 .ThenByDescending(op => op.Power).First();
                                         }
 
@@ -1406,7 +1406,7 @@
                                             currentPlayer.Power = (this.reservedGameCardsIndexes[tc] / 4) * 2 + 
                                                 (this.reservedGameCardsIndexes[i] / 4) * 2 + currentPlayer.Type * 100;
                                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 2 });
-                                            this._sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
+                                            this.sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
                                                 .ThenByDescending(op => op.Power).First();
                                         }
                                     }
@@ -1425,7 +1425,7 @@
                                                 currentPlayer.Type = 0;
                                                 currentPlayer.Power = 13 + this.reservedGameCardsIndexes[i] / 4 + currentPlayer.Type * 100;
                                                 this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 1 });
-                                                this._sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
+                                                this.sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
                                                     .ThenByDescending(op => op.Power).First();
                                             }
                                             else
@@ -1434,7 +1434,7 @@
                                                 currentPlayer.Power = this.reservedGameCardsIndexes[tc] / 4 + 
                                                     this.reservedGameCardsIndexes[i] / 4 + currentPlayer.Type * 100;
                                                 this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 1 });
-                                                this._sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
+                                                this.sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
                                                     .ThenByDescending(op => op.Power).First();
                                             }
                                         }
@@ -1445,7 +1445,7 @@
                                                 currentPlayer.Type = 0;
                                                 currentPlayer.Power = 13 + this.reservedGameCardsIndexes[i + 1] + currentPlayer.Type * 100;
                                                 this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 1 });
-                                                this._sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
+                                                this.sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
                                                     .ThenByDescending(op => op.Power).First();
                                             }
                                             else
@@ -1454,7 +1454,7 @@
                                                 currentPlayer.Power = this.reservedGameCardsIndexes[tc] / 4 +
                                                     this.reservedGameCardsIndexes[i + 1] / 4 + currentPlayer.Type * 100;
                                                 this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 1 });
-                                                this._sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
+                                                this.sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current)
                                                     .ThenByDescending(op => op.Power).First();
                                             }
                                         }
@@ -1483,14 +1483,14 @@
                             currentPlayer.Type = 1;
                             currentPlayer.Power = 13 * 4 + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 1 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                         }
                         else
                         {
                             currentPlayer.Type = 1;
                             currentPlayer.Power = (this.reservedGameCardsIndexes[i + 1] / 4) * 4 + currentPlayer.Type * 100;
                             this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 1 });
-                            this._sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                            this.sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                         }
                     }
 
@@ -1508,7 +1508,7 @@
                                 currentPlayer.Type = 1;
                                 currentPlayer.Power = 13 * 4 + this.reservedGameCardsIndexes[i] / 4 + currentPlayer.Type * 100;
                                 this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 1 });
-                                this._sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                                this.sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                             }
                             else
                             {
@@ -1516,7 +1516,7 @@
                                 currentPlayer.Power = (this.reservedGameCardsIndexes[i + 1] / 4) * 4 + 
                                     this.reservedGameCardsIndexes[i] / 4 + currentPlayer.Type * 100;
                                 this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 1 });
-                                this._sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                                this.sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                             }
                         }
 
@@ -1532,7 +1532,7 @@
                                 currentPlayer.Type = 1;
                                 currentPlayer.Power = 13 * 4 + this.reservedGameCardsIndexes[i + 1] / 4 + currentPlayer.Type * 100;
                                 this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 1 });
-                                this._sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                                this.sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                             }
                             else
                             {
@@ -1540,7 +1540,7 @@
                                 currentPlayer.Power = (this.reservedGameCardsIndexes[tc] / 4) * 4 +
                                     this.reservedGameCardsIndexes[i + 1] / 4 + currentPlayer.Type * 100;
                                 this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = 1 });
-                                this._sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
+                                this.sorted = this.gameDatabase.Win.OrderByDescending(op => op.Current).ThenByDescending(op => op.Power).First();
                             }
                         }
 
@@ -1559,14 +1559,14 @@
                     currentPlayer.Type = -1;
                     currentPlayer.Power = this.reservedGameCardsIndexes[i] / 4;
                     this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = -1 });
-                    this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                    this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                 }
                 else
                 {
                     currentPlayer.Type = -1;
                     currentPlayer.Power = this.reservedGameCardsIndexes[i + 1] / 4;
                     this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = -1 });
-                    this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                    this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                 }
 
                 if (this.reservedGameCardsIndexes[i] / 4 == 0 || this.reservedGameCardsIndexes[i + 1] / 4 == 0)
@@ -1574,7 +1574,7 @@
                     currentPlayer.Type = -1;
                     currentPlayer.Power = 13;
                     this.gameDatabase.Win.Add(new Type() { Power = currentPlayer.Power, Current = -1 });
-                    this._sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
+                    this.sorted = this.gameDatabase.Win.OrderByDescending(op1 => op1.Current).ThenByDescending(op1 => op1.Power).First();
                 }
             }
         }
@@ -1595,9 +1595,9 @@
                 } 
             }
 
-            if (currentPlayer.Type == this._sorted.Current)
+            if (currentPlayer.Type == this.sorted.Current)
             {
-                if (currentPlayer.Power == this._sorted.Power)
+                if (currentPlayer.Power == this.sorted.Power)
                 {
                     this.winners++;
                     this.gameDatabase.CheckWinners.Add(currentPlayer.Name);
@@ -1925,8 +1925,8 @@
                 this.gameDatabase.CheckWinners.Clear();
                 this.winners = 0;
                 this.gameDatabase.Win.Clear();
-                this._sorted.Current = 0;
-                this._sorted.Power = 0;
+                this.sorted.Current = 0;
+                this.sorted.Power = 0;
                 for (int currentCard = 0; currentCard < this.cardsPictureBoxArray.Length; currentCard++)
                 {
                     this.cardsPictureBoxArray[currentCard].Image = null;
@@ -2109,8 +2109,8 @@
             this.rounds = 0;
             this.restart = false;
             this.raising = false;
-            this._height = 0;
-            this._width = 0;
+            this.height = 0;
+            this.width = 0;
             this.winners = 0;
             this.flop = 1;
             this.turn = 2;
@@ -2123,8 +2123,8 @@
             this.gameDatabase.CheckWinners.Clear();
             this.gameDatabase.Chips.Clear();
             this.gameDatabase.Win.Clear();
-            this._sorted.Current = 0;
-            this._sorted.Power = 0;
+            this.sorted.Current = 0;
+            this.sorted.Power = 0;
             this.textBoxPot.Text = "0";
             this.secondsLeft = 60;
             this.up = 10000000;
@@ -2171,8 +2171,8 @@
         public void FixWinners()
         {
             this.gameDatabase.Win.Clear();
-            this._sorted.Current = 0;
-            this._sorted.Power = 0;
+            this.sorted.Current = 0;
+            this.sorted.Power = 0;
             string fixedLast = "qwerty";
             if (!this.playerStatus.Text.Contains("Fold"))
             {
@@ -2606,8 +2606,8 @@
         }
         private void Layout_Change(object sender, LayoutEventArgs e)
         {
-            this._width = this.Width;
-            this._height = this.Height;
+            this.width = this.Width;
+            this.height = this.Height;
         }
         #endregion
     }
