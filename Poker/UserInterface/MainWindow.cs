@@ -1830,15 +1830,34 @@
                     this.Rules(0, 1, this.player);
                 }
 
-                for (int currentBot = 0; currentBot < this.bots.Count; currentBot++)
+                if (!this.botOneStatus.Text.Contains("Fold"))
                 {
-                    if (!this.botStatusLabels[currentBot].Text.Contains("Fold"))
-                    {
-                        fixedLast = this.bots[currentBot].Name;
-                        int firstCart = this.bots[currentBot].StartCard;
-                        int secondCard = firstCart + 1;
-                        this.Rules(firstCart, secondCard, this.bots[currentBot]);
-                    }
+                    fixedLast = "Bot 1";
+                    this.Rules(2, 3, this.bots[0]);
+                }
+
+                if (!this.botTwoStatus.Text.Contains("Fold"))
+                {
+                    fixedLast = "Bot 2";
+                    this.Rules(4, 5, this.bots[1]);
+                }
+
+                if (!this.botThreeStatus.Text.Contains("Fold"))
+                {
+                    fixedLast = "Bot 3";
+                    this.Rules(6, 7, this.bots[2]);
+                }
+
+                if (!this.botFourStatus.Text.Contains("Fold"))
+                {
+                    fixedLast = "Bot 4";
+                    this.Rules(8, 9, this.bots[3]);
+                }
+
+                if (!this.botFiveStatus.Text.Contains("Fold"))
+                {
+                    fixedLast = "Bot 5";
+                    this.Rules(10, 11, this.bots[4]);
                 }
 
                 this.Winner(this.player, fixedLast);
@@ -2162,18 +2181,31 @@
                 fixedLast = "Player";
                 this.Rules(0, 1, this.player);
             }
-
-            for (int currentBot = 0; currentBot < this.bots.Count; currentBot++)
+            if (!botOneStatus.Text.Contains("Fold"))
             {
-                if (!this.botStatusLabels[currentBot].Text.Contains("Fold"))
-                {
-                    fixedLast = this.bots[currentBot].Name;
-                    int firstCart = this.bots[currentBot].StartCard;
-                    int secondCard = firstCart + 1;
-                    this.Rules(firstCart, secondCard, this.bots[currentBot]);
-                }
+                fixedLast = "Bot 1";
+                Rules(2, 3, this.bots[0]);
             }
-            
+            if (!botTwoStatus.Text.Contains("Fold"))
+            {
+                fixedLast = "Bot 2";
+                Rules(4, 5, this.bots[1]);
+            }
+            if (!botThreeStatus.Text.Contains("Fold"))
+            {
+                fixedLast = "Bot 3";
+                Rules(6, 7, this.bots[2]);
+            }
+            if (!botFourStatus.Text.Contains("Fold"))
+            {
+                fixedLast = "Bot 4";
+                Rules(8, 9, this.bots[3]);
+            }
+            if (!botFiveStatus.Text.Contains("Fold"))
+            {
+                fixedLast = "Bot 5";
+                Rules(10, 11, this.bots[4]);
+            }
             this.Winner(this.player, fixedLast);
             this.Winner(this.bots[0], fixedLast);
             this.Winner(this.bots[1], fixedLast);
