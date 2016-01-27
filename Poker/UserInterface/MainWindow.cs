@@ -17,6 +17,7 @@
         #region Variables
         public const int DefaultSetOfCards = 52;
         public const int DefaultCardsInGame = 17;
+        public const int DefaultNumberOfBots = 5;
 
         private ProgressBar progressBar;
         private readonly IPlayer player;
@@ -32,6 +33,7 @@
         private Timer _timer;
         private Timer _updates;
         private Bitmap backImage;
+        private Label[] botStatusLabels;
 
         private int Nm;
 
@@ -83,9 +85,11 @@
             this._timer = new Timer();
             this._updates = new Timer();
             this.backImage = new Bitmap("..\\..\\Resources\\Assets\\Back\\Back.png");
+            this.botStatusLabels = new Label[DefaultNumberOfBots];
+            
 
             this.neededChipsToCall = 500;
-            this.foldedPlayers = 5;
+            this.foldedPlayers = DefaultNumberOfBots;
             this.turnCount = 0;
             this._winners = 0;
             this._flop = 1;
@@ -165,7 +169,7 @@
             bool check = false;
             int horizontal = 580, vertical = 480;
             Random r = new Random();
-            for (i = cardsImageLocation.Length; i > 0; i--)
+            for (i = this.cardsImageLocation.Length; i > 0; i--)
             {
                 int j = r.Next(i);
                 var k = cardsImageLocation[j];
@@ -238,8 +242,8 @@
                             this.cardsPictureBoxArray[cardNumber].Visible = true;
                             this.Controls.Add(this.bots[currentBotNumber].Panel);
                             this.bots[currentBotNumber].InitializePanel(new Point(
-                                cardsPictureBoxArray[currentBotStartCard].Left - 10, 
-                                cardsPictureBoxArray[currentBotStartCard].Top - 10));
+                                this.cardsPictureBoxArray[currentBotStartCard].Left - 10, 
+                                this.cardsPictureBoxArray[currentBotStartCard].Top - 10));
                             this.bots[currentBotNumber].Panel.Visible = false;
                             if (cardNumber == (currentBotStartCard + 1))
                             {
@@ -256,24 +260,28 @@
                     {
                         this.cardsPictureBoxArray[13].Tag = this.reservedGameCardsIndexes[13];
                     }
+
                     if (cardNumber > 13)
                     {
                         this.cardsPictureBoxArray[14].Tag = this.reservedGameCardsIndexes[14];
                     }
+
                     if (cardNumber > 14)
                     {
                         this.cardsPictureBoxArray[15].Tag = this.reservedGameCardsIndexes[15];
                     }
+
                     if (cardNumber > 15)
                     {
                         this.cardsPictureBoxArray[16].Tag = this.reservedGameCardsIndexes[16];
-
                     }
+
                     if (!check)
                     {
                         horizontal = 410;
                         vertical = 265;
                     }
+
                     check = true;
                     if (this.cardsPictureBoxArray[cardNumber] != null)
                     {
@@ -284,6 +292,12 @@
                     }
                 }
                 #endregion
+
+                this.botStatusLabels[0] = this.botOneStatus;
+                this.botStatusLabels[1] = this.botTwoStatus;
+                this.botStatusLabels[2] = this.botThreeStatus;
+                this.botStatusLabels[3] = this.botFourStatus;
+                this.botStatusLabels[4] = this.botFiveStatus;
 
                 for (int currentBotNumber = 0; currentBotNumber < this.bots.Count; currentBotNumber++)
                 {
@@ -355,19 +369,18 @@
                 if (this.player.CanMakeTurn)
                 {
                     this.FixCall(playerStatus, this.player, 1);
-                    //MessageBox.Show("Player's Turn");
                     this.progressBarTimer.Visible = true;
                     this.progressBarTimer.Value = 1000;
                     this.secondsLeft = 60;
-                    _up = 10000000;
-                    _timer.Start();
-                    buttonRaise.Enabled = true;
-                    buttonCall.Enabled = true;
-                    buttonRaise.Enabled = true;
-                    buttonRaise.Enabled = true;
-                    buttonFold.Enabled = true;
+                    this._up = 10000000;
+                    this._timer.Start();
+                    this.buttonRaise.Enabled = true;
+                    this.buttonCall.Enabled = true;
+                    this.buttonRaise.Enabled = true;
+                    this.buttonRaise.Enabled = true;
+                    this.buttonFold.Enabled = true;
                     this.turnCount++;
-                    FixCall(playerStatus, this.player, 2);
+                    this.FixCall(this.playerStatus, this.player, 2);
                 }
             }
             if (this.player.OutOfChips || !this.player.CanMakeTurn)
@@ -375,174 +388,79 @@
                 await AllIn();
                 if (this.player.OutOfChips && !this.player.Folded)
                 {
-                    if (buttonCall.Text.Contains("All in") == false || buttonRaise.Text.Contains("All in") == false)
+                    if (this.buttonCall.Text.Contains("All in") == false || this.buttonRaise.Text.Contains("All in") == false)
                     {
                         this.gameDatabase.PlayersGameStatus.RemoveAt(0);
                         this.gameDatabase.PlayersGameStatus.Insert(0, null);
-                        _maxLeft--;
+                        this._maxLeft--;
                         this.player.Folded = true;
                     }
                 }
+
                 await CheckRaise(0, 0);
-                progressBarTimer.Visible = false;
-                buttonRaise.Enabled = false;
-                buttonCall.Enabled = false;
-                buttonRaise.Enabled = false;
-                buttonRaise.Enabled = false;
-                buttonFold.Enabled = false;
-                _timer.Stop();
-                this.bots[0].CanMakeTurn = true; //botOneTurn
-                if (!this.bots[0].OutOfChips)
+                this.progressBarTimer.Visible = false;
+                this.buttonRaise.Enabled = false;
+                this.buttonCall.Enabled = false;
+                this.buttonRaise.Enabled = false;
+                this.buttonRaise.Enabled = false;
+                this.buttonFold.Enabled = false;
+                this._timer.Stop();
+                
+                for (int currentBotNumber = 0; currentBotNumber < this.bots.Count; currentBotNumber++)
                 {
-                    if (this.bots[0].CanMakeTurn)
+                    this.bots[currentBotNumber].CanMakeTurn = true;
+                    if (!this.bots[currentBotNumber].OutOfChips)
                     {
-                        FixCall(this.botOneStatus, this.bots[0], 1);
-                        FixCall(this.botOneStatus, this.bots[0], 2);
-                        Rules(2, 3, this.bots[0]); //this.bots[0].Name, this.bots[0].Type, this.bots[0].Power, this.bots[0].OutOfChips
-                        MessageBox.Show("Bot 1's Turn");
-                        AI(2, 3, this.botOneStatus, 0, this.bots[0]);
-                        this.turnCount++;
-                        _last = 1;
-                        this.bots[0].CanMakeTurn = false;
-                        this.bots[1].CanMakeTurn = true;
+                        if (this.bots[currentBotNumber].CanMakeTurn)
+                        {
+                            int currentBotStartCard = this.bots[currentBotNumber].StartCard;
+                            this.FixCall(this.botStatusLabels[currentBotNumber], this.bots[currentBotNumber], 1);
+                            this.FixCall(this.botStatusLabels[currentBotNumber], this.bots[currentBotNumber], 2);
+                            this.Rules(currentBotStartCard, currentBotStartCard + 1, this.bots[currentBotNumber]);
+                            string msg = this.bots[currentBotNumber].Name + "'s Turn";
+                            MessageBox.Show(msg);
+                            this.AI(currentBotStartCard, currentBotStartCard + 1, this.botStatusLabels[currentBotNumber], 0, this.bots[currentBotNumber]);
+                            this.turnCount++;
+                            this._last = 1;
+                            this.bots[currentBotNumber].CanMakeTurn = false;
+                        }
+                    }
+
+                    if (this.bots[currentBotNumber].OutOfChips && !this.bots[currentBotNumber].Folded)
+                    {
+                        this.gameDatabase.PlayersGameStatus.RemoveAt(currentBotNumber + 1);
+                        this.gameDatabase.PlayersGameStatus.Insert(currentBotNumber + 1, null);
+                        this._maxLeft--;
+                        this.bots[currentBotNumber].Folded = true;
+                    }
+
+                    if (this.bots[currentBotNumber].OutOfChips || !this.bots[currentBotNumber].CanMakeTurn)
+                    {
+                        await CheckRaise(currentBotNumber + 1, currentBotNumber + 1);
                     }
                 }
-                if (this.bots[0].OutOfChips && !this.bots[0].Folded)
-                {
-                    this.gameDatabase.PlayersGameStatus.RemoveAt(1);
-                    this.gameDatabase.PlayersGameStatus.Insert(1, null);
-                    _maxLeft--;
-                    this.bots[0].Folded = true;
-                }
-                if (this.bots[0].OutOfChips || !this.bots[0].CanMakeTurn)
-                {
-                    await CheckRaise(1, 1);
-                    this.bots[1].CanMakeTurn = true;
-                }
-                if (!this.bots[1].OutOfChips)
-                {
-                    if (this.bots[1].CanMakeTurn)
-                    {
-                        FixCall(this.botTwoStatus, this.bots[1], 1);
-                        FixCall(this.botTwoStatus, this.bots[1], 2);
-                        Rules(4, 5, this.bots[1]);
-                        MessageBox.Show("Bot 2's Turn");
-                        AI(4, 5, this.botTwoStatus, 1, this.bots[1]);
-                        this.turnCount++;
-                        _last = 2;
-                        this.bots[1].CanMakeTurn = false;
-                        this.bots[2].CanMakeTurn = true;
-                    }
-                }
-                if (this.bots[1].OutOfChips && !this.bots[1].Folded)
-                {
-                    this.gameDatabase.PlayersGameStatus.RemoveAt(2);
-                    this.gameDatabase.PlayersGameStatus.Insert(2, null);
-                    _maxLeft--;
-                    this.bots[1].Folded = true;
-                }
-                if (this.bots[1].OutOfChips || !this.bots[1].CanMakeTurn)
-                {
-                    await CheckRaise(2, 2);
-                    this.bots[2].CanMakeTurn = true;
-                }
-                if (!this.bots[2].OutOfChips)
-                {
-                    if (this.bots[2].CanMakeTurn)
-                    {
-                        FixCall(this.botThreeStatus, this.bots[2], 1);
-                        FixCall(this.botThreeStatus, this.bots[2], 2);
-                        Rules(6, 7, this.bots[2]);
-                        MessageBox.Show("Bot 3's Turn");
-                        AI(6, 7, this.botThreeStatus, 2, this.bots[2]);
-                        this.turnCount++;
-                        _last = 3;
-                        this.bots[2].CanMakeTurn = false;
-                        this.bots[3].CanMakeTurn = true;
-                    }
-                }
-                if (this.bots[2].OutOfChips && !this.bots[2].Folded)
-                {
-                    this.gameDatabase.PlayersGameStatus.RemoveAt(3);
-                    this.gameDatabase.PlayersGameStatus.Insert(3, null);
-                    _maxLeft--;
-                    this.bots[2].Folded = true;
-                }
-                if (this.bots[2].OutOfChips || !this.bots[2].CanMakeTurn)
-                {
-                    await CheckRaise(3, 3);
-                    this.bots[3].CanMakeTurn = true;
-                }
-                if (!this.bots[3].OutOfChips)
-                {
-                    if (this.bots[3].CanMakeTurn)
-                    {
-                        FixCall(this.botFourStatus, this.bots[3], 1);
-                        FixCall(this.botFourStatus, this.bots[3], 2);
-                        Rules(8, 9, this.bots[3]);
-                        MessageBox.Show("Bot 4's Turn");
-                        AI(8, 9, this.botFourStatus, 3, this.bots[3]);
-                        this.turnCount++;
-                        _last = 4;
-                        this.bots[3].CanMakeTurn = false;
-                        this.bots[4].CanMakeTurn = true;
-                    }
-                }
-                if (this.bots[3].OutOfChips && !this.bots[3].Folded)
-                {
-                    this.gameDatabase.PlayersGameStatus.RemoveAt(4);
-                    this.gameDatabase.PlayersGameStatus.Insert(4, null);
-                    _maxLeft--;
-                    this.bots[3].Folded = true;
-                }
-                if (this.bots[3].OutOfChips || !this.bots[3].CanMakeTurn)
-                {
-                    await CheckRaise(4, 4);
-                    this.bots[4].CanMakeTurn = true;
-                }
-                if (!this.bots[4].OutOfChips)
-                {
-                    if (this.bots[4].CanMakeTurn)
-                    {
-                        FixCall(this.botFiveStatus, this.bots[4], 1);
-                        FixCall(this.botFiveStatus, this.bots[4], 2);
-                        Rules(10, 11, this.bots[4]);
-                        MessageBox.Show("Bot 5's Turn");
-                        AI(10, 11, this.botFiveStatus, 4, this.bots[4]);
-                        this.turnCount++;
-                        _last = 5;
-                        this.bots[4].CanMakeTurn = false;
-                    }
-                }
-                if (this.bots[4].OutOfChips && !this.bots[4].Folded)
-                {
-                    this.gameDatabase.PlayersGameStatus.RemoveAt(5);
-                    this.gameDatabase.PlayersGameStatus.Insert(5, null);
-                    _maxLeft--;
-                    this.bots[4].Folded = true;
-                }
-                if (this.bots[4].OutOfChips || !this.bots[4].CanMakeTurn)
-                {
-                    await CheckRaise(5, 5);
-                    this.player.CanMakeTurn = true;
-                }
+                
+                this.player.CanMakeTurn = true;
                 if (this.player.OutOfChips && !this.player.Folded)
                 {
-                    if (buttonCall.Text.Contains("All in") == false || buttonRaise.Text.Contains("All in") == false)
+                    if (this.buttonCall.Text.Contains("All in") == false || this.buttonRaise.Text.Contains("All in") == false)
                     {
                         this.gameDatabase.PlayersGameStatus.RemoveAt(0);
                         this.gameDatabase.PlayersGameStatus.Insert(0, null);
-                        _maxLeft--;
+                        this._maxLeft--;
                         this.player.Folded = true;
                     }
                 }
+
                 #endregion
+
                 await AllIn();
-                if (!_restart)
+                if (!this._restart)
                 {
                     await Turns();
                 }
-                _restart = false;
+
+                this._restart = false;
             }
         }
 
