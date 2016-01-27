@@ -11,14 +11,14 @@
         private AnchorStyles verticalLocation;
         private AnchorStyles horizontalLocation;
 
-        public Bot(string name, int startCard, int verticalLocationCoordinate, int horizontalLocationCoordinate, AnchorStyles verticalLocation = 0, AnchorStyles horizontalLocation = 0)
-            : base(name)
+        public Bot(string name, int startCard, int verticalLocationCoordinate, int horizontalLocationCoordinate, 
+            AnchorStyles verticalLocation = 0, AnchorStyles horizontalLocation = 0)
+            : base(name, startCard)
         {
             this.VerticalLocationCoordinate = verticalLocationCoordinate;
             this.HorizontalLocationCoordinate = horizontalLocationCoordinate;
             this.VerticalLocation = verticalLocation;
             this.HorizontalLocation = horizontalLocation;
-            this.StartCard = startCard;
         }
 
         public int VerticalLocationCoordinate
@@ -27,6 +27,7 @@
             {
                 return this.verticalLocationCoordinate;
             }
+
             set
             {
                 this.ValidateForNull(value, "Vertical location coordinate");
@@ -35,11 +36,48 @@
             }
         }
 
-        public int HorizontalLocationCoordinate { get; set; }
+        public int HorizontalLocationCoordinate
+        {
+            get
+            {
+                return this.horizontalLocationCoordinate;
+            }
 
-        public AnchorStyles VerticalLocation { get; set; }
+            set
+            {
+                this.ValidateForNull(value, "Horizontal location coordinate");
+                this.ValidateForNegativeNumber(value, "Horizontal location coordinate");
+                this.horizontalLocationCoordinate = value;
+            }
+        }
 
-        public AnchorStyles HorizontalLocation { get; set; }
+        public AnchorStyles VerticalLocation
+        {
+            get
+            {
+                return this.verticalLocation;
+            }
+
+            set
+            {
+                this.ValidateForNull(value, "Vertical location");
+                this.verticalLocation = value;
+            }
+        }
+
+        public AnchorStyles HorizontalLocation
+        {
+            get
+            {
+                return this.horizontalLocation;
+            }
+
+            set
+            {
+                this.ValidateForNull(value, "Horizontal location");
+                this.horizontalLocation = value;
+            }
+        }
 
         public AnchorStyles GetAnchorStyles()
         {

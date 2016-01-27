@@ -25,7 +25,7 @@
         private IList<ICard> cards;
         private int startCard;
 
-        protected Character(string name)
+        protected Character(string name, int startCard = 0)
         {
             this.Name = name;
             this.Chips = DefaultStartChips;
@@ -37,7 +37,8 @@
             this.CanMakeTurn = false;
             this.OutOfChips = false;
             this.Folded = false;
-            
+            this.StartCard = startCard;
+
             this.Cards = new List<ICard>
             {
                 new Card(),
