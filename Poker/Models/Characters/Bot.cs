@@ -1,10 +1,16 @@
 ﻿namespace Poker.Models.Characters
 {
+    using System;
     using System.Windows.Forms;
     using Interfaces;
 
     public class Bot : Character, IBot
     {
+        private int verticalLocationCoordinate;
+        private int horizontalLocationCoordinate;
+        private AnchorStyles verticalLocation;
+        private AnchorStyles horizontalLocation;
+
         public Bot(string name, int startCard, int verticalLocationCoordinate, int horizontalLocationCoordinate, AnchorStyles verticalLocation = 0, AnchorStyles horizontalLocation = 0)
             : base(name)
         {
@@ -15,7 +21,19 @@
             this.StartCard = startCard;
         }
 
-        public int VerticalLocationCoordinate { get; set; }
+        public int VerticalLocationCoordinate
+        {
+            get
+            {
+                return this.verticalLocationCoordinate;
+            }
+            set
+            {
+                this.ValidateForNull(value, "Vertical location coordinate");
+                this.ValidateForNegativeNumber(value, "Vertical location coordinate");
+                this.verticalLocationCoordinate = value;
+            }
+        }
 
         public int HorizontalLocationCoordinate { get; set; }
 

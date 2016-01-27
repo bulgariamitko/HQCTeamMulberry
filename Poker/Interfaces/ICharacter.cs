@@ -6,7 +6,7 @@
 
     public interface ICharacter
     {
-        string Name { get; set; }
+        string Name { get; }
 
         double Power { get; set; }
 
@@ -31,11 +31,5 @@
         bool Folded { get; set; }
 
         void InitializePanel(Point location);
-
-        void Check();
-
-        void Fold();
-
-        void AllIn();
     }
 }

@@ -3,16 +3,27 @@
     using System.Collections.Generic;
     using System.Drawing;
     using System.Windows.Forms;
-
     using Interfaces;
+    using System;
 
     public abstract class Character : ICharacter
     {
-        private const int DefaultStartChips = 10000;
-        private const int DefaultPlayerPanelHeight = 150;
-        private const int DefaultPlayerPanelWidth = 180;
+        protected const int DefaultStartChips = 10000;
+        protected const int DefaultPlayerPanelHeight = 150;
+        protected const int DefaultPlayerPanelWidth = 180;
 
+        private string name;
         private int chips;
+        private Panel panel;
+        private double type;
+        private double power;
+        private int call;
+        private int raise;
+        private bool canMakeTurn;
+        private bool outOfChips;
+        private bool folded;
+        private IList<ICard> cards;
+        private int startCard;
 
         protected Character(string name)
         {
@@ -35,30 +46,187 @@
 
         }
 
-        public string Name { get; set; }
+        public string Name
+        {
+            get
+            {
+                return this.name;
+            }
 
-        public double Power { get; set; }
+            private set
+            {
+                this.ValidateForEmptyOrNullString(value, "name");
+                this.name = value;
+            }
+        }
 
-        public int Chips { get; set; }
+        public int Chips
+        {
+            get
+            {
+                return this.chips;
+            }
 
-        public IList<ICard> Cards { get; }
+            set
+            {
+                this.ValidateForNull(value, "Chips");
+                if (value < 0)
+                {
+                    this.chips = 0;
+                }
+                else
+                {
+                    this.chips = value;
+                }
+            }
+        }
 
-        public int StartCard { get; set; }
+        public Panel Panel
+        {
+            get
+            {
+                return this.panel;
+            }
 
-        public Panel Panel { get; set; }
+            set
+            {
+                this.ValidateForNull(value, "Panel");
+                this.panel = value;
+            }
+        }
 
-        public double Type { get; set; }
+        public double Type
+        {
+            get
+            {
+                return this.type;
+            }
 
-        public int Call { get; set; }
+            set
+            {
+                this.ValidateForNull(value, "Type");
+                this.type = value;
+            }
+        }
 
-        public int Raise { get; set; }
+        public double Power
+        {
+            get
+            {
+                return this.power;
+            }
 
-        public bool CanMakeTurn { get; set; }
+            set
+            {
+                this.ValidateForNull(value, "Power");
+                this.power = value;
+            }
+        }
 
-        public bool OutOfChips { get; set; }
+        public int Call
+        {
+            get
+            {
+                return this.call;
+            }
 
-        public bool Folded { get; set; }
+            set
+            {
+                this.ValidateForNull(value, "Call");
+                this.call = value;
+            }
+        }
 
+        public int Raise
+        {
+            get
+            {
+                return this.raise;
+            }
+
+            set
+            {
+                this.ValidateForNull(value, "Raise");
+                this.raise = value;
+            }
+            
+        }
+
+        public bool CanMakeTurn
+        {
+            get
+            {
+                return this.canMakeTurn;
+            }
+
+            set
+            {
+                this.ValidateForNull(value, "CanMakeTurn");
+                this.canMakeTurn = value;
+            }
+        }
+
+        public bool OutOfChips
+        {
+            get
+            {
+                return this.outOfChips;
+            }
+
+            set
+            {
+                this.ValidateForNull(value, "OutOfChips");
+                this.outOfChips = value;
+            }
+        }
+
+        public bool Folded
+        {
+            get
+            {
+                return this.folded;
+            }
+
+            set
+            {
+                this.ValidateForNull(value, "Folded");
+                this.folded = value;
+            }
+        }
+
+        public IList<ICard> Cards
+        {
+            get
+            {
+                return this.cards;
+            }
+
+            protected set
+            {
+                this.ValidateForNull(value, "Cards");
+                this.cards = value;
+            }
+        }
+
+        public int StartCard
+        {
+            get
+            {
+                return this.startCard;
+            }
+
+            set
+            {
+                this.ValidateForNull(value, "Start card");
+                this.ValidateForNegativeNumber(value, "Start card");
+                if (value > MainWindow.DefaultSetOfCards - 1)
+                {
+                    throw new ArgumentOutOfRangeException("Start card cannot be bigger then DefaultSetOfCards");
+                }
+                this.startCard = value;
+            }
+        }
+        
         public void InitializePanel(Point location)
         {
             this.Panel.Location = location;
@@ -68,19 +236,31 @@
             this.Panel.Visible = false;
         }
 
-        public void Check()
+        protected void ValidateForNull<T>(T value, string propertyName)
         {
-            throw new System.NotImplementedException();
+            if (value == null)
+            {
+                var msg = string.Format("{0} cannot be null.", propertyName);
+                throw new ArgumentNullException(msg);
+            }
         }
 
-        public void Fold()
+        protected void ValidateForNegativeNumber(int value, string propertyName)
         {
-            throw new System.NotImplementedException();
+            if (value < 0)
+            {
+                var msg = string.Format("{0} cannot be negative.", propertyName);
+                throw new ArgumentOutOfRangeException(msg);
+            }
         }
 
-        public void AllIn()
+        protected void ValidateForEmptyOrNullString(string value, string propertyName)
         {
-            throw new System.NotImplementedException();
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                var msg = string.Format("{0} cannot be null or white space.", propertyName);
+                throw new ArgumentNullException(msg);
+            }
         }
     }
 }
