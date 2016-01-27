@@ -438,7 +438,7 @@
 
                     if (this.bots[currentBotNumber].OutOfChips || !this.bots[currentBotNumber].CanMakeTurn)
                     {
-                        await CheckRaise(currentBotNumber + 1, currentBotNumber + 1);
+                        await this.CheckRaise(currentBotNumber + 1, currentBotNumber + 1);
                     }
                 }
                 
@@ -467,9 +467,6 @@
 
         private void Rules(int card1, int card2, ICharacter currentPlayer)
         {
-            if (card1 == 0 && card2 == 1)
-            {
-            }
             if (!currentPlayer.OutOfChips || card1 == 0 && card2 == 1 && this.playerStatus.Text.Contains("Fold") == false)
             {
                 #region Variables
@@ -2181,92 +2178,25 @@
                 fixedLast = "Player";
                 this.Rules(0, 1, this.player);
             }
-            if (!botOneStatus.Text.Contains("Fold"))
+            
+            for (int currentBotNumber = 0; currentBotNumber < this.bots.Count; currentBotNumber++)
             {
-                fixedLast = "Bot 1";
-                Rules(2, 3, this.bots[0]);
+                if (!this.botStatusLabels[currentBotNumber].Text.Contains("Fold"))
+                {
+                    fixedLast = this.bots[currentBotNumber].Name;
+                    int firstNumber = this.bots[currentBotNumber].StartCard;
+                    int secondNumber = firstNumber + 1;
+                    this.Rules(firstNumber, secondNumber, this.bots[currentBotNumber]);
+                }
             }
-            if (!botTwoStatus.Text.Contains("Fold"))
-            {
-                fixedLast = "Bot 2";
-                Rules(4, 5, this.bots[1]);
-            }
-            if (!botThreeStatus.Text.Contains("Fold"))
-            {
-                fixedLast = "Bot 3";
-                Rules(6, 7, this.bots[2]);
-            }
-            if (!botFourStatus.Text.Contains("Fold"))
-            {
-                fixedLast = "Bot 4";
-                Rules(8, 9, this.bots[3]);
-            }
-            if (!botFiveStatus.Text.Contains("Fold"))
-            {
-                fixedLast = "Bot 5";
-                Rules(10, 11, this.bots[4]);
-            }
+            
             this.Winner(this.player, fixedLast);
-            this.Winner(this.bots[0], fixedLast);
-            this.Winner(this.bots[1], fixedLast);
-            this.Winner(this.bots[2], fixedLast);
-            this.Winner(this.bots[3], fixedLast);
-            this.Winner(this.bots[4], fixedLast);
-        }
-
-        /* staro Ai
-        void Ai(int c1, int c2, ref int sChips, ref bool sTurn, ref bool sFTurn, Label sStatus, int name, double botPower, double botCurrent)
-        {
-            if (!sFTurn)
+            for (int currentBotNumber = 0; currentBotNumber < this.bots.Count; currentBotNumber++)
             {
-                if (botCurrent == -1)
-                {
-                    HighCard(ref sChips, ref sTurn, ref sFTurn, sStatus, botPower);
-                }
-                if (botCurrent == 0)
-                {
-                    PairTable(ref sChips, ref sTurn, ref sFTurn, sStatus, botPower);
-                }
-                if (botCurrent == 1)
-                {
-                    PairHand(ref sChips, ref sTurn, ref sFTurn, sStatus, botPower);
-                }
-                if (botCurrent == 2)
-                {
-                    TwoPair(ref sChips, ref sTurn, ref sFTurn, sStatus, botPower);
-                }
-                if (botCurrent == 3)
-                {
-                    ThreeOfAKind(ref sChips, ref sTurn, ref sFTurn, sStatus, name, botPower);
-                }
-                if (botCurrent == 4)
-                {
-                    Straight(ref sChips, ref sTurn, ref sFTurn, sStatus, name, botPower);
-                }
-                if (botCurrent == 5 || botCurrent == 5.5)
-                {
-                    Flush(ref sChips, ref sTurn, ref sFTurn, sStatus, name, botPower);
-                }
-                if (botCurrent == 6)
-                {
-                    FullHouse(ref sChips, ref sTurn, ref sFTurn, sStatus, name, botPower);
-                }
-                if (botCurrent == 7)
-                {
-                    FourOfAKind(ref sChips, ref sTurn, ref sFTurn, sStatus, name, botPower);
-                }
-                if (botCurrent == 8 || botCurrent == 9)
-                {
-                    StraightFlush(ref sChips, ref sTurn, ref sFTurn, sStatus, name, botPower);
-                }
-            }
-            if (sFTurn)
-            {
-                cardsPictureBoxArray[c1].Visible = false;
-                cardsPictureBoxArray[c2].Visible = false;
+                this.Winner(this.bots[currentBotNumber], fixedLast);
             }
         }
-        */
+        
         private void AI(int card1, int card2, Label sStatus, int name, ICharacter player)
         {
             if (!player.OutOfChips)
@@ -2332,110 +2262,126 @@
         #region UI
         private async void TimerTick(object sender, object e)
         {
-            if (progressBarTimer.Value <= 0)
+            if (this.progressBarTimer.Value <= 0)
             {
                 this.player.OutOfChips = true;
-                await Turns();
+                await this.Turns();
             }
+
             if (this.secondsLeft > 0)
             {
                 this.secondsLeft--;
-                progressBarTimer.Value = (this.secondsLeft / 6) * 100;
+                this.progressBarTimer.Value = (this.secondsLeft / 6) * 100;
             }
         }
+
         private void UpdateTick(object sender, object e)
         {
             if (this.player.Chips <= 0)
             {
-                textBoxPlayerChips.Text = "Chips : 0";
+                this.textBoxPlayerChips.Text = "Chips : 0";
             }
+
             if (this.bots[0].Chips <= 0)
             {
-                textBoxBotOneChips.Text = "Chips : 0";
+                this.textBoxBotOneChips.Text = "Chips : 0";
             }
+
             if (this.bots[1].Chips <= 0)
             {
-                textBoxBotTwoChips.Text = "Chips : 0";
+                this.textBoxBotTwoChips.Text = "Chips : 0";
             }
+
             if (this.bots[2].Chips <= 0)
             {
-                textBoxBotThreeChips.Text = "Chips : 0";
+                this.textBoxBotThreeChips.Text = "Chips : 0";
             }
+
             if (this.bots[3].Chips <= 0)
             {
-                textBoxBotFourChips.Text = "Chips : 0";
+                this.textBoxBotFourChips.Text = "Chips : 0";
             }
+
             if (this.bots[4].Chips <= 0)
             {
-                textBoxBotFiveChips.Text = "Chips : 0";
+                this.textBoxBotFiveChips.Text = "Chips : 0";
             }
-            textBoxPlayerChips.Text = "Chips : " + this.player.Chips.ToString();
-            textBoxBotOneChips.Text = "Chips : " + this.bots[0].Chips.ToString();
-            textBoxBotTwoChips.Text = "Chips : " + this.bots[1].Chips.ToString();
-            textBoxBotThreeChips.Text = "Chips : " + this.bots[2].Chips.ToString();
-            textBoxBotFourChips.Text = "Chips : " + this.bots[3].Chips.ToString();
-            textBoxBotFiveChips.Text = "Chips : " + this.bots[4].Chips.ToString();
+
+            this.textBoxPlayerChips.Text = "Chips : " + this.player.Chips.ToString();
+            this.textBoxBotOneChips.Text = "Chips : " + this.bots[0].Chips.ToString();
+            this.textBoxBotTwoChips.Text = "Chips : " + this.bots[1].Chips.ToString();
+            this.textBoxBotThreeChips.Text = "Chips : " + this.bots[2].Chips.ToString();
+            this.textBoxBotFourChips.Text = "Chips : " + this.bots[3].Chips.ToString();
+            this.textBoxBotFiveChips.Text = "Chips : " + this.bots[4].Chips.ToString();
+
             if (this.player.Chips <= 0)
             {
                 this.player.CanMakeTurn = false;
                 this.player.OutOfChips = true;
-                buttonCall.Enabled = false;
-                buttonRaise.Enabled = false;
-                buttonFold.Enabled = false;
-                buttonCheck.Enabled = false;
+                this.buttonCall.Enabled = false;
+                this.buttonRaise.Enabled = false;
+                this.buttonFold.Enabled = false;
+                this.buttonCheck.Enabled = false;
             }
-            if (_up > 0)
+
+            if (this._up > 0)
             {
-                _up--;
+                this._up--;
             }
+
             if (this.player.Chips >= this.neededChipsToCall)
             {
-                buttonCall.Text = "Call " + this.neededChipsToCall.ToString();
+                this.buttonCall.Text = "Call " + this.neededChipsToCall.ToString();
             }
             else
             {
-                buttonCall.Text = "All in";
-                buttonRaise.Enabled = false;
+                this.buttonCall.Text = "All in";
+                this.buttonRaise.Enabled = false;
             }
+
             if (this.neededChipsToCall > 0)
             {
-                buttonCheck.Enabled = false;
+                this.buttonCheck.Enabled = false;
             }
+
             if (this.neededChipsToCall <= 0)
             {
-                buttonCheck.Enabled = true;
-                buttonCall.Text = "Call";
-                buttonCall.Enabled = false;
+                this.buttonCheck.Enabled = true;
+                this.buttonCall.Text = "Call";
+                this.buttonCall.Enabled = false;
             }
+
             if (this.player.Chips <= 0)
             {
-                buttonRaise.Enabled = false;
+                this.buttonRaise.Enabled = false;
             }
+
             int parsedValue;
 
-            if (textBoxRaise.Text != "" && int.TryParse(textBoxRaise.Text, out parsedValue))
+            if (this.textBoxRaise.Text != "" && int.TryParse(this.textBoxRaise.Text, out parsedValue))
             {
-                if (this.player.Chips <= int.Parse(textBoxRaise.Text))
+                if (this.player.Chips <= int.Parse(this.textBoxRaise.Text))
                 {
-                    buttonRaise.Text = "All in";
+                    this.buttonRaise.Text = "All in";
                 }
                 else
                 {
-                    buttonRaise.Text = "Raise";
+                    this.buttonRaise.Text = "Raise";
                 }
             }
+
             if (this.player.Chips < this.neededChipsToCall)
             {
-                buttonRaise.Enabled = false;
+                this.buttonRaise.Enabled = false;
             }
         }
 
         private async void bFold_Click(object sender, EventArgs e)
         {
-            playerStatus.Text = "Fold";
+            this.playerStatus.Text = "Fold";
             this.player.CanMakeTurn = false;
             this.player.OutOfChips = true;
-            await Turns();
+            await this.Turns();
         }
 
         private async void bCheck_Click(object sender, EventArgs e)
@@ -2443,84 +2389,87 @@
             if (this.neededChipsToCall <= 0)
             {
                 this.player.CanMakeTurn = false;
-                playerStatus.Text = "Check";
+                this.playerStatus.Text = "Check";
             }
             else
             {
-                //playerStatus.Text = "All in " + Chips;
-
-                buttonCheck.Enabled = false;
+                this.buttonCheck.Enabled = false;
             }
-            await Turns();
+
+            await this.Turns();
         }
+
         private async void bCall_Click(object sender, EventArgs e)
         {
-            Rules(0, 1, this.player);
+            this.Rules(0, 1, this.player);
             if (this.player.Chips >= this.neededChipsToCall)
             {
                 this.player.Chips -= this.neededChipsToCall;
-                textBoxPlayerChips.Text = "Chips : " + this.player.Chips.ToString();
-                if (textBoxPot.Text != "")
+                this.textBoxPlayerChips.Text = "Chips : " + this.player.Chips.ToString();
+                if (this.textBoxPot.Text != "")
                 {
-                    textBoxPot.Text = (int.Parse(textBoxPot.Text) + this.neededChipsToCall).ToString();
+                    this.textBoxPot.Text = (int.Parse(this.textBoxPot.Text) + this.neededChipsToCall).ToString();
                 }
                 else
                 {
-                    textBoxPot.Text = this.neededChipsToCall.ToString();
+                    this.textBoxPot.Text = this.neededChipsToCall.ToString();
                 }
+
                 this.player.CanMakeTurn = false;
-                playerStatus.Text = "Call " + this.neededChipsToCall;
+                this.playerStatus.Text = "Call " + this.neededChipsToCall;
                 this.player.Call = this.neededChipsToCall;
             }
             else if (this.player.Chips <= this.neededChipsToCall && this.neededChipsToCall > 0)
             {
-                textBoxPot.Text = (int.Parse(textBoxPot.Text) + this.player.Chips).ToString();
-                playerStatus.Text = "All in " + this.player.Chips;
+                this.textBoxPot.Text = (int.Parse(this.textBoxPot.Text) + this.player.Chips).ToString();
+                this.playerStatus.Text = "All in " + this.player.Chips;
                 this.player.Chips = 0;
-                textBoxPlayerChips.Text = "Chips : " + this.player.Chips.ToString();
+                this.textBoxPlayerChips.Text = "Chips : " + this.player.Chips.ToString();
                 this.player.CanMakeTurn = false;
-                buttonFold.Enabled = false;
+                this.buttonFold.Enabled = false;
                 this.player.Call = this.player.Chips;
             }
-            await Turns();
+
+            await this.Turns();
         }
         private async void bRaise_Click(object sender, EventArgs e)
         {
-            Rules(0, 1, this.player);
+            this.Rules(0, 1, this.player);
             int parsedValue;
-            if (textBoxRaise.Text != "" && int.TryParse(textBoxRaise.Text, out parsedValue))
+            if (this.textBoxRaise.Text != "" && int.TryParse(this.textBoxRaise.Text, out parsedValue))
             {
                 if (this.player.Chips > this.neededChipsToCall)
                 {
-                    if (raise * 2 > int.Parse(textBoxRaise.Text))
+                    if (this.raise * 2 > int.Parse(this.textBoxRaise.Text))
                     {
-                        textBoxRaise.Text = (raise * 2).ToString();
+                        this.textBoxRaise.Text = (this.raise * 2).ToString();
                         MessageBox.Show("You must raise atleast twice as the current raise !");
+
                         return;
                     }
                     else
                     {
-                        if (this.player.Chips >= int.Parse(textBoxRaise.Text))
+                        if (this.player.Chips >= int.Parse(this.textBoxRaise.Text))
                         {
-                            this.neededChipsToCall = int.Parse(textBoxRaise.Text);
-                            raise = int.Parse(textBoxRaise.Text);
-                            playerStatus.Text = "Raise " + this.neededChipsToCall.ToString();
-                            textBoxPot.Text = (int.Parse(textBoxPot.Text) + this.neededChipsToCall).ToString();
-                            buttonCall.Text = "Call";
-                            this.player.Chips -= int.Parse(textBoxRaise.Text);
+                            this.neededChipsToCall = int.Parse(this.textBoxRaise.Text);
+                            this.raise = int.Parse(this.textBoxRaise.Text);
+                            this.playerStatus.Text = "Raise " + this.neededChipsToCall.ToString();
+                            this.textBoxPot.Text = (int.Parse(this.textBoxPot.Text) + this.neededChipsToCall).ToString();
+                            this.buttonCall.Text = "Call";
+                            this.player.Chips -= int.Parse(this.textBoxRaise.Text);
                             this.raising = true;
-                            _last = 0;
-                            this.player.Raise = Convert.ToInt32(raise);
+                            this._last = 0;
+                            this.player.Raise = Convert.ToInt32(this.raise);
                         }
                         else
                         {
                             this.neededChipsToCall = this.player.Chips;
-                            raise = this.player.Chips;
-                            textBoxPot.Text = (int.Parse(textBoxPot.Text) + this.player.Chips).ToString();
-                            playerStatus.Text = "Raise " + this.neededChipsToCall.ToString();
+                            this.raise = this.player.Chips;
+                            this.textBoxPot.Text = (int.Parse(this.textBoxPot.Text) + this.player.Chips).ToString();
+                            this.playerStatus.Text = "Raise " + this.neededChipsToCall.ToString();
                             this.player.Chips = 0;
                             this.raising = true;
-                            _last = 0;
+                            this._last = 0;
                             this.player.Raise = Convert.ToInt32(raise);
                         }
                     }
@@ -2529,108 +2478,135 @@
             else
             {
                 MessageBox.Show("This is a number only field");
+
                 return;
             }
+
             this.player.CanMakeTurn = false;
-            await Turns();
+            await this.Turns();
         }
+
         private void bAdd_Click(object sender, EventArgs e)
         {
-            if (textBoxAdd.Text == "") { }
-            else
+            if (this.textBoxAdd.Text != string.Empty)
             {
-                this.player.Chips += int.Parse(textBoxAdd.Text);
-                this.bots[0].Chips += int.Parse(textBoxAdd.Text);
-                this.bots[1].Chips += int.Parse(textBoxAdd.Text);
-                this.bots[2].Chips += int.Parse(textBoxAdd.Text);
-                this.bots[3].Chips += int.Parse(textBoxAdd.Text);
-                this.bots[4].Chips += int.Parse(textBoxAdd.Text);
+                this.player.Chips += int.Parse(this.textBoxAdd.Text);
+                for (int currentBotNumber = 0; currentBotNumber < this.bots.Count; currentBotNumber++)
+                {
+                    this.bots[currentBotNumber].Chips += int.Parse(this.textBoxAdd.Text);
+                }
             }
-            textBoxPlayerChips.Text = "Chips : " + this.player.Chips.ToString();
+
+            this.textBoxPlayerChips.Text = "Chips : " + this.player.Chips.ToString();
         }
+
         private void bOptions_Click(object sender, EventArgs e)
         {
-            textBoxBigBlind.Text = bigBlindValue.ToString();
-            textBoxSmallBlind.Text = smallBlindValue.ToString();
-            if (textBoxBigBlind.Visible == false)
+            this.textBoxBigBlind.Text = this.bigBlindValue.ToString();
+            this.textBoxSmallBlind.Text = this.smallBlindValue.ToString();
+            if (this.textBoxBigBlind.Visible == false)
             {
-                textBoxBigBlind.Visible = true;
-                textBoxSmallBlind.Visible = true;
-                buttonBigBlind.Visible = true;
-                buttonSmallBlind.Visible = true;
+                this.textBoxBigBlind.Visible = true;
+                this.textBoxSmallBlind.Visible = true;
+                this.buttonBigBlind.Visible = true;
+                this.buttonSmallBlind.Visible = true;
             }
             else
             {
-                textBoxBigBlind.Visible = false;
-                textBoxSmallBlind.Visible = false;
-                buttonBigBlind.Visible = false;
-                buttonSmallBlind.Visible = false;
+                this.textBoxBigBlind.Visible = false;
+                this.textBoxSmallBlind.Visible = false;
+                this.buttonBigBlind.Visible = false;
+                this.buttonSmallBlind.Visible = false;
             }
         }
+
         private void bSB_Click(object sender, EventArgs e)
         {
             int parsedValue;
-            if (textBoxSmallBlind.Text.Contains(",") || textBoxSmallBlind.Text.Contains("."))
+            if (this.textBoxSmallBlind.Text.Contains(",") || this.textBoxSmallBlind.Text.Contains("."))
             {
-                MessageBox.Show("The Small Blind can be only round number !");
-                textBoxSmallBlind.Text = smallBlindValue.ToString();
+                string msg = "The Small Blind can be only round number !";
+                MessageBox.Show(msg);
+                this.textBoxSmallBlind.Text = this.smallBlindValue.ToString();
+
                 return;
             }
-            if (!int.TryParse(textBoxSmallBlind.Text, out parsedValue))
+
+            if (!int.TryParse(this.textBoxSmallBlind.Text, out parsedValue))
             {
-                MessageBox.Show("This is a number only field");
-                textBoxSmallBlind.Text = smallBlindValue.ToString();
+                string msg = "This is a number only field";
+                MessageBox.Show(msg);
+                this.textBoxSmallBlind.Text = this.smallBlindValue.ToString();
+
                 return;
             }
-            if (int.Parse(textBoxSmallBlind.Text) > 100000)
+
+            if (int.Parse(this.textBoxSmallBlind.Text) > 100000)
             {
-                MessageBox.Show("The maximum of the Small Blind is 100 000 $");
-                textBoxSmallBlind.Text = smallBlindValue.ToString();
+                string msg = "The maximum of the Small Blind is 100 000 $";
+                MessageBox.Show(msg);
+                this.textBoxSmallBlind.Text = this.smallBlindValue.ToString();
             }
-            if (int.Parse(textBoxSmallBlind.Text) < 250)
+
+            if (int.Parse(this.textBoxSmallBlind.Text) < 250)
             {
-                MessageBox.Show("The minimum of the Small Blind is 250 $");
+                string msg = "The minimum of the Small Blind is 250 $";
+                MessageBox.Show(msg);
             }
-            if (int.Parse(textBoxSmallBlind.Text) >= 250 && int.Parse(textBoxSmallBlind.Text) <= 100000)
+
+            if (int.Parse(this.textBoxSmallBlind.Text) >= 250 && int.Parse(this.textBoxSmallBlind.Text) <= 100000)
             {
-                smallBlindValue = int.Parse(textBoxSmallBlind.Text);
-                MessageBox.Show("The changes have been saved ! They will become available the next hand you play. ");
+                this.smallBlindValue = int.Parse(this.textBoxSmallBlind.Text);
+                string msg = "The changes have been saved ! They will become available the next hand you play. ";
+                MessageBox.Show(msg);
             }
         }
+
         private void bBB_Click(object sender, EventArgs e)
         {
             int parsedValue;
-            if (textBoxBigBlind.Text.Contains(",") || textBoxBigBlind.Text.Contains("."))
+            if (this.textBoxBigBlind.Text.Contains(",") || this.textBoxBigBlind.Text.Contains("."))
             {
-                MessageBox.Show("The Big Blind can be only round number !");
-                textBoxBigBlind.Text = bigBlindValue.ToString();
+                string msg = "The Big Blind can be only round number !";
+                MessageBox.Show(msg);
+                this.textBoxBigBlind.Text = this.bigBlindValue.ToString();
+
                 return;
             }
-            if (!int.TryParse(textBoxSmallBlind.Text, out parsedValue))
+
+            if (!int.TryParse(this.textBoxSmallBlind.Text, out parsedValue))
             {
-                MessageBox.Show("This is a number only field");
-                textBoxSmallBlind.Text = bigBlindValue.ToString();
+                string msg = "This is a number only field";
+                MessageBox.Show(msg);
+                this.textBoxSmallBlind.Text = this.bigBlindValue.ToString();
+
                 return;
             }
-            if (int.Parse(textBoxBigBlind.Text) > 200000)
+
+            if (int.Parse(this.textBoxBigBlind.Text) > 200000)
             {
-                MessageBox.Show("The maximum of the Big Blind is 200 000");
-                textBoxBigBlind.Text = bigBlindValue.ToString();
+                string msg = "The maximum of the Big Blind is 200 000";
+                MessageBox.Show(msg);
+                this.textBoxBigBlind.Text = this.bigBlindValue.ToString();
             }
-            if (int.Parse(textBoxBigBlind.Text) < 500)
+
+            if (int.Parse(this.textBoxBigBlind.Text) < 500)
             {
-                MessageBox.Show("The minimum of the Big Blind is 500 $");
+                string msg = "The minimum of the Big Blind is 500 $";
+                MessageBox.Show(msg);
             }
-            if (int.Parse(textBoxBigBlind.Text) >= 500 && int.Parse(textBoxBigBlind.Text) <= 200000)
+
+            if (int.Parse(this.textBoxBigBlind.Text) >= 500 && int.Parse(this.textBoxBigBlind.Text) <= 200000)
             {
-                bigBlindValue = int.Parse(textBoxBigBlind.Text);
-                MessageBox.Show("The changes have been saved ! They will become available the next hand you play. ");
+                this.bigBlindValue = int.Parse(this.textBoxBigBlind.Text);
+                string msg = "The changes have been saved ! They will become available the next hand you play. ";
+                MessageBox.Show(msg);
             }
         }
         private void Layout_Change(object sender, LayoutEventArgs e)
         {
-            _width = this.Width;
-            _height = this.Height;
+            this._width = this.Width;
+            this._height = this.Height;
         }
         #endregion
     }
