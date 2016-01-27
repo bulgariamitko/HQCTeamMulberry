@@ -31,6 +31,7 @@
         private PictureBox[] cardsPictureBoxArray;
         private Timer _timer;
         private Timer _updates;
+        private Bitmap backImage;
 
         private int Nm;
 
@@ -81,6 +82,7 @@
             this.cardsPictureBoxArray = new PictureBox[DefaultSetOfCards];
             this._timer = new Timer();
             this._updates = new Timer();
+            this.backImage = new Bitmap("..\\..\\Resources\\Assets\\Back\\Back.png");
 
             this.neededChipsToCall = 500;
             this.foldedPlayers = 5;
@@ -161,7 +163,6 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             bool check = false;
-            Bitmap backImage = new Bitmap("..\\..\\Resources\\Assets\\Back\\Back.png");
             int horizontal = 580, vertical = 480;
             Random r = new Random();
             for (i = cardsImageLocation.Length; i > 0; i--)
@@ -174,221 +175,80 @@
 
             for (int cardNumber = 0; cardNumber < 17; cardNumber++)
             {
-                gameCardsAsImages[cardNumber] = Image.FromFile(cardsImageLocation[cardNumber]);
+                this.gameCardsAsImages[cardNumber] = Image.FromFile(this.cardsImageLocation[cardNumber]);
                 var charsToRemove = new string[] { "..\\..\\Resources\\Assets\\Cards\\", ".png" };
                 foreach (var c in charsToRemove)
                 {
-                    cardsImageLocation[cardNumber] = cardsImageLocation[cardNumber].Replace(c, string.Empty);
+                    this.cardsImageLocation[cardNumber] = this.cardsImageLocation[cardNumber].Replace(c, string.Empty);
                 }
 
-                reservedGameCardsIndexes[cardNumber] = int.Parse(cardsImageLocation[cardNumber]) - 1;
-                cardsPictureBoxArray[cardNumber] = new PictureBox();
-                cardsPictureBoxArray[cardNumber].SizeMode = PictureBoxSizeMode.StretchImage;
-                cardsPictureBoxArray[cardNumber].Height = 130;
-                cardsPictureBoxArray[cardNumber].Width = 80;
-                this.Controls.Add(cardsPictureBoxArray[cardNumber]);
-                cardsPictureBoxArray[cardNumber].Name = "pb" + cardNumber.ToString();
+                this.reservedGameCardsIndexes[cardNumber] = int.Parse(this.cardsImageLocation[cardNumber]) - 1;
+                this.cardsPictureBoxArray[cardNumber] = new PictureBox();
+                this.cardsPictureBoxArray[cardNumber].SizeMode = PictureBoxSizeMode.StretchImage;
+                this.cardsPictureBoxArray[cardNumber].Height = 130;
+                this.cardsPictureBoxArray[cardNumber].Width = 80;
+                this.Controls.Add(this.cardsPictureBoxArray[cardNumber]);
+                this.cardsPictureBoxArray[cardNumber].Name = "pb" + cardNumber.ToString();
                 await Task.Delay(200);
 
                 #region Throwing Cards
                 if (cardNumber < 2)
                 {
-                    if (cardsPictureBoxArray[0].Tag != null)
+                    if (this.cardsPictureBoxArray[0].Tag != null)
                     {
-                        cardsPictureBoxArray[1].Tag = reservedGameCardsIndexes[1];
+                        this.cardsPictureBoxArray[1].Tag = this.reservedGameCardsIndexes[1];
                     }
 
-                    cardsPictureBoxArray[0].Tag = reservedGameCardsIndexes[0];
-                    cardsPictureBoxArray[cardNumber].Image = gameCardsAsImages[cardNumber];
-                    cardsPictureBoxArray[cardNumber].Anchor = (AnchorStyles.Bottom);
-                    //Holder[cardNumber].Dock = DockStyle.Top;
-                    cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
-                    horizontal += cardsPictureBoxArray[cardNumber].Width;
+                    this.cardsPictureBoxArray[0].Tag = this.reservedGameCardsIndexes[0];
+                    this.cardsPictureBoxArray[cardNumber].Image = this.gameCardsAsImages[cardNumber];
+                    this.cardsPictureBoxArray[cardNumber].Anchor = (AnchorStyles.Bottom);
+                    this.cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
+                    horizontal += this.cardsPictureBoxArray[cardNumber].Width;
                     this.Controls.Add(this.player.Panel);
-                    this.player.InitializePanel(new Point(this.cardsPictureBoxArray[0].Left - 10, this.cardsPictureBoxArray[0].Top - 10));
+                    this.player.InitializePanel(new Point(
+                        this.cardsPictureBoxArray[0].Left - 10, 
+                        this.cardsPictureBoxArray[0].Top - 10));
                 }
-
-                if (this.bots[0].Chips > 0)
+                
+                for (int currentBotNumber = 0; currentBotNumber < this.bots.Count; currentBotNumber++)
                 {
-                    foldedPlayers--;
-                    if (cardNumber >= 2 && cardNumber < 4)
+                    if (this.bots[currentBotNumber].Chips > 0)
                     {
-                        if (cardsPictureBoxArray[2].Tag != null)
+                        this.foldedPlayers--;
+                        int currentBotStartCard = this.bots[currentBotNumber].StartCard;
+                        if ((cardNumber >= currentBotStartCard) && (cardNumber < currentBotStartCard + 2))
                         {
-                            cardsPictureBoxArray[3].Tag = reservedGameCardsIndexes[3];
-                        }
+                            if (this.cardsPictureBoxArray[currentBotStartCard].Tag != null)
+                            {
+                                this.cardsPictureBoxArray[currentBotStartCard + 1].Tag = this.reservedGameCardsIndexes[currentBotStartCard + 1];
+                            }
 
-                        cardsPictureBoxArray[2].Tag = reservedGameCardsIndexes[2];
-                        if (!check)
-                        {
-                            horizontal = 15;
-                            vertical = 420;
-                        }
+                            this.cardsPictureBoxArray[currentBotStartCard].Tag = this.reservedGameCardsIndexes[currentBotStartCard];
+                            if (!check)
+                            {
+                                vertical = this.bots[currentBotNumber].VerticalLocationCoordinate;
+                                horizontal = this.bots[currentBotNumber].HorizontalLocationCoordinate;
+                            }
 
-                        check = true;
-                        cardsPictureBoxArray[cardNumber].Anchor = (AnchorStyles.Bottom | AnchorStyles.Left);
-                        cardsPictureBoxArray[cardNumber].Image = backImage;
-                        //Holder[i].Image = Deck[i];
-                        cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
-                        horizontal += cardsPictureBoxArray[cardNumber].Width;
-                        cardsPictureBoxArray[cardNumber].Visible = true;
-                        this.Controls.Add(this.bots[0].Panel);
-                        this.bots[0].Panel.Location = new Point(cardsPictureBoxArray[2].Left - 10, cardsPictureBoxArray[2].Top - 10);
-                        this.bots[0].Panel.BackColor = Color.DarkBlue;
-                        this.bots[0].Panel.Height = 150;
-                        this.bots[0].Panel.Width = 180;
-                        this.bots[0].Panel.Visible = false;
-                        if (cardNumber == 3)
-                        {
-                            check = false;
+                            check = true;
+                            this.cardsPictureBoxArray[cardNumber].Anchor = (AnchorStyles.Bottom | AnchorStyles.Left);
+                            this.cardsPictureBoxArray[cardNumber].Image = this.backImage;
+                            this.cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
+                            horizontal += this.cardsPictureBoxArray[cardNumber].Width;
+                            this.cardsPictureBoxArray[cardNumber].Visible = true;
+                            this.Controls.Add(this.bots[currentBotNumber].Panel);
+                            this.bots[currentBotNumber].InitializePanel(new Point(
+                                cardsPictureBoxArray[currentBotStartCard].Left - 10, 
+                                cardsPictureBoxArray[currentBotStartCard].Top - 10));
+                            this.bots[currentBotNumber].Panel.Visible = false;
+                            if (cardNumber == (currentBotStartCard + 1))
+                            {
+                                check = false;
+                            }
                         }
                     }
                 }
-
-                if (this.bots[1].Chips > 0)
-                {
-                    foldedPlayers--;
-                    if (cardNumber >= 4 && cardNumber < 6)
-                    {
-                        if (cardsPictureBoxArray[4].Tag != null)
-                        {
-                            cardsPictureBoxArray[5].Tag = reservedGameCardsIndexes[5];
-                        }
-
-                        cardsPictureBoxArray[4].Tag = reservedGameCardsIndexes[4];
-                        if (!check)
-                        {
-                            horizontal = 75;
-                            vertical = 65;
-                        }
-
-                        check = true;
-                        cardsPictureBoxArray[cardNumber].Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-                        cardsPictureBoxArray[cardNumber].Image = backImage;
-                        //Holder[i].Image = Deck[i];
-                        cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
-                        horizontal += cardsPictureBoxArray[cardNumber].Width;
-                        cardsPictureBoxArray[cardNumber].Visible = true;
-                        this.Controls.Add(this.bots[1].Panel);
-                        this.bots[1].Panel.Location = new Point(cardsPictureBoxArray[4].Left - 10, cardsPictureBoxArray[4].Top - 10);
-                        this.bots[1].Panel.BackColor = Color.DarkBlue;
-                        this.bots[1].Panel.Height = 150;
-                        this.bots[1].Panel.Width = 180;
-                        this.bots[1].Panel.Visible = false;
-                        if (cardNumber == 5)
-                        {
-                            check = false;
-                        }
-                    }
-                }
-
-                if (this.bots[2].Chips > 0)
-                {
-                    foldedPlayers--;
-                    if (cardNumber >= 6 && cardNumber < 8)
-                    {
-                        if (cardsPictureBoxArray[6].Tag != null)
-                        {
-                            cardsPictureBoxArray[7].Tag = reservedGameCardsIndexes[7];
-                        }
-
-                        cardsPictureBoxArray[6].Tag = reservedGameCardsIndexes[6];
-                        if (!check)
-                        {
-                            horizontal = 590;
-                            vertical = 25;
-                        }
-
-                        check = true;
-                        cardsPictureBoxArray[cardNumber].Anchor = (AnchorStyles.Top);
-                        cardsPictureBoxArray[cardNumber].Image = backImage;
-                        //Holder[i].Image = Deck[i];
-                        cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
-                        horizontal += cardsPictureBoxArray[cardNumber].Width;
-                        cardsPictureBoxArray[cardNumber].Visible = true;
-                        this.Controls.Add(this.bots[2].Panel);
-                        this.bots[2].Panel.Location = new Point(cardsPictureBoxArray[6].Left - 10, cardsPictureBoxArray[6].Top - 10);
-                        this.bots[2].Panel.BackColor = Color.DarkBlue;
-                        this.bots[2].Panel.Height = 150;
-                        this.bots[2].Panel.Width = 180;
-                        this.bots[2].Panel.Visible = false;
-                        if (cardNumber == 7)
-                        {
-                            check = false;
-                        }
-                    }
-                }
-
-                if (this.bots[3].Chips > 0)
-                {
-                    foldedPlayers--;
-                    if (cardNumber >= 8 && cardNumber < 10)
-                    {
-                        if (cardsPictureBoxArray[8].Tag != null)
-                        {
-                            cardsPictureBoxArray[9].Tag = reservedGameCardsIndexes[9];
-                        }
-                        cardsPictureBoxArray[8].Tag = reservedGameCardsIndexes[8];
-                        if (!check)
-                        {
-                            horizontal = 1115;
-                            vertical = 65;
-                        }
-                        check = true;
-                        cardsPictureBoxArray[cardNumber].Anchor = (AnchorStyles.Top | AnchorStyles.Right);
-                        cardsPictureBoxArray[cardNumber].Image = backImage;
-                        //Holder[i].Image = Deck[i];
-                        cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
-                        horizontal += cardsPictureBoxArray[cardNumber].Width;
-                        cardsPictureBoxArray[cardNumber].Visible = true;
-                        this.Controls.Add(this.bots[3].Panel);
-                        this.bots[3].Panel.Location = new Point(cardsPictureBoxArray[8].Left - 10, cardsPictureBoxArray[8].Top - 10);
-                        this.bots[3].Panel.BackColor = Color.DarkBlue;
-                        this.bots[3].Panel.Height = 150;
-                        this.bots[3].Panel.Width = 180;
-                        this.bots[3].Panel.Visible = false;
-                        if (cardNumber == 9)
-                        {
-                            check = false;
-                        }
-                    }
-                }
-                if (this.bots[4].Chips > 0)
-                {
-                    foldedPlayers--;
-                    if (cardNumber >= 10 && cardNumber < 12)
-                    {
-                        if (cardsPictureBoxArray[10].Tag != null)
-                        {
-                            cardsPictureBoxArray[11].Tag = reservedGameCardsIndexes[11];
-                        }
-                        cardsPictureBoxArray[10].Tag = reservedGameCardsIndexes[10];
-                        if (!check)
-                        {
-                            horizontal = 1160;
-                            vertical = 420;
-                        }
-                        check = true;
-                        cardsPictureBoxArray[cardNumber].Anchor = (AnchorStyles.Bottom | AnchorStyles.Right);
-                        cardsPictureBoxArray[cardNumber].Image = backImage;
-                        //Holder[i].Image = Deck[i];
-                        cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
-                        horizontal += cardsPictureBoxArray[cardNumber].Width;
-                        cardsPictureBoxArray[cardNumber].Visible = true;
-                        this.Controls.Add(this.bots[4].Panel);
-                        this.bots[4].Panel.Location = new Point(cardsPictureBoxArray[10].Left - 10, cardsPictureBoxArray[10].Top - 10);
-                        this.bots[4].Panel.BackColor = Color.DarkBlue;
-                        this.bots[4].Panel.Height = 150;
-                        this.bots[4].Panel.Width = 180;
-                        this.bots[4].Panel.Visible = false;
-                        if (cardNumber == 11)
-                        {
-                            check = false;
-                        }
-                    }
-                }
-
-
+                
                 if (cardNumber >= 12)
                 {
                     this.cardsPictureBoxArray[12].Tag = this.reservedGameCardsIndexes[12];
@@ -415,12 +275,11 @@
                         vertical = 265;
                     }
                     check = true;
-                    if (cardsPictureBoxArray[cardNumber] != null)
+                    if (this.cardsPictureBoxArray[cardNumber] != null)
                     {
-                        cardsPictureBoxArray[cardNumber].Anchor = AnchorStyles.None;
-                        cardsPictureBoxArray[cardNumber].Image = backImage;
-                        //Holder[cardNumber].Image = Deck[cardNumber];
-                        cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
+                        this.cardsPictureBoxArray[cardNumber].Anchor = AnchorStyles.None;
+                        this.cardsPictureBoxArray[cardNumber].Image = backImage;
+                        this.cardsPictureBoxArray[cardNumber].Location = new Point(horizontal, vertical);
                         horizontal += 110;
                     }
                 }
@@ -2599,375 +2458,6 @@
                 this.cardsPictureBoxArray[card2].Visible = false;
             }
         }
-        /* // otiva v WinningHandType
-        private void HighCard(ref int sChips, ref bool sTurn, ref bool sFTurn, Label sStatus, double botPower)
-        {
-            Hp(ref sChips, ref sTurn, ref sFTurn, sStatus, botPower, 20, 25);
-        }
-        private void PairTable(ref int sChips, ref bool sTurn, ref bool sFTurn, Label sStatus, double botPower)
-        {
-            Hp(ref sChips, ref sTurn, ref sFTurn, sStatus, botPower, 16, 25);
-        }
-        private void PairHand(ref int sChips, ref bool sTurn, ref bool sFTurn, Label sStatus, double botPower)
-        {
-            Random rPair = new Random();
-            int rCall = rPair.Next(10, 16);
-            int rRaise = rPair.Next(10, 13);
-            if (botPower <= 199 && botPower >= 140)
-            {
-                Ph(ref sChips, ref sTurn, ref sFTurn, sStatus, rCall, 6, rRaise);
-            }
-            if (botPower <= 139 && botPower >= 128)
-            {
-                Ph(ref sChips, ref sTurn, ref sFTurn, sStatus, rCall, 7, rRaise);
-            }
-            if (botPower < 128 && botPower >= 101)
-            {
-                Ph(ref sChips, ref sTurn, ref sFTurn, sStatus, rCall, 9, rRaise);
-            }
-        }
-        private void TwoPair(ref int sChips, ref bool sTurn, ref bool sFTurn, Label sStatus, double botPower)
-        {
-            Random rPair = new Random();
-            int rCall = rPair.Next(6, 11);
-            int rRaise = rPair.Next(6, 11);
-            if (botPower <= 290 && botPower >= 246)
-            {
-                Ph(ref sChips, ref sTurn, ref sFTurn, sStatus, rCall, 3, rRaise);
-            }
-            if (botPower <= 244 && botPower >= 234)
-            {
-                Ph(ref sChips, ref sTurn, ref sFTurn, sStatus, rCall, 4, rRaise);
-            }
-            if (botPower < 234 && botPower >= 201)
-            {
-                Ph(ref sChips, ref sTurn, ref sFTurn, sStatus, rCall, 4, rRaise);
-            }
-        }
-        private void ThreeOfAKind(ref int sChips, ref bool sTurn, ref bool sFTurn, Label sStatus, int name, double botPower)
-        {
-            Random tk = new Random();
-            int tCall = tk.Next(3, 7);
-            int tRaise = tk.Next(4, 8);
-            if (botPower <= 390 && botPower >= 330)
-            {
-                Smooth(ref sChips, ref sTurn, ref sFTurn, sStatus, name, tCall, tRaise);
-            }
-            if (botPower <= 327 && botPower >= 321)//10  8
-            {
-                Smooth(ref sChips, ref sTurn, ref sFTurn, sStatus, name, tCall, tRaise);
-            }
-            if (botPower < 321 && botPower >= 303)//7 2
-            {
-                Smooth(ref sChips, ref sTurn, ref sFTurn, sStatus, name, tCall, tRaise);
-            }
-        }
-        private void Straight(ref int sChips, ref bool sTurn, ref bool sFTurn, Label sStatus, int name, double botPower)
-        {
-            Random str = new Random();
-            int sCall = str.Next(3, 6);
-            int sRaise = str.Next(3, 8);
-            if (botPower <= 480 && botPower >= 410)
-            {
-                Smooth(ref sChips, ref sTurn, ref sFTurn, sStatus, name, sCall, sRaise);
-            }
-            if (botPower <= 409 && botPower >= 407)//10  8
-            {
-                Smooth(ref sChips, ref sTurn, ref sFTurn, sStatus, name, sCall, sRaise);
-            }
-            if (botPower < 407 && botPower >= 404)
-            {
-                Smooth(ref sChips, ref sTurn, ref sFTurn, sStatus, name, sCall, sRaise);
-            }
-        }
-        private void Flush(ref int sChips, ref bool sTurn, ref bool sFTurn, Label sStatus, int name, double botPower)
-        {
-            Random fsh = new Random();
-            int fCall = fsh.Next(2, 6);
-            int fRaise = fsh.Next(3, 7);
-            Smooth(ref sChips, ref sTurn, ref sFTurn, sStatus, name, fCall, fRaise);
-        }
-        private void FullHouse(ref int sChips, ref bool sTurn, ref bool sFTurn, Label sStatus, int name, double botPower)
-        {
-            Random flh = new Random();
-            int fhCall = flh.Next(1, 5);
-            int fhRaise = flh.Next(2, 6);
-            if (botPower <= 626 && botPower >= 620)
-            {
-                Smooth(ref sChips, ref sTurn, ref sFTurn, sStatus, name, fhCall, fhRaise);
-            }
-            if (botPower < 620 && botPower >= 602)
-            {
-                Smooth(ref sChips, ref sTurn, ref sFTurn, sStatus, name, fhCall, fhRaise);
-            }
-        }
-        private void FourOfAKind(ref int sChips, ref bool sTurn, ref bool sFTurn, Label sStatus, int name, double botPower)
-        {
-            Random fk = new Random();
-            int fkCall = fk.Next(1, 4);
-            int fkRaise = fk.Next(2, 5);
-            if (botPower <= 752 && botPower >= 704)
-            {
-                Smooth(ref sChips, ref sTurn, ref sFTurn, sStatus, name, fkCall, fkRaise);
-            }
-        }
-        private void StraightFlush(ref int sChips, ref bool sTurn, ref bool sFTurn, Label sStatus, int name, double botPower)
-        {
-            Random sf = new Random();
-            int sfCall = sf.Next(1, 3);
-            int sfRaise = sf.Next(1, 3);
-            if (botPower <= 913 && botPower >= 804)
-            {
-                Smooth(ref sChips, ref sTurn, ref sFTurn, sStatus, name, sfCall, sfRaise);
-            }
-        }
-        */
-
-        /* otiva v PlayerMove
-        private void Fold(ref bool sTurn, ref bool sFTurn, Label sStatus)
-        {
-            this.raising = false;
-            sStatus.Text = "Fold";
-            sTurn = false;
-            sFTurn = true;
-        }
-        private void Check(ref bool cTurn, Label cStatus)
-        {
-            cStatus.Text = "Check";
-            cTurn = false;
-            this.raising = false;
-        }
-        private void Call(ref int sChips, ref bool sTurn, Label sStatus)
-        {
-            this.raising = false;
-            sTurn = false;
-            sChips -= this.neededChipsToCall;
-            sStatus.Text = "Call " + this.neededChipsToCall;
-            textBoxPot.Text = (int.Parse(textBoxPot.Text) + this.neededChipsToCall).ToString();
-        }
-        private void Raised(ref int sChips, ref bool sTurn, Label sStatus)
-        {
-            sChips -= Convert.ToInt32(raise);
-            sStatus.Text = "Raise " + raise;
-            textBoxPot.Text = (int.Parse(textBoxPot.Text) + Convert.ToInt32(raise)).ToString();
-            this.neededChipsToCall = Convert.ToInt32(raise);
-            this.raising = true;
-            sTurn = false;
-        }
-        private static double RoundN(int sChips, int n)
-        {
-            double a = Math.Round((sChips / n) / 100d, 0) * 100;
-            return a;
-        }
-        */
-        /* // otiva v WinningHandType
-        private void Hp(ref int sChips, ref bool sTurn, ref bool sFTurn, Label sStatus, double botPower, int n, int n1)
-        {
-            Random rand = new Random();
-            int rnd = rand.Next(1, 4);
-            if (this.neededChipsToCall <= 0)
-            {
-                Check(ref sTurn, sStatus);
-            }
-            if (this.neededChipsToCall > 0)
-            {
-                if (rnd == 1)
-                {
-                    if (this.neededChipsToCall <= RoundN(sChips, n))
-                    {
-                        Call(ref sChips, ref sTurn, sStatus);
-                    }
-                    else
-                    {
-                        Fold(ref sTurn, ref sFTurn, sStatus);
-                    }
-                }
-                if (rnd == 2)
-                {
-                    if (this.neededChipsToCall <= RoundN(sChips, n1))
-                    {
-                        Call(ref sChips, ref sTurn, sStatus);
-                    }
-                    else
-                    {
-                        Fold(ref sTurn, ref sFTurn, sStatus);
-                    }
-                }
-            }
-            if (rnd == 3)
-            {
-                if (raise == 0)
-                {
-                    raise = this.neededChipsToCall * 2;
-                    Raised(ref sChips, ref sTurn, sStatus);
-                }
-                else
-                {
-                    if (raise <= RoundN(sChips, n))
-                    {
-                        raise = this.neededChipsToCall * 2;
-                        Raised(ref sChips, ref sTurn, sStatus);
-                    }
-                    else
-                    {
-                        Fold(ref sTurn, ref sFTurn, sStatus);
-                    }
-                }
-            }
-            if (sChips <= 0)
-            {
-                sFTurn = true;
-            }
-        }
-        private void Ph(ref int sChips, ref bool sTurn, ref bool sFTurn, Label sStatus, int n, int n1, int r)
-        {
-            Random rand = new Random();
-            int rnd = rand.Next(1, 3);
-            if (rounds < 2)
-            {
-                if (this.neededChipsToCall <= 0)
-                {
-                    Check(ref sTurn, sStatus);
-                }
-                if (this.neededChipsToCall > 0)
-                {
-                    if (this.neededChipsToCall >= RoundN(sChips, n1))
-                    {
-                        Fold(ref sTurn, ref sFTurn, sStatus);
-                    }
-                    if (raise > RoundN(sChips, n))
-                    {
-                        Fold(ref sTurn, ref sFTurn, sStatus);
-                    }
-                    if (!sFTurn)
-                    {
-                        if (this.neededChipsToCall >= RoundN(sChips, n) && this.neededChipsToCall <= RoundN(sChips, n1))
-                        {
-                            Call(ref sChips, ref sTurn, sStatus);
-                        }
-                        if (raise <= RoundN(sChips, n) && raise >= (RoundN(sChips, n)) / 2)
-                        {
-                            Call(ref sChips, ref sTurn, sStatus);
-                        }
-                        if (raise <= (RoundN(sChips, n)) / 2)
-                        {
-                            if (raise > 0)
-                            {
-                                raise = (int)RoundN(sChips, n);
-                                Raised(ref sChips, ref sTurn, sStatus);
-                            }
-                            else
-                            {
-                                raise = this.neededChipsToCall * 2;
-                                Raised(ref sChips, ref sTurn, sStatus);
-                            }
-                        }
-
-                    }
-                }
-            }
-            if (rounds >= 2)
-            {
-                if (this.neededChipsToCall > 0)
-                {
-                    if (this.neededChipsToCall >= RoundN(sChips, n1 - rnd))
-                    {
-                        Fold(ref sTurn, ref sFTurn, sStatus);
-                    }
-                    if (raise > RoundN(sChips, n - rnd))
-                    {
-                        Fold(ref sTurn, ref sFTurn, sStatus);
-                    }
-                    if (!sFTurn)
-                    {
-                        if (this.neededChipsToCall >= RoundN(sChips, n - rnd) && this.neededChipsToCall <= RoundN(sChips, n1 - rnd))
-                        {
-                            Call(ref sChips, ref sTurn, sStatus);
-                        }
-                        if (raise <= RoundN(sChips, n - rnd) && raise >= (RoundN(sChips, n - rnd)) / 2)
-                        {
-                            Call(ref sChips, ref sTurn, sStatus);
-                        }
-                        if (raise <= (RoundN(sChips, n - rnd)) / 2)
-                        {
-                            if (raise > 0)
-                            {
-                                raise = (int)RoundN(sChips, n - rnd);
-                                Raised(ref sChips, ref sTurn, sStatus);
-                            }
-                            else
-                            {
-                                raise = this.neededChipsToCall * 2;
-                                Raised(ref sChips, ref sTurn, sStatus);
-                            }
-                        }
-                    }
-                }
-                if (this.neededChipsToCall <= 0)
-                {
-                    raise = (int)RoundN(sChips, r - rnd);
-                    Raised(ref sChips, ref sTurn, sStatus);
-                }
-            }
-
-            if (sChips <= 0)
-            {
-                sFTurn = true;
-            }
-        }
-
-        void Smooth(ref int botChips, ref bool botTurn, ref bool botFTurn, Label botStatus, int name, int n, int r)
-        {
-            Random rand = new Random();
-            int rnd = rand.Next(1, 3);
-            if (this.neededChipsToCall <= 0)
-            {
-                Check(ref botTurn, botStatus);
-            }
-            else
-            {
-                if (this.neededChipsToCall >= RoundN(botChips, n))
-                {
-                    if (botChips > this.neededChipsToCall)
-                    {
-                        Call(ref botChips, ref botTurn, botStatus);
-                    }
-                    else if (botChips <= this.neededChipsToCall)
-                    {
-                        this.raising = false;
-                        botTurn = false;
-                        botChips = 0;
-                        botStatus.Text = "Call " + botChips;
-                        textBoxPot.Text = (int.Parse(textBoxPot.Text) + botChips).ToString();
-                    }
-                }
-                else
-                {
-                    if (raise > 0)
-                    {
-                        if (botChips >= raise * 2)
-                        {
-                            raise *= 2;
-                            Raised(ref botChips, ref botTurn, botStatus);
-                        }
-                        else
-                        {
-                            Call(ref botChips, ref botTurn, botStatus);
-                        }
-                    }
-                    else
-                    {
-                        raise = this.neededChipsToCall * 2;
-                        Raised(ref botChips, ref botTurn, botStatus);
-                    }
-                }
-            }
-            if (botChips <= 0)
-            {
-                botFTurn = true;
-            }
-        }
-        */
 
         #region UI
         private async void TimerTick(object sender, object e)
