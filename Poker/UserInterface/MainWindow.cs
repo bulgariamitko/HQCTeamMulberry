@@ -151,6 +151,10 @@
             this.textBoxRaise.Text = (this.bigBlindValue * 2).ToString();
         }
 
+        /// <summary>
+        /// Deals cards to all players and puts cards at the table.
+        /// Enables card controls and panel controls for the players.
+        /// </summary>
         async Task Shuffle()
         {
             this.gameDatabase.PlayersGameStatus.Add(this.player.OutOfChips);
@@ -399,7 +403,7 @@
                     }
                 }
 
-                await this.CheckRaise(0, 0);
+                await this.CheckRaise(0);
                 this.progressBarTimer.Visible = false;
                 this.buttonRaise.Enabled = false;
                 this.buttonCall.Enabled = false;
@@ -438,7 +442,7 @@
 
                     if (this.bots[currentBotNumber].OutOfChips || !this.bots[currentBotNumber].CanMakeTurn)
                     {
-                        await this.CheckRaise(currentBotNumber + 1, currentBotNumber + 1);
+                        await this.CheckRaise(currentBotNumber + 1);
                     }
                 }
                 
@@ -541,6 +545,7 @@
                 }
             }
         }
+
 
         private void RStraightFlush(ICharacter currentPlayer, int[] st1, int[] st2, int[] st3, int[] st4)
         {
@@ -649,6 +654,7 @@
                 }
             }
         }
+
         private void RFullHouse(ICharacter currentPlayer, ref bool done, int[] straight)
         {
             if (currentPlayer.Type >= -1)
@@ -704,6 +710,7 @@
                 }
             }
         }
+
         private void RFlush(ICharacter currentPlayer, ref bool vf, int[] cardsOnBoard)
         {
             if (currentPlayer.Type >= -1)
@@ -1578,6 +1585,10 @@
             }
         }
 
+        /// <summary>
+        /// Deturmens the winner.
+        /// </summary>
+        /// <param name="currentPlayer">The current character</param>
         public void Winner(ICharacter currentPlayer, string lastly)
         {
             if (lastly == " ")
@@ -1728,7 +1739,11 @@
             }
         }
 
-        async Task CheckRaise(int currentTurn, int raiseTurn)
+        /// <summary>
+        /// Checks if bet is raised in the current turn.
+        /// </summary>
+        /// <param name="currentTurn">The current turn</param>
+        async Task CheckRaise(int currentTurn)
         {
             if (this.raising)
             {
@@ -1986,6 +2001,13 @@
             }
         }
 
+        /// <summary>
+        /// Checks if there are any characters that are all in.
+        /// If two or more players are all in, it waits until the end
+        /// of the round and then deturmens the winner.
+        /// If there is only one character that hasn't foldet, 
+        /// he becoms the winner
+        /// </summary>   
         async Task AllIn()
         {
             #region Allin
@@ -2072,6 +2094,12 @@
             #endregion
         }
 
+        /// <summary>
+        /// Returns all variables to their default values.
+        /// Disables player and bots panels. 
+        /// Clears lists and text messages.
+        /// </summary>
+        /// <param name="n">The n parameter.</param>
         async Task Finish(int n)
         {
             if (n == 2)
@@ -2259,6 +2287,12 @@
         }
 
         #region UI
+        /// <summary>
+        /// Checks if the time for guman player has expired.
+        /// If the time has expired the player automatically folds.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">Parameters of the event.</param>
         private async void TimerTick(object sender, object e)
         {
             if (this.progressBarTimer.Value <= 0)
@@ -2274,6 +2308,11 @@
             }
         }
 
+        /// <summary>
+        /// Updates the status of all players, every tick of the timer.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">Parameters of the event.</param>  
         private void UpdateTick(object sender, object e)
         {
             if (this.player.Chips <= 0)
@@ -2375,6 +2414,11 @@
             }
         }
 
+        /// <summary>
+        /// Event for the button "buttonFold".
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">Parameters of the event.</param> 
         private async void FoldButtonClick(object sender, EventArgs e)
         {
             this.playerStatus.Text = "Fold";
@@ -2383,6 +2427,11 @@
             await this.Turns();
         }
 
+        /// <summary>
+        /// Event for the button "buttonCheck".
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">Parameters of the event.</param> 
         private async void CheckButtonClick(object sender, EventArgs e)
         {
             if (this.neededChipsToCall <= 0)
@@ -2398,6 +2447,11 @@
             await this.Turns();
         }
 
+        /// <summary>
+        /// Event for the button "buttonCall".
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">Parameters of the event.</param> 
         private async void CallButtonClick(object sender, EventArgs e)
         {
             this.Rules(0, 1, this.player);
@@ -2432,6 +2486,11 @@
             await this.Turns();
         }
 
+        /// <summary>
+        /// Event for the button "buttonRaise".
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">Parameters of the event.</param> 
         private async void RaiseButtonClick(object sender, EventArgs e)
         {
             this.Rules(0, 1, this.player);
@@ -2484,6 +2543,11 @@
             await this.Turns();
         }
 
+        /// <summary>
+        /// Event for the button "buttonAdd".
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">Parameters of the event.</param> 
         private void AddButtonClick(object sender, EventArgs e)
         {
             if (this.textBoxAdd.Text != string.Empty)
@@ -2498,6 +2562,11 @@
             this.textBoxPlayerChips.Text = "Chips : " + this.player.Chips.ToString();
         }
 
+        /// <summary>
+        /// Event for the button "buttonOptions".
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">Parameters of the event.</param> 
         private void OptionsButtonClick(object sender, EventArgs e)
         {
             this.textBoxBigBlind.Text = this.bigBlindValue.ToString();
@@ -2518,6 +2587,11 @@
             }
         }
 
+        /// <summary>
+        /// Event for the button "buttonSmallBlind".
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">Parameters of the event.</param> 
         private void SmallBlindButtonClick(object sender, EventArgs e)
         {
             int parsedValue;
@@ -2560,6 +2634,11 @@
             }
         }
 
+        /// <summary>
+        /// Event for the button "buttonBigBlind".
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">Parameters of the event.</param> 
         private void BigBlindButtonClick(object sender, EventArgs e)
         {
             int parsedValue;
