@@ -3,6 +3,7 @@
     using Interfaces;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.IO;
     using System.Linq;
@@ -12,6 +13,7 @@
     using Poker.Models;
     using Poker.Models.Characters;
 
+    [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
     public partial class MainWindow : Form
     {
         #region Variables
@@ -1754,14 +1756,14 @@
 
                         if (!this.player.OutOfChips)
                         {
-                            this.playerStatus.Text = "";
+                            this.playerStatus.Text = string.Empty;
                         }
 
                         for (int currantBot = 0; currantBot < this.botStatusLabels.Length; currantBot++)
                         {
                             if (!this.bots[currantBot].OutOfChips)
                             {
-                                this.botStatusLabels[currantBot].Text = "";
+                                this.botStatusLabels[currantBot].Text = string.Empty;
                             }
                         }
                     }
@@ -1990,7 +1992,7 @@
 
         async Task AllIn()
         {
-            #region All in
+            #region Allin
             if (this.player.Chips <= 0 && !this.chipsAreAdded)
             {
                 if (this.playerStatus.Text.Contains("Raise"))
@@ -2280,32 +2282,32 @@
         {
             if (this.player.Chips <= 0)
             {
-                this.textBoxPlayerChips.Text = "Chips : 0";
+                this.textBoxPlayerChips.Text = "Chips: 0";
             }
 
             if (this.bots[0].Chips <= 0)
             {
-                this.textBoxBotOneChips.Text = "Chips : 0";
+                this.textBoxBotOneChips.Text = "Chips: 0";
             }
 
             if (this.bots[1].Chips <= 0)
             {
-                this.textBoxBotTwoChips.Text = "Chips : 0";
+                this.textBoxBotTwoChips.Text = "Chips: 0";
             }
 
             if (this.bots[2].Chips <= 0)
             {
-                this.textBoxBotThreeChips.Text = "Chips : 0";
+                this.textBoxBotThreeChips.Text = "Chips: 0";
             }
 
             if (this.bots[3].Chips <= 0)
             {
-                this.textBoxBotFourChips.Text = "Chips : 0";
+                this.textBoxBotFourChips.Text = "Chips: 0";
             }
 
             if (this.bots[4].Chips <= 0)
             {
-                this.textBoxBotFiveChips.Text = "Chips : 0";
+                this.textBoxBotFiveChips.Text = "Chips: 0";
             }
 
             this.textBoxPlayerChips.Text = "Chips : " + this.player.Chips.ToString();
@@ -2359,7 +2361,7 @@
 
             int parsedValue;
 
-            if (this.textBoxRaise.Text != "" && int.TryParse(this.textBoxRaise.Text, out parsedValue))
+            if (this.textBoxRaise.Text != string.Empty && int.TryParse(this.textBoxRaise.Text, out parsedValue))
             {
                 if (this.player.Chips <= int.Parse(this.textBoxRaise.Text))
                 {
@@ -2406,8 +2408,8 @@
             if (this.player.Chips >= this.neededChipsToCall)
             {
                 this.player.Chips -= this.neededChipsToCall;
-                this.textBoxPlayerChips.Text = "Chips : " + this.player.Chips.ToString();
-                if (this.textBoxPot.Text != "")
+                this.textBoxPlayerChips.Text = "Chips: " + this.player.Chips.ToString();
+                if (this.textBoxPot.Text != string.Empty)
                 {
                     this.textBoxPot.Text = (int.Parse(this.textBoxPot.Text) + this.neededChipsToCall).ToString();
                 }
@@ -2425,7 +2427,7 @@
                 this.textBoxPot.Text = (int.Parse(this.textBoxPot.Text) + this.player.Chips).ToString();
                 this.playerStatus.Text = "All in " + this.player.Chips;
                 this.player.Chips = 0;
-                this.textBoxPlayerChips.Text = "Chips : " + this.player.Chips.ToString();
+                this.textBoxPlayerChips.Text = "Chips: " + this.player.Chips.ToString();
                 this.player.CanMakeTurn = false;
                 this.buttonFold.Enabled = false;
                 this.player.Call = this.player.Chips;
@@ -2433,11 +2435,12 @@
 
             await this.Turns();
         }
+
         private async void bRaise_Click(object sender, EventArgs e)
         {
             this.Rules(0, 1, this.player);
             int parsedValue;
-            if (this.textBoxRaise.Text != "" && int.TryParse(this.textBoxRaise.Text, out parsedValue))
+            if (this.textBoxRaise.Text != string.Empty && int.TryParse(this.textBoxRaise.Text, out parsedValue))
             {
                 if (this.player.Chips > this.neededChipsToCall)
                 {
@@ -2604,6 +2607,7 @@
                 MessageBox.Show(msg);
             }
         }
+
         private void Layout_Change(object sender, LayoutEventArgs e)
         {
             this.width = this.Width;
