@@ -1,4 +1,13 @@
-﻿namespace Poker.UserInterface
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MainWindow.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   The main window.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Poker.UserInterface
 {
     using System;
     using System.Collections.Generic;
@@ -14,6 +23,9 @@
     using Poker.Models;
     using Poker.Models.Characters;
 
+    /// <summary>
+    /// The main window.
+    /// </summary>
     public partial class MainWindow : Form
     {
         #region Variables
@@ -70,6 +82,10 @@
         private readonly PokerRules pokerRules;
 
         #endregion
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainWindow"/> class.
+        /// </summary>
         public MainWindow()
         {
             this.player = new Player("Player");
@@ -157,6 +173,9 @@
             this.pokerRules = new PokerRules(this);
         }
 
+        /// <summary>
+        /// Gets the poker rules.
+        /// </summary>
         public PokerRules PokerRules
         {
             get
@@ -820,19 +839,19 @@
             }
         }
 
-        private void SetCallAndRaiseToZero(int j)
-        {
-            this.cardsPictureBoxArray[j].Image = this.gameCardsAsImages[j];
-            this.player.Call = 0;
-            this.player.Raise = 0;
-            for (int currentBot = 0; currentBot < this.bots.Count; currentBot++)
-            {
-                this.bots[currentBot].Call = 0;
-                this.bots[currentBot].Raise = 0;
-            }
-        }
-
-        void FixCall(Label status, ICharacter currentPlayer, int options) //ref int cCall, ref int cRaise
+        /// <summary>
+        /// The fix call.
+        /// </summary>
+        /// <param name="status">
+        /// The status.
+        /// </param>
+        /// <param name="currentPlayer">
+        /// The current player.
+        /// </param>
+        /// <param name="options">
+        /// The options.
+        /// </param>
+        public void FixCall(Label status, ICharacter currentPlayer, int options) //ref int cCall, ref int cRaise
         {
             if (this.rounds != 4)
             {
@@ -978,7 +997,7 @@
         /// Clears lists and text messages.
         /// </summary>
         /// <param name="n">The n parameter.</param>
-        async Task Finish(int n)
+        public async Task Finish(int n)
         {
             if (n == 2)
             {
@@ -1072,6 +1091,9 @@
             await this.Shuffle();
         }
 
+        /// <summary>
+        /// The fix winners.
+        /// </summary>
         public void FixWinners()
         {
             this.gameDatabase.Win.Clear();
@@ -1101,7 +1123,25 @@
                 this.Winner(this.bots[currentBotNumber], fixedLast);
             }
         }
-        
+
+        /// <summary>
+        /// The ai.
+        /// </summary>
+        /// <param name="card1">
+        /// The card 1.
+        /// </param>
+        /// <param name="card2">
+        /// The card 2.
+        /// </param>
+        /// <param name="sStatus">
+        /// The s status.
+        /// </param>
+        /// <param name="name">
+        /// The name.
+        /// </param>
+        /// <param name="player">
+        /// The player.
+        /// </param>
         private void AI(int card1, int card2, Label sStatus, int name, ICharacter player)
         {
             if (!player.OutOfChips)
@@ -1559,11 +1599,38 @@
             }
         }
 
+        /// <summary>
+        /// The layout change.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
         private void LayoutChange(object sender, LayoutEventArgs e)
         {
             this.width = this.Width;
             this.height = this.Height;
         }
         #endregion
+
+        /// <summary>
+        /// The set call and raise to zero.
+        /// </summary>
+        /// <param name="j">
+        /// The j.
+        /// </param>
+        private void SetCallAndRaiseToZero(int j)
+        {
+            this.cardsPictureBoxArray[j].Image = this.gameCardsAsImages[j];
+            this.player.Call = 0;
+            this.player.Raise = 0;
+            for (int currentBot = 0; currentBot < this.bots.Count; currentBot++)
+            {
+                this.bots[currentBot].Call = 0;
+                this.bots[currentBot].Raise = 0;
+            }
+        }
     }
 }
