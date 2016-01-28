@@ -37,7 +37,8 @@
         private Label botFourStatus;
         private Label botThreeStatus;
         private Label botOneStatus;
-        private Label playerStatus;
+
+        public Label playerStatus;
         private Label botTwoStatus;
         private Label potLabel;
 

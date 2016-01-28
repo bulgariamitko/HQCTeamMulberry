@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\PokerRules.cs" />
     <Compile Include="Enums\Suit.cs" />
     <Compile Include="Interfaces\IBot.cs" />
     <Compile Include="Interfaces\ICard.cs" />
