@@ -39,7 +39,7 @@ namespace Poker.Validators
         }
 
         /// <summary>
-        /// The validate for negative number.
+        /// The validate for negative Int number.
         /// </summary>
         /// <param name="value">
         /// The value.
@@ -49,7 +49,7 @@ namespace Poker.Validators
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException">
         /// </exception>
-        public static void ValidateForNegativeNumber(int value, string propertyName)
+        public static void ValidateForNegativeIntNumber(int value, string propertyName)
         {
             if (value < 0)
             {
@@ -75,6 +75,26 @@ namespace Poker.Validators
             {
                 var msg = string.Format("{0} cannot be null or white space.", propertyName);
                 throw new ArgumentNullException(msg);
+            }
+        }
+
+        /// <summary>
+        /// The validate for negative double number.
+        /// </summary>
+        /// <param name="value">
+        /// The value.
+        /// </param>
+        /// <param name="propertyName">
+        /// The property name.
+        /// </param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// </exception>
+        public static void ValidateForNegativeDoubleNumber(double value, string propertyName)
+        {
+            if (value < 0)
+            {
+                var msg = string.Format("{0} cannot be negative.", propertyName);
+                throw new ArgumentOutOfRangeException(msg);
             }
         }
     }

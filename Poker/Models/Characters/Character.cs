@@ -338,7 +338,7 @@ namespace Poker.Models.Characters
             set
             {
                 PropertyValueValidator.ValidateForNull(value, "Start card");
-                PropertyValueValidator.ValidateForNegativeNumber(value, "Start card");
+                PropertyValueValidator.ValidateForNegativeIntNumber(value, "Start card");
                 if (value > MainWindow.DefaultSetOfCards - 1)
                 {
                     throw new ArgumentOutOfRangeException("Start card cannot be bigger then DefaultSetOfCards");

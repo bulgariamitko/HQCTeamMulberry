@@ -81,7 +81,7 @@ namespace Poker.Models.Characters
             set
             {
                 PropertyValueValidator.ValidateForNull(value, "Vertical location coordinate");
-                PropertyValueValidator.ValidateForNegativeNumber(value, "Vertical location coordinate");
+                PropertyValueValidator.ValidateForNegativeIntNumber(value, "Vertical location coordinate");
                 this.verticalLocationCoordinate = value;
             }
         }
@@ -99,7 +99,7 @@ namespace Poker.Models.Characters
             set
             {
                 PropertyValueValidator.ValidateForNull(value, "Horizontal location coordinate");
-                PropertyValueValidator.ValidateForNegativeNumber(value, "Horizontal location coordinate");
+                PropertyValueValidator.ValidateForNegativeIntNumber(value, "Horizontal location coordinate");
                 this.horizontalLocationCoordinate = value;
             }
         }
