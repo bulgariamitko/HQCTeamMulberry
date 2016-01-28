@@ -61,7 +61,6 @@ namespace Poker
             set
             {
                 PropertyValueValidator.ValidateForNull(value, "Power");
-                PropertyValueValidator.ValidateForNegativeDoubleNumber(value, "Power");
                 this.power = value;
             }
         }

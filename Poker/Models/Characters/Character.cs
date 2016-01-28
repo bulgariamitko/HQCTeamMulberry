@@ -157,7 +157,6 @@ namespace Poker.Models.Characters
 
             set
             {
-                PropertyValueValidator.ValidateForNull(value, "Chips");
                 if (value < 0)
                 {
                     this.chips = 0;
@@ -198,7 +197,6 @@ namespace Poker.Models.Characters
 
             set
             {
-                PropertyValueValidator.ValidateForNull(value, "Type");
                 this.type = value;
             }
         }
@@ -215,7 +213,6 @@ namespace Poker.Models.Characters
 
             set
             {
-                PropertyValueValidator.ValidateForNull(value, "Power");
                 this.power = value;
             }
         }
@@ -232,7 +229,6 @@ namespace Poker.Models.Characters
 
             set
             {
-                PropertyValueValidator.ValidateForNull(value, "Call");
                 this.call = value;
             }
         }
@@ -249,7 +245,6 @@ namespace Poker.Models.Characters
 
             set
             {
-                PropertyValueValidator.ValidateForNull(value, "Raise");
                 this.raise = value;
             }
 
@@ -267,7 +262,6 @@ namespace Poker.Models.Characters
 
             set
             {
-                PropertyValueValidator.ValidateForNull(value, "CanMakeTurn");
                 this.canMakeTurn = value;
             }
         }
@@ -284,7 +278,6 @@ namespace Poker.Models.Characters
 
             set
             {
-                PropertyValueValidator.ValidateForNull(value, "OutOfChips");
                 this.outOfChips = value;
             }
         }
@@ -301,7 +294,6 @@ namespace Poker.Models.Characters
 
             set
             {
-                PropertyValueValidator.ValidateForNull(value, "Folded");
                 this.folded = value;
             }
         }
@@ -318,7 +310,6 @@ namespace Poker.Models.Characters
 
             protected set
             {
-                PropertyValueValidator.ValidateForNull(value, "Cards");
                 this.cards = value;
             }
         }
@@ -337,12 +328,12 @@ namespace Poker.Models.Characters
 
             set
             {
-                PropertyValueValidator.ValidateForNull(value, "Start card");
                 PropertyValueValidator.ValidateForNegativeIntNumber(value, "Start card");
                 if (value > MainWindow.DefaultSetOfCards - 1)
                 {
                     throw new ArgumentOutOfRangeException("Start card cannot be bigger then DefaultSetOfCards");
                 }
+
                 this.startCard = value;
             }
         }

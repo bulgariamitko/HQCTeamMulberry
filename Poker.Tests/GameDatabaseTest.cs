@@ -1,7 +1,7 @@
 ﻿namespace Poker.Tests
 {
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Poker.Data;
 
     [TestClass]

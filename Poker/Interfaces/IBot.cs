@@ -35,13 +35,5 @@ namespace Poker.Interfaces
         /// Gets or sets the horizontal location.
         /// </summary>
         AnchorStyles HorizontalLocation { get; set; }
-
-        /// <summary>
-        /// The get anchor styles.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="AnchorStyles"/>.
-        /// </returns>
-        AnchorStyles GetAnchorStyles();
     }
 }

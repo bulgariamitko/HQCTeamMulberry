@@ -80,7 +80,6 @@ namespace Poker.Models.Characters
 
             set
             {
-                PropertyValueValidator.ValidateForNull(value, "Vertical location coordinate");
                 PropertyValueValidator.ValidateForNegativeIntNumber(value, "Vertical location coordinate");
                 this.verticalLocationCoordinate = value;
             }
@@ -98,7 +97,6 @@ namespace Poker.Models.Characters
 
             set
             {
-                PropertyValueValidator.ValidateForNull(value, "Horizontal location coordinate");
                 PropertyValueValidator.ValidateForNegativeIntNumber(value, "Horizontal location coordinate");
                 this.horizontalLocationCoordinate = value;
             }
@@ -116,7 +114,6 @@ namespace Poker.Models.Characters
 
             set
             {
-                PropertyValueValidator.ValidateForNull(value, "Vertical location");
                 this.verticalLocation = value;
             }
         }
@@ -133,30 +130,7 @@ namespace Poker.Models.Characters
 
             set
             {
-                PropertyValueValidator.ValidateForNull(value, "Horizontal location");
                 this.horizontalLocation = value;
-            }
-        }
-
-        /// <summary>
-        /// The get anchor styles.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="AnchorStyles"/>.
-        /// </returns>
-        public AnchorStyles GetAnchorStyles()
-        {
-            if (this.VerticalLocation == 0)
-            {
-                return this.HorizontalLocation;
-            }
-            else if (this.HorizontalLocation == 0)
-            {
-                return this.VerticalLocation;
-            }
-            else
-            {
-                return this.VerticalLocation | this.HorizontalLocation;
             }
         }
     }
