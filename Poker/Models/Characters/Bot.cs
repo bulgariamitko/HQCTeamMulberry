@@ -1,4 +1,13 @@
-﻿namespace Poker.Models.Characters
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Bot.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   The bot.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Poker.Models.Characters
 {
     using System.Windows.Forms;
     using Interfaces;

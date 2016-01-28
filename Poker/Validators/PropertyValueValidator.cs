@@ -1,4 +1,13 @@
-﻿namespace Poker.Validators
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="PropertyValueValidator.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   Static class who validate property value
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Poker.Validators
 {
     using System;
 
