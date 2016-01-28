@@ -50,7 +50,14 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="GameDatabaseTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Poker\Poker.csproj">
+      <Project>{3f8b18d1-affb-4aae-a26e-316a4f773a13}</Project>
+      <Name>Poker</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
