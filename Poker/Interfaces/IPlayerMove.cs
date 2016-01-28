@@ -114,7 +114,7 @@ namespace Poker.Interfaces
         /// <param name="raising">
         /// The raising.
         /// </param>
-        void HP(ICharacter pokerPlayer, Label sStatus, int n, int n1, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising);
+        void HP(ICharacter pokerPlayer, Label sStatus, int n, int n1, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising, IRandomGenerator randomGenerator);
 
         /// <summary>
         /// The ph.
@@ -149,6 +149,6 @@ namespace Poker.Interfaces
         /// <param name="rounds">
         /// The rounds.
         /// </param>
-        void PH(ICharacter player, Label sStatus, int n, int n1, int r, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising, ref int rounds);
+        void PH(ICharacter player, Label sStatus, int n, int n1, int r, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising, ref int rounds, IRandomGenerator randomGenerator);
     }
 }

@@ -13,6 +13,9 @@ namespace Poker.Tests
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Models;
+
+    using Moq;
+
     using Poker.Models.Characters;
     using Poker.Interfaces;
 
@@ -22,11 +25,6 @@ namespace Poker.Tests
     [TestClass]
     public class PlayerMoveTest
     {
-        /// <summary>
-        /// The test random generator.
-        /// </summary>
-        private IRandomGenerator testRandomGenerator;
-
         /// <summary>
         /// The tested player move.
         /// </summary>
@@ -73,8 +71,7 @@ namespace Poker.Tests
         [TestInitialize]
         public void TestInitialize()
         {
-            this.testRandomGenerator = new RandomGenerator();
-            this.testedPlayerMove = new PlayerMove(this.testRandomGenerator);
+            this.testedPlayerMove = new PlayerMove();
             this.player = new Player("player");
             this.testLabel = new Label();
             this.testLabel.Text = "Test";
@@ -165,6 +162,17 @@ namespace Poker.Tests
             Assert.AreEqual(5, this.neededChipsToCall);
             Assert.AreEqual(true, this.raising);
             Assert.AreEqual(false, this.player.CanMakeTurn);
+        }
+
+        [TestMethod]
+        public void HP_ShouldManipulatePlayerLabelTextBoxRaising_ShouldNotThrowException()
+        {
+            var fakeRandomGenerator = new Mock<IRandomGenerator>();
+            fakeRandomGenerator.Setup(r => r.RandomFromTo(It.IsAny<int>(), It.IsAny<int>())).Returns(1);
+
+            this.testedPlayerMove.HP(this.player, this.testLabel, 1, 1, ref this.neededChipsToCall, this.potStatus, ref this.raise, ref this.raising, fakeRandomGenerator.Object);
+
+            //TODO
         }
     }
 }

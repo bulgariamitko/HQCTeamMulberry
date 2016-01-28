@@ -19,35 +19,10 @@ namespace Poker.Models
     public class PlayerMove : IPlayerMove
     {
         /// <summary>
-        /// The random generator.
-        /// </summary>
-        private IRandomGenerator randomGenerator;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="PlayerMove"/> class.
         /// </summary>
-        /// <param name="randomGenerator">
-        /// The random generator.
-        /// </param>
-        public PlayerMove(IRandomGenerator randomGenerator)
+        public PlayerMove()
         {
-            this.RandomGenerator = randomGenerator;
-        }
-
-        /// <summary>
-        /// Gets or sets the random generator.
-        /// </summary>
-        public IRandomGenerator RandomGenerator
-        {
-            get
-            {
-                return this.randomGenerator;
-            }
-
-            set
-            {
-                this.randomGenerator = value;
-            }
         }
 
         /// <summary>
@@ -193,9 +168,9 @@ namespace Poker.Models
         /// <param name="raising">
         /// The raising.
         /// </param>
-        public void HP(ICharacter player, Label sStatus, int n, int n1, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising)
+        public void HP(ICharacter player, Label sStatus, int n, int n1, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising, IRandomGenerator randomGenerator)
         {
-            int rnd = this.randomGenerator.RandomFromTo(1, 4);
+            int rnd = randomGenerator.RandomFromTo(1, 4);
             if (neededChipsToCall <= 0)
             {
                 this.Check(player, sStatus, ref raising);
@@ -288,9 +263,9 @@ namespace Poker.Models
         /// <param name="rounds">
         /// The rounds.
         /// </param>
-        public void PH(ICharacter player, Label sStatus, int n, int n1, int r, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising, ref int rounds)
+        public void PH(ICharacter player, Label sStatus, int n, int n1, int r, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising, ref int rounds, IRandomGenerator randomGenerator)
         {
-            int rnd = this.randomGenerator.RandomFromTo(1, 3);
+            int rnd = randomGenerator.RandomFromTo(1, 3);
             if (rounds < 2)
             {
                 if (neededChipsToCall <= 0)

@@ -26,15 +26,15 @@ namespace Poker.Models
         /// <summary>
         /// The random generator.
         /// </summary>
-        private readonly Random randomGenerator;
+        private readonly IRandomGenerator randomGenerator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WinningHandType"/> class.
         /// </summary>
         public WinningHandType()
         {
-            this.randomGenerator = new Random();
-            this.playerMove = new PlayerMove(new RandomGenerator());
+            this.randomGenerator = new RandomGenerator();
+            this.playerMove = new PlayerMove();
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Poker.Models
         /// </param>
         public void HighCard(ICharacter pokerPlayer, Label sStatus, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising)
         {
-            this.playerMove.HP(pokerPlayer, sStatus, 20, 25, ref neededChipsToCall, potStatus, ref raise, ref raising);
+            this.playerMove.HP(pokerPlayer, sStatus, 20, 25, ref neededChipsToCall, potStatus, ref raise, ref raising, this.randomGenerator);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Poker.Models
         /// </param>
         public void PairTable(ICharacter pokerPlayer, Label sStatus, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising)
         {
-            this.playerMove.HP(pokerPlayer, sStatus, 16, 25, ref neededChipsToCall, potStatus, ref raise, ref raising);
+            this.playerMove.HP(pokerPlayer, sStatus, 16, 25, ref neededChipsToCall, potStatus, ref raise, ref raising, this.randomGenerator);
         }
 
         /// <summary>
@@ -115,21 +115,21 @@ namespace Poker.Models
         /// </param>
         public void PairHand(ICharacter player, Label sStatus, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising, ref int rounds)
         {
-            int rCall = this.randomGenerator.Next(10, 16);
-            int rRaise = this.randomGenerator.Next(10, 13);
+            int rCall = this.randomGenerator.RandomFromTo(10, 16);
+            int rRaise = this.randomGenerator.RandomFromTo(10, 13);
             if (player.Power <= 199 && player.Power >= 140)
             {
-                this.playerMove.PH(player, sStatus, rCall, 6, rRaise, ref neededChipsToCall, potStatus, ref raise, ref raising, ref rounds);
+                this.playerMove.PH(player, sStatus, rCall, 6, rRaise, ref neededChipsToCall, potStatus, ref raise, ref raising, ref rounds, this.randomGenerator);
             }
 
             if (player.Power <= 139 && player.Power >= 128)
             {
-                this.playerMove.PH(player, sStatus, rCall, 7, rRaise, ref neededChipsToCall, potStatus, ref raise, ref raising, ref rounds);
+                this.playerMove.PH(player, sStatus, rCall, 7, rRaise, ref neededChipsToCall, potStatus, ref raise, ref raising, ref rounds, this.randomGenerator);
             }
 
             if (player.Power < 128 && player.Power >= 101)
             {
-                this.playerMove.PH(player, sStatus, rCall, 9, rRaise, ref neededChipsToCall, potStatus, ref raise, ref raising, ref rounds);
+                this.playerMove.PH(player, sStatus, rCall, 9, rRaise, ref neededChipsToCall, potStatus, ref raise, ref raising, ref rounds, this.randomGenerator);
             }
         }
 
@@ -159,21 +159,21 @@ namespace Poker.Models
         /// </param>
         public void TwoPair(ICharacter player, Label sStatus, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising, ref int rounds)
         {
-            int rCall = this.randomGenerator.Next(6, 11);
-            int rRaise = this.randomGenerator.Next(6, 11);
+            int rCall = this.randomGenerator.RandomFromTo(6, 11);
+            int rRaise = this.randomGenerator.RandomFromTo(6, 11);
             if (player.Power <= 290 && player.Power >= 246)
             {
-                this.playerMove.PH(player, sStatus, rCall, 3, rRaise, ref neededChipsToCall, potStatus, ref raise, ref raising, ref rounds);
+                this.playerMove.PH(player, sStatus, rCall, 3, rRaise, ref neededChipsToCall, potStatus, ref raise, ref raising, ref rounds, this.randomGenerator);
             }
 
             if (player.Power <= 244 && player.Power >= 234)
             {
-                this.playerMove.PH(player, sStatus, rCall, 4, rRaise, ref neededChipsToCall, potStatus, ref raise, ref raising, ref rounds);
+                this.playerMove.PH(player, sStatus, rCall, 4, rRaise, ref neededChipsToCall, potStatus, ref raise, ref raising, ref rounds, this.randomGenerator);
             }
 
             if (player.Power < 234 && player.Power >= 201)
             {
-                this.playerMove.PH(player, sStatus, rCall, 4, rRaise, ref neededChipsToCall, potStatus, ref raise, ref raising, ref rounds);
+                this.playerMove.PH(player, sStatus, rCall, 4, rRaise, ref neededChipsToCall, potStatus, ref raise, ref raising, ref rounds, this.randomGenerator);
             }
         }
 
@@ -206,8 +206,8 @@ namespace Poker.Models
         /// </param>
         public void ThreeOfAKind(ICharacter player, Label sStatus, int name, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising, ref int rounds)
         {
-            int tCall = this.randomGenerator.Next(3, 7);
-            int tRaise = this.randomGenerator.Next(4, 8);
+            int tCall = this.randomGenerator.RandomFromTo(3, 7);
+            int tRaise = this.randomGenerator.RandomFromTo(4, 8);
             if (player.Power <= 390 && player.Power >= 330)
             {
                 this.Smooth(player, sStatus, name, tCall, tRaise, ref neededChipsToCall, potStatus, ref raise, ref raising, ref rounds);
@@ -253,8 +253,8 @@ namespace Poker.Models
         /// </param>
         public void Straight(ICharacter player, Label sStatus, int name, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising, ref int rounds)
         {
-            int sCall = this.randomGenerator.Next(3, 6);
-            int sRaise = this.randomGenerator.Next(3, 8);
+            int sCall = this.randomGenerator.RandomFromTo(3, 6);
+            int sRaise = this.randomGenerator.RandomFromTo(3, 8);
             if (player.Power <= 480 && player.Power >= 410)
             {
                 this.Smooth(player, sStatus, name, sCall, sRaise, ref neededChipsToCall, potStatus, ref raise, ref raising, ref rounds);
@@ -300,8 +300,8 @@ namespace Poker.Models
         /// </param>
         public void Flush(ICharacter player, Label sStatus, int name, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising, ref int rounds)
         {
-            int fCall = this.randomGenerator.Next(2, 6);
-            int fRaise = this.randomGenerator.Next(3, 7);
+            int fCall = this.randomGenerator.RandomFromTo(2, 6);
+            int fRaise = this.randomGenerator.RandomFromTo(3, 7);
             this.Smooth(player, sStatus, name, fCall, fRaise, ref neededChipsToCall, potStatus, ref raise, ref raising, ref rounds);
         }
 
@@ -334,8 +334,8 @@ namespace Poker.Models
         /// </param>
         public void FullHouse(ICharacter player, Label sStatus, int name, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising, ref int rounds)
         {
-            int fhCall = this.randomGenerator.Next(1, 5);
-            int fhRaise = this.randomGenerator.Next(2, 6);
+            int fhCall = this.randomGenerator.RandomFromTo(1, 5);
+            int fhRaise = this.randomGenerator.RandomFromTo(2, 6);
             if (player.Power <= 626 && player.Power >= 620)
             {
                 this.Smooth(player, sStatus, name, fhCall, fhRaise, ref neededChipsToCall, potStatus, ref raise, ref raising, ref rounds);
@@ -376,8 +376,8 @@ namespace Poker.Models
         /// </param>
         public void FourOfAKind(ICharacter player, Label sStatus, int name, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising, ref int rounds)
         {
-            int fkCall = this.randomGenerator.Next(1, 4);
-            int fkRaise = this.randomGenerator.Next(2, 5);
+            int fkCall = this.randomGenerator.RandomFromTo(1, 4);
+            int fkRaise = this.randomGenerator.RandomFromTo(2, 5);
             if (player.Power <= 752 && player.Power >= 704)
             {
                 this.Smooth(player, sStatus, name, fkCall, fkRaise, ref neededChipsToCall, potStatus, ref raise, ref raising, ref rounds);
@@ -413,8 +413,8 @@ namespace Poker.Models
         /// </param>
         public void StraightFlush(ICharacter player, Label sStatus, int name, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising, ref int rounds)
         {
-            int sfCall = this.randomGenerator.Next(1, 3);
-            int sfRaise = this.randomGenerator.Next(1, 3);
+            int sfCall = this.randomGenerator.RandomFromTo(1, 3);
+            int sfRaise = this.randomGenerator.RandomFromTo(1, 3);
             if (player.Power <= 913 && player.Power >= 804)
             {
                 this.Smooth(player, sStatus, name, sfCall, sfRaise, ref neededChipsToCall, potStatus, ref raise, ref raising, ref rounds);
@@ -456,7 +456,7 @@ namespace Poker.Models
         /// </param>
         private void Smooth(ICharacter player, Label botStatus, int name, int n, int r, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising, ref int rounds)
         {
-            int rnd = this.randomGenerator.Next(1, 3);
+            int rnd = this.randomGenerator.RandomFromTo(1, 3);
             if (neededChipsToCall <= 0)
             {
                 this.playerMove.Check(player, botStatus, ref raising);
