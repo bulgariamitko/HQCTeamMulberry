@@ -49,10 +49,12 @@
     <Compile Include="Interfaces\ICard.cs" />
     <Compile Include="Interfaces\IDatabase.cs" />
     <Compile Include="Interfaces\IPlayerMove.cs" />
+    <Compile Include="Interfaces\IRandomGenerator.cs" />
     <Compile Include="Interfaces\IWinningHandType.cs" />
     <Compile Include="Interfaces\IPlayer.cs" />
     <Compile Include="Models\Card.cs" />
     <Compile Include="Models\PlayerMove.cs" />
+    <Compile Include="Models\RandomGenerator.cs" />
     <Compile Include="Models\WinningHandType.cs" />
     <Compile Include="UserInterface\AddChips.cs">
       <SubType>Form</SubType>

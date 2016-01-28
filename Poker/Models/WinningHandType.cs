@@ -34,7 +34,7 @@ namespace Poker.Models
         public WinningHandType()
         {
             this.randomGenerator = new Random();
-            this.playerMove = new PlayerMove();
+            this.playerMove = new PlayerMove(new RandomGenerator());
         }
 
         /// <summary>
