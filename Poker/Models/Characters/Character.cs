@@ -1,4 +1,13 @@
-﻿namespace Poker.Models.Characters
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Character.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   Defines the Character type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Poker.Models.Characters
 {
     using System;
     using System.Collections.Generic;
@@ -8,25 +17,95 @@
     using Poker.UserInterface;
     using Poker.Validators;
 
+    /// <summary>
+    /// The base class for all players.
+    /// </summary>
     public abstract class Character : ICharacter
     {
+        /// <summary>
+        /// The default start chips.
+        /// </summary>
         protected const int DefaultStartChips = 10000;
+
+        /// <summary>
+        /// The default player panel height.
+        /// </summary>
         protected const int DefaultPlayerPanelHeight = 150;
+
+        /// <summary>
+        /// The default player panel width.
+        /// </summary>
         protected const int DefaultPlayerPanelWidth = 180;
 
+        /// <summary>
+        /// The name.
+        /// </summary>
         private string name;
+
+        /// <summary>
+        /// The chips.
+        /// </summary>
         private int chips;
+
+        /// <summary>
+        /// The panel.
+        /// </summary>
         private Panel panel;
+
+        /// <summary>
+        /// The type.
+        /// </summary>
         private double type;
+
+        /// <summary>
+        /// The power.
+        /// </summary>
         private double power;
+
+        /// <summary>
+        /// The call.
+        /// </summary>
         private int call;
+
+        /// <summary>
+        /// The raise.
+        /// </summary>
         private int raise;
+
+        /// <summary>
+        /// The can make turn.
+        /// </summary>
         private bool canMakeTurn;
+
+        /// <summary>
+        /// The out of chips.
+        /// </summary>
         private bool outOfChips;
+
+        /// <summary>
+        /// The folded.
+        /// </summary>
         private bool folded;
+
+        /// <summary>
+        /// Player cards.
+        /// </summary>
         private IList<ICard> cards;
+
+        /// <summary>
+        /// The start card.
+        /// </summary>
         private int startCard;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Character"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// The name.
+        /// </param>
+        /// <param name="startCard">
+        /// The start card.
+        /// </param>
         protected Character(string name, int startCard = 0)
         {
             this.Name = name;
@@ -49,6 +128,9 @@
 
         }
 
+        /// <summary>
+        /// Gets the name.
+        /// </summary>
         public string Name
         {
             get
@@ -63,6 +145,9 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the chips.
+        /// </summary>
         public int Chips
         {
             get
@@ -84,6 +169,9 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the panel.
+        /// </summary>
         public Panel Panel
         {
             get
@@ -98,6 +186,9 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the type.
+        /// </summary>
         public double Type
         {
             get
@@ -112,6 +203,9 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the power.
+        /// </summary>
         public double Power
         {
             get
@@ -126,6 +220,9 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the call.
+        /// </summary>
         public int Call
         {
             get
@@ -140,6 +237,9 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the raise.
+        /// </summary>
         public int Raise
         {
             get
@@ -155,6 +255,9 @@
 
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether can make turn.
+        /// </summary>
         public bool CanMakeTurn
         {
             get
@@ -169,6 +272,9 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether out of chips.
+        /// </summary>
         public bool OutOfChips
         {
             get
@@ -183,6 +289,9 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether folded.
+        /// </summary>
         public bool Folded
         {
             get
@@ -197,6 +306,9 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the cards.
+        /// </summary>
         public IList<ICard> Cards
         {
             get
@@ -211,6 +323,11 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the start card.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// </exception>
         public int StartCard
         {
             get
@@ -230,6 +347,12 @@
             }
         }
 
+        /// <summary>
+        /// The panel initializer.
+        /// </summary>
+        /// <param name="location">
+        /// The location.
+        /// </param>
         public void InitializePanel(Point location)
         {
             this.Panel.Location = location;
