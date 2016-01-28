@@ -54,6 +54,7 @@
     <Compile Include="BotTest.cs" />
     <Compile Include="CharacterTest.cs" />
     <Compile Include="GameDatabaseTest.cs" />
+    <Compile Include="PlayerMoveTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
