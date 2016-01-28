@@ -4,9 +4,9 @@
     using System.Collections.Generic;
     using System.Drawing;
     using System.Windows.Forms;
-
     using Poker.Interfaces;
     using Poker.UserInterface;
+    using Poker.Validators;
 
     public abstract class Character : ICharacter
     {
@@ -58,7 +58,7 @@
 
             private set
             {
-                this.ValidateForEmptyOrNullString(value, "name");
+                PropertyValueValidator.ValidateForEmptyOrNullString(value, "name");
                 this.name = value;
             }
         }
@@ -72,7 +72,7 @@
 
             set
             {
-                this.ValidateForNull(value, "Chips");
+                PropertyValueValidator.ValidateForNull(value, "Chips");
                 if (value < 0)
                 {
                     this.chips = 0;
@@ -93,7 +93,7 @@
 
             set
             {
-                this.ValidateForNull(value, "Panel");
+                PropertyValueValidator.ValidateForNull(value, "Panel");
                 this.panel = value;
             }
         }
@@ -107,7 +107,7 @@
 
             set
             {
-                this.ValidateForNull(value, "Type");
+                PropertyValueValidator.ValidateForNull(value, "Type");
                 this.type = value;
             }
         }
@@ -121,7 +121,7 @@
 
             set
             {
-                this.ValidateForNull(value, "Power");
+                PropertyValueValidator.ValidateForNull(value, "Power");
                 this.power = value;
             }
         }
@@ -135,7 +135,7 @@
 
             set
             {
-                this.ValidateForNull(value, "Call");
+                PropertyValueValidator.ValidateForNull(value, "Call");
                 this.call = value;
             }
         }
@@ -149,10 +149,10 @@
 
             set
             {
-                this.ValidateForNull(value, "Raise");
+                PropertyValueValidator.ValidateForNull(value, "Raise");
                 this.raise = value;
             }
-            
+
         }
 
         public bool CanMakeTurn
@@ -164,7 +164,7 @@
 
             set
             {
-                this.ValidateForNull(value, "CanMakeTurn");
+                PropertyValueValidator.ValidateForNull(value, "CanMakeTurn");
                 this.canMakeTurn = value;
             }
         }
@@ -178,7 +178,7 @@
 
             set
             {
-                this.ValidateForNull(value, "OutOfChips");
+                PropertyValueValidator.ValidateForNull(value, "OutOfChips");
                 this.outOfChips = value;
             }
         }
@@ -192,7 +192,7 @@
 
             set
             {
-                this.ValidateForNull(value, "Folded");
+                PropertyValueValidator.ValidateForNull(value, "Folded");
                 this.folded = value;
             }
         }
@@ -206,7 +206,7 @@
 
             protected set
             {
-                this.ValidateForNull(value, "Cards");
+                PropertyValueValidator.ValidateForNull(value, "Cards");
                 this.cards = value;
             }
         }
@@ -220,8 +220,8 @@
 
             set
             {
-                this.ValidateForNull(value, "Start card");
-                this.ValidateForNegativeNumber(value, "Start card");
+                PropertyValueValidator.ValidateForNull(value, "Start card");
+                PropertyValueValidator.ValidateForNegativeNumber(value, "Start card");
                 if (value > MainWindow.DefaultSetOfCards - 1)
                 {
                     throw new ArgumentOutOfRangeException("Start card cannot be bigger then DefaultSetOfCards");
@@ -229,7 +229,7 @@
                 this.startCard = value;
             }
         }
-        
+
         public void InitializePanel(Point location)
         {
             this.Panel.Location = location;
@@ -237,33 +237,6 @@
             this.Panel.Height = DefaultPlayerPanelHeight;
             this.Panel.Width = DefaultPlayerPanelWidth;
             this.Panel.Visible = false;
-        }
-
-        protected void ValidateForNull<T>(T value, string propertyName)
-        {
-            if (value == null)
-            {
-                var msg = string.Format("{0} cannot be null.", propertyName);
-                throw new ArgumentNullException(msg);
-            }
-        }
-
-        protected void ValidateForNegativeNumber(int value, string propertyName)
-        {
-            if (value < 0)
-            {
-                var msg = string.Format("{0} cannot be negative.", propertyName);
-                throw new ArgumentOutOfRangeException(msg);
-            }
-        }
-
-        protected void ValidateForEmptyOrNullString(string value, string propertyName)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                var msg = string.Format("{0} cannot be null or white space.", propertyName);
-                throw new ArgumentNullException(msg);
-            }
         }
     }
 }
