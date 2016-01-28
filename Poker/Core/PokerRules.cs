@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="PokerRules.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   Defines the PokerRules type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Poker.Core
 {
     using System;
@@ -6,17 +15,44 @@ namespace Poker.Core
     using Poker.Interfaces;
     using Poker.UserInterface;
 
+    /// <summary>
+    /// The poker rules.
+    /// </summary>
     public class PokerRules
     {
+        /// <summary>
+        /// The default carts on board.
+        /// </summary>
         public const int DefaultCartsOnBoard = 5;
 
+        /// <summary>
+        /// The main window.
+        /// </summary>
         private MainWindow mainWindow;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PokerRules"/> class.
+        /// </summary>
+        /// <param name="mainWindow">
+        /// The main window.
+        /// </param>
         public PokerRules(MainWindow mainWindow)
         {
             this.mainWindow = mainWindow;
         }
 
+        /// <summary>
+        /// The rules.
+        /// </summary>
+        /// <param name="card1">
+        /// The card 1.
+        /// </param>
+        /// <param name="card2">
+        /// The card 2.
+        /// </param>
+        /// <param name="currentPlayer">
+        /// The current player.
+        /// </param>
         public void Rules(int card1, int card2, ICharacter currentPlayer)
         {
             if (!currentPlayer.OutOfChips || card1 == 0 && card2 == 1 && this.mainWindow.playerStatus.Text.Contains("Fold") == false)
@@ -94,6 +130,24 @@ namespace Poker.Core
             }
         }
 
+        /// <summary>
+        /// The r straight flush.
+        /// </summary>
+        /// <param name="currentPlayer">
+        /// The current player.
+        /// </param>
+        /// <param name="st1">
+        /// The st 1.
+        /// </param>
+        /// <param name="st2">
+        /// The st 2.
+        /// </param>
+        /// <param name="st3">
+        /// The st 3.
+        /// </param>
+        /// <param name="st4">
+        /// The st 4.
+        /// </param>
         public void RStraightFlush(ICharacter currentPlayer, int[] st1, int[] st2, int[] st3, int[] st4)
         {
             if (currentPlayer.Type >= -1)
@@ -176,6 +230,15 @@ namespace Poker.Core
             }
         }
 
+        /// <summary>
+        /// The r four of a kind.
+        /// </summary>
+        /// <param name="currentPlayer">
+        /// The current player.
+        /// </param>
+        /// <param name="straight">
+        /// The straight.
+        /// </param>
         public void RFourOfAKind(ICharacter currentPlayer, int[] straight)
         {
             if (currentPlayer.Type >= -1)
@@ -202,6 +265,18 @@ namespace Poker.Core
             }
         }
 
+        /// <summary>
+        /// The r full house.
+        /// </summary>
+        /// <param name="currentPlayer">
+        /// The current player.
+        /// </param>
+        /// <param name="done">
+        /// The done.
+        /// </param>
+        /// <param name="straight">
+        /// The straight.
+        /// </param>
         public void RFullHouse(ICharacter currentPlayer, ref bool done, int[] straight)
         {
             if (currentPlayer.Type >= -1)
@@ -258,6 +333,18 @@ namespace Poker.Core
             }
         }
 
+        /// <summary>
+        /// The r flush.
+        /// </summary>
+        /// <param name="currentPlayer">
+        /// The current player.
+        /// </param>
+        /// <param name="vf">
+        /// The vf.
+        /// </param>
+        /// <param name="cardsOnBoard">
+        /// The cards on board.
+        /// </param>
         public void RFlush(ICharacter currentPlayer, ref bool vf, int[] cardsOnBoard)
         {
             if (currentPlayer.Type >= -1)
@@ -835,6 +922,12 @@ namespace Poker.Core
             }
         }
 
+        /// <summary>
+        /// The r two pair.
+        /// </summary>
+        /// <param name="currentPlayer">
+        /// The current player.
+        /// </param>
         public void RTwoPair(ICharacter currentPlayer) //ref double current, ref double power
         {
             if (currentPlayer.Type >= -1)
@@ -899,6 +992,12 @@ namespace Poker.Core
             }
         }
 
+        /// <summary>
+        /// The r pair two pair.
+        /// </summary>
+        /// <param name="currentPlayer">
+        /// The current player.
+        /// </param>
         public void RPairTwoPair(ICharacter currentPlayer) //ref double current, ref double power
         {
             if (currentPlayer.Type >= -1)
@@ -1022,6 +1121,12 @@ namespace Poker.Core
             }
         }
 
+        /// <summary>
+        /// The r pair from hand.
+        /// </summary>
+        /// <param name="currentPlayer">
+        /// The current player.
+        /// </param>
         public void RPairFromHand(ICharacter currentPlayer) //ref double current, ref double power
         {
             if (currentPlayer.Type >= -1)
@@ -1103,6 +1208,12 @@ namespace Poker.Core
             }
         }
 
+        /// <summary>
+        /// The r high card.
+        /// </summary>
+        /// <param name="currentPlayer">
+        /// The current player.
+        /// </param>
         public void RHighCard(ICharacter currentPlayer)
         {
             if (currentPlayer.Type == -1)
