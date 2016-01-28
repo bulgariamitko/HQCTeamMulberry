@@ -1,10 +1,21 @@
-﻿namespace Poker
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Program.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   Defines the Program type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Poker
 {
     using System;
     using System.Windows.Forms;
-
     using Poker.UserInterface;
 
+    /// <summary>
+    /// The program.
+    /// </summary>
     public static class Program
     {
         /// <summary>

@@ -1,17 +1,54 @@
-﻿namespace Poker.Models
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="PlayerMove.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   Defines the PlayerMove type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Poker.Models
 {
     using System;
     using System.Windows.Forms;
     using Interfaces;
 
+    /// <summary>
+    /// The player move.
+    /// </summary>
     public class PlayerMove : IPlayerMove
     {
+        /// <summary>
+        /// The round n.
+        /// </summary>
+        /// <param name="sChips">
+        /// The s chips.
+        /// </param>
+        /// <param name="n">
+        /// The n.
+        /// </param>
+        /// <returns>
+        /// The <see cref="double"/>.
+        /// </returns>
         public static double RoundN(int sChips, int n)
         {
             double a = Math.Round((sChips / n) / 100d, 0) * 100;
+
             return a;
         }
 
+        /// <summary>
+        /// The fold.
+        /// </summary>
+        /// <param name="player">
+        /// The player.
+        /// </param>
+        /// <param name="sStatus">
+        /// The s status.
+        /// </param>
+        /// <param name="rising">
+        /// The rising.
+        /// </param>
         public void Fold(ICharacter player, Label sStatus, ref bool rising)
         {
             rising = false;
@@ -20,6 +57,18 @@
             player.OutOfChips = true;
         }
 
+        /// <summary>
+        /// The check.
+        /// </summary>
+        /// <param name="player">
+        /// The player.
+        /// </param>
+        /// <param name="cStatus">
+        /// The c status.
+        /// </param>
+        /// <param name="raising">
+        /// The raising.
+        /// </param>
         public void Check(ICharacter player, Label cStatus, ref bool raising)
         {
             cStatus.Text = "Check";
@@ -27,6 +76,24 @@
             raising = false;
         }
 
+        /// <summary>
+        /// The call.
+        /// </summary>
+        /// <param name="player">
+        /// The player.
+        /// </param>
+        /// <param name="sStatus">
+        /// The s status.
+        /// </param>
+        /// <param name="raising">
+        /// The raising.
+        /// </param>
+        /// <param name="neededChipsToCall">
+        /// The needed chips to call.
+        /// </param>
+        /// <param name="potStatus">
+        /// The pot status.
+        /// </param>
         public void Call(ICharacter player, Label sStatus, ref bool raising, ref int neededChipsToCall, TextBox potStatus)
         {
             raising = false;
@@ -36,6 +103,27 @@
             potStatus.Text = (int.Parse(potStatus.Text) + neededChipsToCall).ToString();
         }
 
+        /// <summary>
+        /// The raised.
+        /// </summary>
+        /// <param name="player">
+        /// The player.
+        /// </param>
+        /// <param name="sStatus">
+        /// The s status.
+        /// </param>
+        /// <param name="raising">
+        /// The raising.
+        /// </param>
+        /// <param name="raise">
+        /// The raise.
+        /// </param>
+        /// <param name="neededChipsToCall">
+        /// The needed chips to call.
+        /// </param>
+        /// <param name="potStatus">
+        /// The pot status.
+        /// </param>
         public void Raised(ICharacter player, Label sStatus, ref bool raising, ref int raise, ref int neededChipsToCall, TextBox potStatus)
         {
             player.Chips -= Convert.ToInt32(raise);
@@ -46,6 +134,33 @@
             player.CanMakeTurn = false;
         }
 
+        /// <summary>
+        /// The hp.
+        /// </summary>
+        /// <param name="player">
+        /// The player.
+        /// </param>
+        /// <param name="sStatus">
+        /// The s status.
+        /// </param>
+        /// <param name="n">
+        /// The n.
+        /// </param>
+        /// <param name="n1">
+        /// The n 1.
+        /// </param>
+        /// <param name="neededChipsToCall">
+        /// The needed chips to call.
+        /// </param>
+        /// <param name="potStatus">
+        /// The pot status.
+        /// </param>
+        /// <param name="raise">
+        /// The raise.
+        /// </param>
+        /// <param name="raising">
+        /// The raising.
+        /// </param>
         public void HP(ICharacter player, Label sStatus, int n, int n1, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising)
         {
             Random rand = new Random();
@@ -109,6 +224,39 @@
             }
         }
 
+        /// <summary>
+        /// The ph.
+        /// </summary>
+        /// <param name="player">
+        /// The player.
+        /// </param>
+        /// <param name="sStatus">
+        /// The s status.
+        /// </param>
+        /// <param name="n">
+        /// The n.
+        /// </param>
+        /// <param name="n1">
+        /// The n 1.
+        /// </param>
+        /// <param name="r">
+        /// The r.
+        /// </param>
+        /// <param name="neededChipsToCall">
+        /// The needed chips to call.
+        /// </param>
+        /// <param name="potStatus">
+        /// The pot status.
+        /// </param>
+        /// <param name="raise">
+        /// The raise.
+        /// </param>
+        /// <param name="raising">
+        /// The raising.
+        /// </param>
+        /// <param name="rounds">
+        /// The rounds.
+        /// </param>
         public void PH(ICharacter player, Label sStatus, int n, int n1, int r, ref int neededChipsToCall, TextBox potStatus, ref int raise, ref bool raising, ref int rounds)
         {
             Random rand = new Random();
