@@ -20,8 +20,7 @@
         public const int DefaultSetOfCards = 52;
         public const int DefaultCardsInGame = 17;
         public const int DefaultNumberOfBots = 5;
-
-        private ProgressBar progressBar;
+        
         private readonly IPlayer player;
         private readonly IList<IBot> bots;
         private readonly IWinningHandType winningHandType;
@@ -73,7 +72,6 @@
         #endregion
         public MainWindow()
         {
-            this.progressBar = new ProgressBar();
             this.player = new Player("Player");
             this.bots = new List<IBot>()
                             {
@@ -171,7 +169,7 @@
         /// Deals cards to all players and puts cards at the table.
         /// Enables card controls and panel controls for the players.
         /// </summary>
-        async Task Shuffle()
+        public async Task Shuffle()
         {
             this.gameDatabase.PlayersGameStatus.Add(this.player.OutOfChips);
             this.gameDatabase.PlayersGameStatus.Add(this.bots[0].OutOfChips);
@@ -386,7 +384,7 @@
         /// Going through each character.
         /// Updates the data for all characters.
         /// </summary>
-        async Task Turns()
+        public async Task Turns()
         {
             #region Rotating
             if (!this.player.OutOfChips)
@@ -647,7 +645,7 @@
         /// Checks if bet is raised in the current turn.
         /// </summary>
         /// <param name="currentTurn">The current turn</param>
-        async Task CheckRaise(int currentTurn)
+        public async Task CheckRaise(int currentTurn)
         {
             if (this.raising)
             {
@@ -728,34 +726,15 @@
                     this.PokerRules.Rules(0, 1, this.player);
                 }
 
-                if (!this.botOneStatus.Text.Contains("Fold"))
+                for (int currentBotNumber = 0; currentBotNumber < this.bots.Count; currentBotNumber++)
                 {
-                    fixedLast = "Bot 1";
-                    this.PokerRules.Rules(2, 3, this.bots[0]);
-                }
-
-                if (!this.botTwoStatus.Text.Contains("Fold"))
-                {
-                    fixedLast = "Bot 2";
-                    this.PokerRules.Rules(4, 5, this.bots[1]);
-                }
-
-                if (!this.botThreeStatus.Text.Contains("Fold"))
-                {
-                    fixedLast = "Bot 3";
-                    this.PokerRules.Rules(6, 7, this.bots[2]);
-                }
-
-                if (!this.botFourStatus.Text.Contains("Fold"))
-                {
-                    fixedLast = "Bot 4";
-                    this.PokerRules.Rules(8, 9, this.bots[3]);
-                }
-
-                if (!this.botFiveStatus.Text.Contains("Fold"))
-                {
-                    fixedLast = "Bot 5";
-                    this.PokerRules.Rules(10, 11, this.bots[4]);
+                    if (!this.botStatusLabels[currentBotNumber].Text.Contains("Fold"))
+                    {
+                        fixedLast = this.bots[currentBotNumber].Name;
+                        int startCard = this.bots[currentBotNumber].StartCard;
+                        int secondCard = startCard + 1;
+                        this.PokerRules.Rules(startCard, secondCard, this.bots[currentBotNumber]);
+                    }
                 }
 
                 this.Winner(this.player, fixedLast);
@@ -846,16 +825,11 @@
             this.cardsPictureBoxArray[j].Image = this.gameCardsAsImages[j];
             this.player.Call = 0;
             this.player.Raise = 0;
-            this.bots[0].Call = 0;
-            this.bots[0].Raise = 0;
-            this.bots[1].Call = 0;
-            this.bots[1].Raise = 0;
-            this.bots[2].Call = 0;
-            this.bots[2].Raise = 0;
-            this.bots[3].Call = 0;
-            this.bots[3].Raise = 0;
-            this.bots[4].Call = 0;
-            this.bots[4].Raise = 0;
+            for (int currentBot = 0; currentBot < this.bots.Count; currentBot++)
+            {
+                this.bots[currentBot].Call = 0;
+                this.bots[currentBot].Raise = 0;
+            }
         }
 
         void FixCall(Label status, ICharacter currentPlayer, int options) //ref int cCall, ref int cRaise
@@ -912,7 +886,7 @@
         /// If there is only one character that hasn't foldet, 
         /// he becoms the winner
         /// </summary>   
-        async Task AllIn()
+        public async Task AllIn()
         {
             #region Allin
             if (this.player.Chips <= 0 && !this.chipsAreAdded)
